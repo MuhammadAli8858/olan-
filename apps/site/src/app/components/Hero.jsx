@@ -127,7 +127,7 @@ export function Hero() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 1.2 }}
-        className="relative z-20 mt-10 flex justify-center pb-4 md:absolute md:bottom-8 md:left-1/2 md:mt-0 md:-translate-x-1/2 md:pb-0"
+        className="relative z-20 mt-10 flex justify-center pb-4 md:absolute md:bottom-1 md:left-1/2 md:mt-0 md:-translate-x-1/2 md:pb-0"
       >
         <div className="flex animate-bounce flex-col items-center gap-1.5">
           <span className="text-sm text-cyan-600 dark:text-cyan-400">Прокрутите вниз</span>
