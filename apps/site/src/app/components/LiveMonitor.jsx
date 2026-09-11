@@ -81,12 +81,30 @@ function formatClock(date) {
 // Положение отметок и момент вспышки. Задержка подобрана так, чтобы
 // точка загоралась ровно тогда, когда луч проходит через её сектор:
 // полный оборот — 4 секунды, значит каждая четверть круга это 1 секунда.
-const BLIPS = [
-  { top: '25%', left: '62%', delay: 0.6 },
-  { top: '64%', left: '68%', delay: 1.7 },
-  { top: '70%', left: '34%', delay: 2.6 },
-  { top: '38%', left: '26%', delay: 3.4 },
+// Полный оборот луча.
+const SWEEP_SECONDS = 4;
+
+// Отметки целей заданы в процентах от размера радара (центр — 50/50).
+const BLIP_POSITIONS = [
+  { top: 25, left: 62 },
+  { top: 64, left: 68 },
+  { top: 70, left: 34 },
+  { top: 38, left: 26 },
 ];
+
+// Момент вспышки считается из положения точки, а не подбирается на глаз.
+// Луч стартует направленным вправо и идёт по часовой стрелке, значит
+// точка загорается, когда он доходит до её угла.
+const BLIPS = BLIP_POSITIONS.map((blip) => {
+  const dx = blip.left - 50;
+  const dy = blip.top - 50;
+  // Угол по часовой стрелке от направления «вверх», 0…360.
+  const angle = (Math.atan2(dx, -dy) * 180) / Math.PI;
+  const clockwise = (angle + 360) % 360;
+  // Луч в начале смотрит вправо — это 90 градусов от «вверх».
+  const fromStart = (clockwise - 90 + 360) % 360;
+  return { ...blip, delay: (fromStart / 360) * SWEEP_SECONDS };
+});
 
 export function LiveMonitor() {
   const { language } = useSite();
@@ -215,22 +233,36 @@ export function LiveMonitor() {
               <div className="absolute bottom-0 left-1/2 top-0 w-px bg-cyan-500/10" />
               <div className="absolute left-0 right-0 top-1/2 h-px bg-cyan-500/10" />
 
-              {/* Луч радара: линия и шлейф вращаются вместе, поэтому
-                  хвост всегда тянется позади, а не отдельно от линии. */}
+              {/* Луч радара.
+                  Линия смотрит вправо, вращение идёт по часовой стрелке.
+                  Шлейф в conic-gradient отсчитывается от верха элемента,
+                  поэтому сектор 0…90 градусов — это ровно то, что луч
+                  уже прошёл. Так хвост оказывается позади линии, а не
+                  впереди неё, как было раньше. */}
               <div className="olan-sweep-line absolute inset-0">
                 <div
                   className="absolute inset-0 rounded-full"
                   style={{
-                    background:
-                      'conic-gradient(from -90deg, rgba(34,211,238,0.28) 0deg, rgba(34,211,238,0.10) 45deg, transparent 90deg)',
+                    background: [
+                      'conic-gradient(from 0deg,',
+                      'rgba(34,211,238,0) 0deg,',
+                      'rgba(34,211,238,0.03) 30deg,',
+                      'rgba(34,211,238,0.10) 60deg,',
+                      'rgba(34,211,238,0.22) 80deg,',
+                      'rgba(34,211,238,0.34) 89deg,',
+                      'rgba(34,211,238,0) 90deg)',
+                    ].join(' '),
+                    // К краю свечение слабеет — как на настоящем экране,
+                    // где сигнал у центра плотнее.
+                    maskImage: 'radial-gradient(circle at center, #000 25%, rgba(0,0,0,0.55) 75%, transparent 100%)',
+                    WebkitMaskImage: 'radial-gradient(circle at center, #000 25%, rgba(0,0,0,0.55) 75%, transparent 100%)',
                   }}
                 />
                 <div
                   className="absolute left-1/2 top-1/2 h-px w-1/2 origin-left"
                   style={{
-                    transform: 'rotate(-90deg)',
-                    background: 'linear-gradient(90deg, rgba(34,211,238,0.9), rgba(34,211,238,0))',
-                    boxShadow: '0 0 12px rgba(34,211,238,0.8)',
+                    background: 'linear-gradient(90deg, rgba(34,211,238,0.95), rgba(34,211,238,0.15))',
+                    boxShadow: '0 0 10px rgba(34,211,238,0.7)',
                   }}
                 />
               </div>

@@ -6,6 +6,28 @@ const SiteContext = createContext(null);
 const SUPPORTED = LANGUAGE_OPTIONS.map((option) => option.code);
 const DEFAULT_LANGUAGE = 'ru';
 const LANG_STORAGE_KEY = 'olan-lang';
+const THEME_STORAGE_KEY = 'olan-theme';
+
+// Какая тема стоит в системе у посетителя.
+function systemTheme() {
+  if (typeof window === 'undefined' || !window.matchMedia) return 'light';
+  try {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  } catch {
+    return 'light';
+  }
+}
+
+// Свой выбор, если посетитель уже переключал тему руками.
+function savedTheme() {
+  if (typeof window === 'undefined') return null;
+  try {
+    const value = localStorage.getItem(THEME_STORAGE_KEY);
+    return value === 'dark' || value === 'light' ? value : null;
+  } catch {
+    return null;
+  }
+}
 
 function getInitialLanguage() {
   if (typeof window === 'undefined') return DEFAULT_LANGUAGE;
@@ -19,27 +41,44 @@ function getInitialLanguage() {
 }
 
 export function SiteProvider({ children }) {
-  const [theme, setTheme] = useState(() => {
-    // Светлая тема по умолчанию: основной контент читают и печатают,
-    // а часть аудитории смотрит сайт при ярком свете. Тёмная остаётся
-    // переключателем и запоминается для каждого посетителя.
-    if (typeof window === 'undefined') return 'light';
-    try {
-      return localStorage.getItem('olan-theme') || 'light';
-    } catch {
-      return 'light';
-    }
-  });
+  // Тема берётся из настроек системы посетителя. Если человек переключил
+  // её на сайте вручную, дальше уважается только его выбор — система
+  // больше не вмешивается.
+  const [theme, setTheme] = useState(() => savedTheme() ?? systemTheme());
+  // Был ли выбор сделан руками. От этого зависит, слушать ли систему.
+  const [themePinned, setThemePinned] = useState(() => savedTheme() !== null);
   const [language, setLanguageState] = useState(getInitialLanguage);
 
+  // Применяем тему к странице. В хранилище пишем только тогда, когда
+  // выбор сделан вручную: иначе автоматически определённая тема
+  // записалась бы как решение посетителя и заморозилась навсегда.
   useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    if (!themePinned) return;
     try {
-      localStorage.setItem('olan-theme', theme);
+      localStorage.setItem(THEME_STORAGE_KEY, theme);
     } catch {
       /* ignore */
     }
-    document.documentElement.classList.toggle('dark', theme === 'dark');
-  }, [theme]);
+  }, [theme, themePinned]);
+
+  // Пока посетитель не выбрал тему сам, следим за системной настройкой:
+  // переключил человек тёмный режим в операционной системе — сайт
+  // переключится следом, не дожидаясь перезагрузки страницы.
+  useEffect(() => {
+    if (themePinned || typeof window === 'undefined' || !window.matchMedia) return undefined;
+
+    const query = window.matchMedia('(prefers-color-scheme: dark)');
+    const onChange = (event) => setTheme(event.matches ? 'dark' : 'light');
+
+    if (query.addEventListener) query.addEventListener('change', onChange);
+    else query.addListener(onChange); // старые версии Safari
+
+    return () => {
+      if (query.removeEventListener) query.removeEventListener('change', onChange);
+      else query.removeListener(onChange);
+    };
+  }, [themePinned]);
 
   useEffect(() => {
     try {
@@ -66,10 +105,23 @@ export function SiteProvider({ children }) {
       languageOptions: LANGUAGE_OPTIONS,
       theme,
       setTheme,
-      toggleTheme: () => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark')),
+      // Ручное переключение: с этого момента системная настройка
+      // перестаёт влиять, а выбор сохраняется между визитами.
+      toggleTheme: () => {
+        setThemePinned(true);
+        setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+      },
+      // Вернуться к системной теме — на случай, если понадобится кнопка
+      // «как в системе».
+      useSystemTheme: () => {
+        try { localStorage.removeItem(THEME_STORAGE_KEY); } catch { /* ignore */ }
+        setThemePinned(false);
+        setTheme(systemTheme());
+      },
+      themePinned,
       text: UI_TEXT[language] || UI_TEXT.ru,
     }),
-    [theme, language],
+    [theme, themePinned, language],
   );
 
   return <SiteContext.Provider value={value}>{children}</SiteContext.Provider>;
