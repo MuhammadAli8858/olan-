@@ -1,0 +1,235 @@
+@import './fonts.css';
+@import './tailwind.css';
+@import './theme.css';
+
+/* Custom animations and styles for the automotive radar website */
+@layer base {
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #000000;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #06b6d4, #3b82f6);
+    border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #22d3ee, #60a5fa);
+  }
+
+  /* Prevent horizontal scroll */
+  body {
+    margin: 0;
+    overflow-x: hidden;
+    font-family: Inter, system-ui, sans-serif;
+  }
+}
+
+/* Custom animations */
+@layer utilities {
+  @keyframes pulse-glow {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.5;
+      transform: scale(1.05);
+    }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  /* Gradient text animation */
+  @keyframes gradient-shift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient-shift 3s ease infinite;
+  }
+}
+/* ═══════════════════════════════════════════════════════════════════════
+   Анимации в стиле центра мониторинга.
+   Свечение и неон включаются только в тёмной теме — на светлом фоне
+   такие эффекты выглядят грязно, поэтому там остаются мягкие переходы.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@keyframes olan-radar-sweep {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes olan-ping {
+  0% { transform: scale(1); opacity: 0.9; }
+  75%, 100% { transform: scale(2.6); opacity: 0; }
+}
+
+@keyframes olan-flicker {
+  0%, 95%, 97%, 100% { opacity: 1; }
+  96% { opacity: 0.45; }
+}
+
+@keyframes olan-neon-pulse {
+  0%, 100% { text-shadow: 0 0 6px rgba(6, 182, 212, 0.55), 0 0 14px rgba(6, 182, 212, 0.35); }
+  50% { text-shadow: 0 0 12px rgba(6, 182, 212, 0.9), 0 0 28px rgba(6, 182, 212, 0.55); }
+}
+
+@keyframes olan-grid-flow {
+  0% { background-position: 0 0; }
+  100% { background-position: 60px 60px; }
+}
+
+@keyframes olan-row-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes olan-scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(900%); }
+}
+
+/* Плавное появление блока при прокрутке */
+.olan-reveal {
+  opacity: 0;
+  transform: translateY(36px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+  will-change: opacity, transform;
+}
+.olan-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Карточка: подсветка верхней грани и подъём при наведении */
+.olan-card {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.olan-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(6 182 212), transparent);
+  transform: scaleX(0);
+  transition: transform 0.45s ease;
+}
+.olan-card:hover::before { transform: scaleX(1); }
+.olan-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(6, 182, 212, 0.55);
+  box-shadow: 0 10px 40px rgba(6, 182, 212, 0.12);
+}
+
+/* Кнопка: блик, пробегающий слева направо */
+.olan-sweep {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.olan-sweep::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(120deg, transparent 20%, rgba(255, 255, 255, 0.28) 50%, transparent 80%);
+  transform: translateX(-120%);
+  transition: transform 0.6s ease;
+}
+.olan-sweep:hover::after { transform: translateX(120%); }
+
+/* Сетка «как на радаре» — фон секции */
+.olan-grid {
+  background-image:
+    linear-gradient(rgba(6, 182, 212, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(6, 182, 212, 0.07) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: olan-grid-flow 8s linear infinite;
+}
+
+.olan-flicker { animation: olan-flicker 8s ease-in-out infinite; }
+.olan-ping { animation: olan-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite; }
+.olan-sweep-line { animation: olan-radar-sweep 4s linear infinite; transform-origin: center; }
+.olan-row-in { animation: olan-row-in 0.45s ease both; }
+.olan-scanline { animation: olan-scan 6s linear infinite; }
+
+/* Неоновый текст — только в тёмной теме */
+.dark .olan-neon { animation: olan-neon-pulse 3s ease-in-out infinite; }
+
+/* Уважаем системную настройку «меньше движения» */
+@media (prefers-reduced-motion: reduce) {
+  .olan-reveal { opacity: 1; transform: none; transition: none; }
+  .olan-grid,
+  .olan-flicker,
+  .olan-ping,
+  .olan-sweep-line,
+  .olan-scanline,
+  .dark .olan-neon {
+    animation: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Плавная типографика.
+
+   Базовый размер шрифта меняется вместе с шириной окна. Всё остальное
+   на сайте задано в rem, поэтому от одной строки масштабируется целиком:
+   заголовки, текст, отступы, кнопки.
+
+   На телефоне 16.5px — читаемо и ничего не разъезжается.
+   На ноутбуке около 18px. На большом мониторе упирается в 20px:
+   дальше растить бессмысленно, строка становится слишком длинной.
+   ═══════════════════════════════════════════════════════════════════════ */
+html {
+  font-size: clamp(16.5px, 0.95rem + 0.35vw, 20px);
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Крупные заголовки растут быстрее обычного текста, но тоже с потолком. */
+h1, .text-fluid-h1 { font-size: clamp(2rem, 1.5rem + 2.2vw, 3.4rem); line-height: 1.1; }
+h2, .text-fluid-h2 { font-size: clamp(1.6rem, 1.25rem + 1.5vw, 2.6rem); line-height: 1.15; }
+
+/* Длинные абзацы не должны растягиваться на весь монитор — глазу тяжело
+   возвращаться к началу строки. */
+p { max-width: 78ch; }
+p.max-w-none, .prose-wide p { max-width: none; }
+
+/* Отметка на радаре: вспыхивает при проходе луча и медленно гаснет.
+   Цикл совпадает с оборотом луча — 4 секунды. */
+@keyframes olan-blip {
+  0%   { opacity: 0; transform: scale(0.6); box-shadow: 0 0 0 rgba(34, 211, 238, 0); }
+  4%   { opacity: 1; transform: scale(1.5); box-shadow: 0 0 14px rgba(34, 211, 238, 0.95); }
+  30%  { opacity: 0.75; transform: scale(1); box-shadow: 0 0 8px rgba(34, 211, 238, 0.5); }
+  75%  { opacity: 0.18; box-shadow: 0 0 3px rgba(34, 211, 238, 0.15); }
+  100% { opacity: 0; transform: scale(0.85); box-shadow: 0 0 0 rgba(34, 211, 238, 0); }
+}
+
+.olan-blip {
+  opacity: 0;
+  animation: olan-blip 4s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .olan-blip { animation: none; opacity: 0.7; }
+}

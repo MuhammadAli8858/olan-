@@ -1,0 +1,27 @@
+# зависимости
+node_modules/
+
+# сборки
+dist/
+build/
+
+# личный конфиг (в репозиторий кладём только .env.example)
+.env
+.env.local
+
+# рабочие данные сервера: чаты, заявки, бэкапы контента
+server/data/chats.json
+server/data/messages.json
+server/data/backups/*
+!server/data/backups/.gitkeep
+server/data/original-content.json
+server/data/users.json
+server/data/assignments.json
+server/data/sessions.json
+
+# служебное
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+.vite/

@@ -1,0 +1,3446 @@
+{
+  "UI_TEXT": {
+    "ru": {
+      "brand": "OLAN HIGH TECH",
+      "nav": {
+        "about": "О компании",
+        "catalog": "Каталог",
+        "benefits": "Преимущества",
+        "process": "Как купить",
+        "testimonials": "Отзывы",
+        "projects": "Наши проекты",
+        "solutions": "Решение",
+        "faq": "FAQ",
+        "contact": "Контакты"
+      },
+      "actions": {
+        "contact": "Связаться",
+        "login": "Войти",
+        "logout": "Выйти",
+        "openCatalog": "Смотреть каталог",
+        "consultation": "Получить консультацию",
+        "details": "Подробнее",
+        "buy": "Оставить заявку",
+        "close": "Закрыть",
+        "save": "Сохранить",
+        "send": "Отправить сообщение",
+        "chooseEquipment": "Выбрать оборудование",
+        "backToTop": "Наверх",
+        "morePhotos": "Фотографии",
+        "themeLight": "Светлая тема",
+        "themeDark": "Тёмная тема",
+        "language": "Язык",
+        "openCard": "Открыть карточку"
+      },
+      "hero": {
+        "badge": "Интеллектуальные комплексы • Сертифицированное оборудование",
+        "title1": "Технологии контроля",
+        "title2": "дорожной безопасности",
+        "description": "Проектируем и производим высокотехнологические комплексы для фиксации нарушений ПДД.",
+        "descriptionLine2": "Полный цикл — от разработки до выпуска готового оборудования.",
+        "stats": [
+          {
+            "value": "15+",
+            "label": "Лет на рынке"
+          },
+          {
+            "value": "3000+",
+            "label": "Поставленных комплексов"
+          },
+          {
+            "value": "12 мес",
+            "label": "Гарантия на оборудование"
+          }
+        ],
+        "scroll": "Прокрутите вниз"
+      },
+      "about": {
+        "tag": "О компании",
+        "title": "Производитель комплексов фиксации нарушений",
+        "description": "OLAN HIGH TECH PROJECT — производитель и поставщик сертифицированных высокотехнологических комплексов автоматической фиксации нарушений ПДД",
+        "stats": [
+          {
+            "value": "15+",
+            "label": "Лет на рынке"
+          },
+          {
+            "value": "100+",
+            "label": "Поставлено комплексов"
+          },
+          {
+            "value": "12 мес",
+            "label": "Гарантия"
+          },
+          {
+            "value": "5 лет",
+            "label": "Срок службы"
+          }
+        ]
+      },
+      "catalog": {
+        "tag": "Каталог комплексов",
+        "title": "Каталог комплексов по типам нарушений",
+        "description": "Выберите тип нарушения и откройте карточку комплекса — там характеристики, галерея и области применения. Все комплексы сертифицированы и поставляются с гарантией.",
+        "filters": "Фильтры",
+        "stockYes": "В наличии",
+        "stockNo": "Под заказ",
+        "priceLabel": "Стоимость",
+        "specsTitle": "Ключевые характеристики",
+        "galleryTitle": "Галерея товара",
+        "appsTitle": "Где применяется",
+        "addHint": "Новые комплексы можно добавлять в файл src/app/data/siteData.js",
+        "all": "Все комплексы",
+        "categories": {
+          "speed": "Скорость (1-320км/ч)",
+          "roadside": "Движение по обочине",
+          "lane": "Встречная полоса",
+          "beltPhone": "Ремень-Телефон",
+          "video": "Розыск ТС",
+          "trafficLight": "Проезд на \n красный свет🚦",
+          "buss": "А Полоса",
+          "parking": "Парковка",
+          "pedestrianCrossing": "Пешеходный переход",
+          "railwayCrossings": "Ж/Д переезды"
+        }
+      },
+      "benefits": {
+        "tag": "Преимущества",
+        "title": "Почему покупают именно у нас",
+        "description": "Сертифицированное оборудование напрямую от производителя, гарантия, готовность к интеграции и стабильная работа в любых условиях."
+      },
+      "process": {
+        "tag": "Как купить",
+        "title": "Как оформить заказ",
+        "description": "Прозрачный процесс покупки — от выбора типа нарушения до согласования комплектации и поставки оборудования."
+      },
+      "solutions": {
+        "tag": "Подбор по задаче",
+        "title": "Какое нарушение нужно фиксировать?",
+        "description": "Выберите свою ситуацию — мы сразу покажем подходящий комплекс из каталога с нужным типом фиксации.",
+        "problemLabel": "Задача",
+        "solutionLabel": "Решение",
+        "cta": "Подобрать комплекс",
+        "footnote": "Не нашли свою задачу? Оставьте заявку — подберём комплекс под ваш объект.",
+        "footCta": "Получить консультацию",
+        "guarantees": [
+          {
+            "icon": "BadgeCheck",
+            "title": "Сертифицировано",
+            "text": "Сертификаты соответствия и протоколы испытаний на каждый комплекс."
+          },
+          {
+            "icon": "ShieldCheck",
+            "title": "Гарантия 12 месяцев",
+            "text": "Официальная гарантия и срок службы оборудования до 5 лет."
+          },
+          {
+            "icon": "Factory",
+            "title": "От производителя",
+            "text": "Прямые поставки без посредников и наценок."
+          },
+          {
+            "icon": "Truck",
+            "title": "Поставка по СНГ",
+            "text": "Отгрузка со склада и под заказ в согласованные сроки."
+          }
+        ]
+      },
+      "testimonials": {
+        "tag": "Отзывы и проекты",
+        "title": "Результаты внедрения",
+        "description": "Наши решения используются на перекрёстках, магистралях и объектах городской инфраструктуры."
+      },
+      "projects": {
+        "tag": "Портфолио",
+        "title": "Наши проекты",
+        "description": "Примеры установки комплексов OLAN HIGH TECH PROJECT на дорогах и городских объектах. Нажмите на фотографию, чтобы открыть её на весь экран.",
+        "close": "Закрыть",
+        "prev": "Предыдущее",
+        "next": "Следующее"
+      },
+      "faq": {
+        "tag": "FAQ",
+        "title": "Частые вопросы",
+        "description": "Собрали ответы на основные вопросы заказчиков по внедрению и обслуживанию комплексов."
+      },
+      "contact": {
+        "tag": "Контакты",
+        "title": "Свяжитесь с нами",
+        "description": "Отправьте сообщение, и специалисты OLAN HIGH TECH PROJECT подготовят решение под ваш объект.",
+        "formTitle": "Отправить сообщение",
+        "name": "Ваше имя",
+        "email": "Email",
+        "phone": "Телефон",
+        "message": "Сообщение",
+        "namePlaceholder": "Например, Алишер",
+        "emailPlaceholder": "you@example.com",
+        "phonePlaceholder": "+998 90 123 45 67",
+        "messagePlaceholder": "Опишите задачу, объект и интересующие комплексы...",
+        "addressLabel": "Адрес",
+        "hoursLabel": "Время работы",
+        "messengers": "Мессенджеры",
+        "sendSuccess": "Заявка отправлена. Мы свяжемся с вами в ближайшее время.",
+        "sendFallback": "Не удалось отправить заявку. Проверьте, запущен ли сервер, или напишите нам в онлайн-чат."
+      },
+      "auth": {
+        "loginTitle": "Вход в систему",
+        "registerTitle": "Регистрация",
+        "loginDescription": "Войдите, чтобы отправлять заявки быстрее.",
+        "registerDescription": "Создайте аккаунт для работы с заявками и консультациями.",
+        "name": "Имя",
+        "confirmPassword": "Подтвердите пароль",
+        "password": "Пароль",
+        "noAccount": "Нет аккаунта?",
+        "haveAccount": "Уже есть аккаунт?",
+        "switchToRegister": "Регистрация",
+        "switchToLogin": "Вход",
+        "submitLogin": "Войти",
+        "submitRegister": "Зарегистрироваться",
+        "loginSuccess": "Вы успешно вошли в систему.",
+        "registerSuccess": "Регистрация выполнена. Теперь вы можете войти.",
+        "passwordMismatch": "Пароли не совпадают."
+      },
+      "footer": {
+        "products": "Продукты",
+        "company": "Компания",
+        "support": "Информация",
+        "privacy": "Политика конфиденциальности",
+        "terms": "Условия использования",
+        "copyright": "© 2026 OLAN HIGH TECH PROJECT. Все права защищены.",
+        "description": "Производитель и поставщик сертифицированных комплексов автоматической фиксации нарушений дорожного движения."
+      },
+      "misc": {
+        "recommended": "Рекомендуем",
+        "new": "Новинка",
+        "engineer": "Инженерное решение",
+        "userGreeting": "Здравствуйте"
+      }
+    },
+    "uz": {
+      "brand": "OLAN HIGH TECH",
+      "nav": {
+        "about": "Kompaniya",
+        "catalog": "Katalog",
+        "benefits": "Afzalliklar",
+        "process": "Qanday xarid qilish",
+        "testimonials": "Sharhlar",
+        "projects": "Bizning loyihalar",
+        "solutions": "Yechim",
+        "faq": "FAQ",
+        "contact": "Kontaktlar"
+      },
+      "actions": {
+        "contact": "Bogʻlanish",
+        "login": "Kirish",
+        "logout": "Chiqish",
+        "openCatalog": "Katalogni koʻrish",
+        "consultation": "Maslahat olish",
+        "details": "Batafsil",
+        "buy": "Buyurtma qoldirish",
+        "close": "Yopish",
+        "save": "Saqlash",
+        "send": "Xabar yuborish",
+        "chooseEquipment": "Jihozni tanlash",
+        "backToTop": "Yuqoriga",
+        "morePhotos": "Suratlar",
+        "themeLight": "Yorugʻ mavzu",
+        "themeDark": "Tungi mavzu",
+        "language": "Til",
+        "openCard": "Kartani ochish"
+      },
+      "hero": {
+        "badge": "Intellektual majmualar • Sertifikatlangan jihozlar",
+        "title1": "Yoʻl xavfsizligini",
+        "title2": "nazorat texnologiyalari",
+        "description": "Yoʻl harakati qoidalari buzilishini qayd etuvchi yuqori texnologiyali majmualarni loyihalaymiz va ishlab chiqaramiz.",
+        "descriptionLine2": "Toʻliq tsikl — ishlab chiqishdan tayyor jihozgacha.",
+        "stats": [
+          {
+            "value": "15+",
+            "label": "Yillik tajriba"
+          },
+          {
+            "value": "3000+",
+            "label": "Yetkazib berilgan majmualar"
+          },
+          {
+            "value": "12 oy",
+            "label": "Jihozga kafolat"
+          }
+        ],
+        "scroll": "Pastga aylantiring"
+      },
+      "about": {
+        "tag": "Kompaniya",
+        "title": "Qoidabuzarliklarni qayd etish majmualari ishlab chiqaruvchisi",
+        "description": "OLAN HIGH TECH PROJECT — yoʻl harakati qoidalari buzilishini avtomatik qayd etuvchi sertifikatlangan yuqori texnologiyali majmualar ishlab chiqaruvchi va yetkazib beruvchi",
+        "stats": [
+          {
+            "value": "15+",
+            "label": "Yillik tajriba"
+          },
+          {
+            "value": "100+",
+            "label": "Yetkazilgan majmualar"
+          },
+          {
+            "value": "12 oy",
+            "label": "Kafolat"
+          },
+          {
+            "value": "5 yil",
+            "label": "Xizmat muddati"
+          }
+        ]
+      },
+      "catalog": {
+        "tag": "Majmualar katalogi",
+        "title": "Qoidabuzarlik turlari boʻyicha majmualar katalogi",
+        "description": "Qoidabuzarlik turini tanlang va majmua kartasini oching — u yerda xususiyatlar, galereya va qoʻllash sohalari bor. Barcha majmualar sertifikatlangan va kafolat bilan yetkaziladi.",
+        "filters": "Filtrlar",
+        "stockYes": "Mavjud",
+        "stockNo": "Buyurtma boʻyicha",
+        "priceLabel": "Narxi",
+        "specsTitle": "Asosiy xususiyatlar",
+        "galleryTitle": "Mahsulot galereyasi",
+        "appsTitle": "Qayerda qoʻllaniladi",
+        "addHint": "Yangi majmualarni src/app/data/siteData.js faylga qoʻshish mumkin",
+        "all": "Barcha majmualar",
+        "categories": {
+          "speed": "Tezlik (1-320km/s)",
+          "roadside": "Yoʻl chetida harakat",
+          "lane": "Qarama-qarshi yoʻlak",
+          "beltPhone": "Kamar-Telefon",
+          "video": "TVni qidirish",
+          "trafficLight": "Qizil chiroqda \n oʻtish🚦",
+          "buss": "A yoʻlak",
+          "parking": "Toʻxtash joyi",
+          "pedestrianCrossing": "Piyodalar oʻtish joyi",
+          "railwayCrossings": "Temir yoʻl kechuvi"
+        }
+      },
+      "benefits": {
+        "tag": "Afzalliklar",
+        "title": "Nega aynan bizdan xarid qilishadi",
+        "description": "Toʻgʻridan-toʻgʻri ishlab chiqaruvchidan sertifikatlangan jihoz, kafolat, integratsiyaga tayyorlik va har qanday sharoitda barqaror ishlash."
+      },
+      "process": {
+        "tag": "Qanday xarid qilish",
+        "title": "Buyurtmani qanday rasmiylashtirish",
+        "description": "Shaffof xarid jarayoni — qoidabuzarlik turini tanlashdan komplektatsiyani kelishish va jihozni yetkazib berishgacha."
+      },
+      "solutions": {
+        "tag": "Vazifa boʻyicha tanlash",
+        "title": "Qaysi qoidabuzarlikni qayd etish kerak?",
+        "description": "Vaziyatingizni tanlang — biz darhol kerakli qayd etish turiga ega mos majmuani katalogdan koʻrsatamiz.",
+        "problemLabel": "Vazifa",
+        "solutionLabel": "Yechim",
+        "cta": "Majmuani tanlash",
+        "footnote": "Vazifangizni topmadingizmi? Ariza qoldiring — obyektingizga mos majmuani tanlaymiz.",
+        "footCta": "Maslahat olish",
+        "guarantees": [
+          {
+            "icon": "BadgeCheck",
+            "title": "Sertifikatlangan",
+            "text": "Har bir majmua uchun muvofiqlik sertifikatlari va sinov bayonnomalari."
+          },
+          {
+            "icon": "ShieldCheck",
+            "title": "12 oy kafolat",
+            "text": "Rasmiy kafolat va jihozning 5 yilgacha xizmat muddati."
+          },
+          {
+            "icon": "Factory",
+            "title": "Ishlab chiqaruvchidan",
+            "text": "Vositachilarsiz va ustamasiz toʻgʻridan-toʻgʻri yetkazib berish."
+          },
+          {
+            "icon": "Truck",
+            "title": "MDH boʻylab yetkazish",
+            "text": "Ombordan va buyurtma boʻyicha kelishilgan muddatlarda joʻnatish."
+          }
+        ]
+      },
+      "testimonials": {
+        "tag": "Sharhlar va loyihalar",
+        "title": "Joriy etish natijalari",
+        "description": "Bizning yechimlar chorrahalarda, magistrallarda va shahar infratuzilmasi obyektlarida qoʻllaniladi."
+      },
+      "projects": {
+        "tag": "Portfolio",
+        "title": "Bizning loyihalar",
+        "description": "OLAN HIGH TECH PROJECT majmualarining yoʻllarda va shahar obyektlarida oʻrnatilishi namunalari. Suratni toʻliq ekranda ochish uchun ustiga bosing.",
+        "close": "Yopish",
+        "prev": "Oldingi",
+        "next": "Keyingi"
+      },
+      "faq": {
+        "tag": "FAQ",
+        "title": "Tez-tez beriladigan savollar",
+        "description": "Majmualarni joriy etish va xizmat koʻrsatish boʻyicha mijozlarning asosiy savollariga javoblarni toʻpladik."
+      },
+      "contact": {
+        "tag": "Kontaktlar",
+        "title": "Biz bilan bogʻlaning",
+        "description": "Xabar yuboring va OLAN HIGH TECH PROJECT mutaxassislari obyektingizga yechim tayyorlaydi.",
+        "formTitle": "Xabar yuborish",
+        "name": "Ismingiz",
+        "email": "Email",
+        "phone": "Telefon",
+        "message": "Xabar",
+        "namePlaceholder": "Masalan, Alisher",
+        "emailPlaceholder": "you@example.com",
+        "phonePlaceholder": "+998 90 123 45 67",
+        "messagePlaceholder": "Vazifa, obyekt va qiziqtirgan majmualarni tasvirlab bering...",
+        "addressLabel": "Manzil",
+        "hoursLabel": "Ish vaqti",
+        "messengers": "Messenjerlar",
+        "sendSuccess": "Ariza yuborildi. Tez orada siz bilan bogʻlanamiz.",
+        "sendFallback": "Arizani yuborib boʻlmadi. Server ishga tushganini tekshiring yoki onlayn chatga yozing."
+      },
+      "auth": {
+        "loginTitle": "Tizimga kirish",
+        "registerTitle": "Roʻyxatdan oʻtish",
+        "loginDescription": "Arizalarni tezroq yuborish uchun kiring.",
+        "registerDescription": "Arizalar va maslahatlar bilan ishlash uchun hisob yarating.",
+        "name": "Ism",
+        "confirmPassword": "Parolni tasdiqlang",
+        "password": "Parol",
+        "noAccount": "Hisob yoʻqmi?",
+        "haveAccount": "Hisobingiz bormi?",
+        "switchToRegister": "Roʻyxatdan oʻtish",
+        "switchToLogin": "Kirish",
+        "submitLogin": "Kirish",
+        "submitRegister": "Roʻyxatdan oʻtish",
+        "loginSuccess": "Tizimga muvaffaqiyatli kirdingiz.",
+        "registerSuccess": "Roʻyxatdan oʻtish bajarildi. Endi kirishingiz mumkin.",
+        "passwordMismatch": "Parollar mos kelmadi."
+      },
+      "footer": {
+        "products": "Mahsulotlar",
+        "company": "Kompaniya",
+        "support": "Maʼlumot",
+        "privacy": "Maxfiylik siyosati",
+        "terms": "Foydalanish shartlari",
+        "copyright": "© 2026 OLAN HIGH TECH PROJECT. Barcha huquqlar himoyalangan.",
+        "description": "Yoʻl harakati qoidalari buzilishini avtomatik qayd etuvchi sertifikatlangan majmualar ishlab chiqaruvchi va yetkazib beruvchi."
+      },
+      "misc": {
+        "recommended": "Tavsiya etamiz",
+        "new": "Yangi",
+        "engineer": "Muhandislik yechimi",
+        "userGreeting": "Assalomu alaykum"
+      }
+    },
+    "en": {
+      "brand": "OLAN HIGH TECH",
+      "nav": {
+        "about": "About",
+        "catalog": "Catalog",
+        "benefits": "Benefits",
+        "process": "How to buy",
+        "testimonials": "Reviews",
+        "projects": "Our projects",
+        "solutions": "Solution",
+        "faq": "FAQ",
+        "contact": "Contacts"
+      },
+      "actions": {
+        "contact": "Contact us",
+        "login": "Sign in",
+        "logout": "Sign out",
+        "openCatalog": "View catalog",
+        "consultation": "Get a consultation",
+        "details": "Details",
+        "buy": "Send a request",
+        "close": "Close",
+        "save": "Save",
+        "send": "Send message",
+        "chooseEquipment": "Choose equipment",
+        "backToTop": "Back to top",
+        "morePhotos": "Photos",
+        "themeLight": "Light theme",
+        "themeDark": "Dark theme",
+        "language": "Language",
+        "openCard": "Open card"
+      },
+      "hero": {
+        "badge": "Intelligent systems • Certified equipment",
+        "title1": "Road safety control",
+        "title2": "technologies",
+        "description": "We design and manufacture high-tech systems for recording traffic violations.",
+        "descriptionLine2": "Full cycle — from development to release of finished equipment.",
+        "stats": [
+          {
+            "value": "15+",
+            "label": "Years on the market"
+          },
+          {
+            "value": "3000+",
+            "label": "Systems delivered"
+          },
+          {
+            "value": "12 mo",
+            "label": "Equipment warranty"
+          }
+        ],
+        "scroll": "Scroll down"
+      },
+      "about": {
+        "tag": "About",
+        "title": "Manufacturer of violation recording systems",
+        "description": "OLAN HIGH TECH PROJECT is a manufacturer and supplier of certified high-tech systems for automatic recording of traffic violations",
+        "stats": [
+          {
+            "value": "15+",
+            "label": "Years on the market"
+          },
+          {
+            "value": "100+",
+            "label": "Systems delivered"
+          },
+          {
+            "value": "12 mo",
+            "label": "Warranty"
+          },
+          {
+            "value": "5 yrs",
+            "label": "Service life"
+          }
+        ]
+      },
+      "catalog": {
+        "tag": "Systems catalog",
+        "title": "Systems catalog by violation type",
+        "description": "Choose a violation type and open the system card — it has specifications, a gallery and use cases. All systems are certified and delivered with a warranty.",
+        "filters": "Filters",
+        "stockYes": "In stock",
+        "stockNo": "Made to order",
+        "priceLabel": "Price",
+        "specsTitle": "Key specifications",
+        "galleryTitle": "Product gallery",
+        "appsTitle": "Where it is used",
+        "addHint": "New systems can be added in src/app/data/siteData.js",
+        "all": "All systems",
+        "categories": {
+          "speed": "Speed (1-320km/h)",
+          "roadside": "Driving on the shoulder",
+          "lane": "Oncoming lane",
+          "beltPhone": "Seatbelt-Phone",
+          "video": "Vehicle search",
+          "trafficLight": "Running a \n red light🚦",
+          "buss": "Bus lane (A)",
+          "parking": "Parking",
+          "pedestrianCrossing": "Pedestrian crossing",
+          "railwayCrossings": "Railway crossings"
+        }
+      },
+      "benefits": {
+        "tag": "Benefits",
+        "title": "Why customers choose us",
+        "description": "Certified equipment directly from the manufacturer, warranty, integration readiness and stable operation in any conditions."
+      },
+      "process": {
+        "tag": "How to buy",
+        "title": "How to place an order",
+        "description": "A transparent purchasing process — from choosing the violation type to agreeing on configuration and delivery of equipment."
+      },
+      "solutions": {
+        "tag": "Pick by task",
+        "title": "Which violation do you need to record?",
+        "description": "Choose your situation — we will immediately show a suitable system from the catalog with the right recording type.",
+        "problemLabel": "Task",
+        "solutionLabel": "Solution",
+        "cta": "Find a system",
+        "footnote": "Did not find your task? Send a request — we will select a system for your site.",
+        "footCta": "Get a consultation",
+        "guarantees": [
+          {
+            "icon": "BadgeCheck",
+            "title": "Certified",
+            "text": "Certificates of conformity and test reports for every system."
+          },
+          {
+            "icon": "ShieldCheck",
+            "title": "12-month warranty",
+            "text": "Official warranty and equipment service life of up to 5 years."
+          },
+          {
+            "icon": "Factory",
+            "title": "From the manufacturer",
+            "text": "Direct supply with no intermediaries or markups."
+          },
+          {
+            "icon": "Truck",
+            "title": "Delivery across the CIS",
+            "text": "Shipment from stock and made to order within agreed timeframes."
+          }
+        ]
+      },
+      "testimonials": {
+        "tag": "Reviews and projects",
+        "title": "Implementation results",
+        "description": "Our solutions are used at intersections, highways and urban infrastructure facilities."
+      },
+      "projects": {
+        "tag": "Portfolio",
+        "title": "Our projects",
+        "description": "Examples of OLAN HIGH TECH PROJECT systems installed on roads and urban facilities. Click a photo to open it full screen.",
+        "close": "Close",
+        "prev": "Previous",
+        "next": "Next"
+      },
+      "faq": {
+        "tag": "FAQ",
+        "title": "Frequently asked questions",
+        "description": "We have collected answers to the main customer questions about implementing and servicing the systems."
+      },
+      "contact": {
+        "tag": "Contacts",
+        "title": "Get in touch",
+        "description": "Send a message and OLAN HIGH TECH PROJECT specialists will prepare a solution for your site.",
+        "formTitle": "Send a message",
+        "name": "Your name",
+        "email": "Email",
+        "phone": "Phone",
+        "message": "Message",
+        "namePlaceholder": "For example, Alisher",
+        "emailPlaceholder": "you@example.com",
+        "phonePlaceholder": "+998 90 123 45 67",
+        "messagePlaceholder": "Describe the task, the site and the systems you are interested in...",
+        "addressLabel": "Address",
+        "hoursLabel": "Working hours",
+        "messengers": "Messengers",
+        "sendSuccess": "Your request has been sent. We will contact you shortly.",
+        "sendFallback": "Could not send the request. Check that the server is running, or write to us in the online chat."
+      },
+      "auth": {
+        "loginTitle": "Sign in",
+        "registerTitle": "Register",
+        "loginDescription": "Sign in to send requests faster.",
+        "registerDescription": "Create an account to work with requests and consultations.",
+        "name": "Name",
+        "confirmPassword": "Confirm password",
+        "password": "Password",
+        "noAccount": "No account?",
+        "haveAccount": "Already have an account?",
+        "switchToRegister": "Register",
+        "switchToLogin": "Sign in",
+        "submitLogin": "Sign in",
+        "submitRegister": "Register",
+        "loginSuccess": "You have successfully signed in.",
+        "registerSuccess": "Registration complete. You can now sign in.",
+        "passwordMismatch": "Passwords do not match."
+      },
+      "footer": {
+        "products": "Products",
+        "company": "Company",
+        "support": "Information",
+        "privacy": "Privacy policy",
+        "terms": "Terms of use",
+        "copyright": "© 2026 OLAN HIGH TECH PROJECT. All rights reserved.",
+        "description": "Manufacturer and supplier of certified systems for automatic recording of traffic violations."
+      },
+      "misc": {
+        "recommended": "Recommended",
+        "new": "New",
+        "engineer": "Engineering solution",
+        "userGreeting": "Hello"
+      }
+    },
+    "uk": {
+      "brand": "OLAN HIGH TECH",
+      "nav": {
+        "about": "Про компанію",
+        "catalog": "Каталог",
+        "benefits": "Переваги",
+        "process": "Як купити",
+        "testimonials": "Відгуки",
+        "projects": "Наші проєкти",
+        "solutions": "Рішення",
+        "faq": "FAQ",
+        "contact": "Контакти"
+      },
+      "actions": {
+        "contact": "Звʼязатися",
+        "login": "Увійти",
+        "logout": "Вийти",
+        "openCatalog": "Переглянути каталог",
+        "consultation": "Отримати консультацію",
+        "details": "Докладніше",
+        "buy": "Залишити заявку",
+        "close": "Закрити",
+        "save": "Зберегти",
+        "send": "Надіслати повідомлення",
+        "chooseEquipment": "Обрати обладнання",
+        "backToTop": "Нагору",
+        "morePhotos": "Фотографії",
+        "themeLight": "Світла тема",
+        "themeDark": "Темна тема",
+        "language": "Мова",
+        "openCard": "Відкрити картку"
+      },
+      "hero": {
+        "badge": "Інтелектуальні комплекси • Сертифіковане обладнання",
+        "title1": "Технології контролю",
+        "title2": "безпеки дорожнього руху",
+        "description": "Проєктуємо та виробляємо високотехнологічні комплекси для фіксації порушень ПДР.",
+        "descriptionLine2": "Повний цикл — від розробки до випуску готового обладнання.",
+        "stats": [
+          {
+            "value": "15+",
+            "label": "Років на ринку"
+          },
+          {
+            "value": "3000+",
+            "label": "Поставлених комплексів"
+          },
+          {
+            "value": "12 міс",
+            "label": "Гарантія на обладнання"
+          }
+        ],
+        "scroll": "Прокрутіть униз"
+      },
+      "about": {
+        "tag": "Про компанію",
+        "title": "Виробник комплексів фіксації порушень",
+        "description": "OLAN HIGH TECH PROJECT — виробник і постачальник сертифікованих високотехнологічних комплексів автоматичної фіксації порушень ПДР",
+        "stats": [
+          {
+            "value": "15+",
+            "label": "Років на ринку"
+          },
+          {
+            "value": "100+",
+            "label": "Поставлено комплексів"
+          },
+          {
+            "value": "12 міс",
+            "label": "Гарантія"
+          },
+          {
+            "value": "5 років",
+            "label": "Термін служби"
+          }
+        ]
+      },
+      "catalog": {
+        "tag": "Каталог комплексів",
+        "title": "Каталог комплексів за типами порушень",
+        "description": "Оберіть тип порушення та відкрийте картку комплексу — там характеристики, галерея та сфери застосування. Усі комплекси сертифіковані та постачаються з гарантією.",
+        "filters": "Фільтри",
+        "stockYes": "У наявності",
+        "stockNo": "Під замовлення",
+        "priceLabel": "Вартість",
+        "specsTitle": "Ключові характеристики",
+        "galleryTitle": "Галерея товару",
+        "appsTitle": "Де застосовується",
+        "addHint": "Нові комплекси можна додавати у файл src/app/data/siteData.js",
+        "all": "Усі комплекси",
+        "categories": {
+          "speed": "Швидкість (1-320км/год)",
+          "roadside": "Рух узбіччям",
+          "lane": "Зустрічна смуга",
+          "beltPhone": "Ремінь-Телефон",
+          "video": "Розшук ТЗ",
+          "trafficLight": "Проїзд на \n червоне світло🚦",
+          "buss": "Смуга А",
+          "parking": "Паркування",
+          "pedestrianCrossing": "Пішохідний перехід",
+          "railwayCrossings": "Залізничні переїзди"
+        }
+      },
+      "benefits": {
+        "tag": "Переваги",
+        "title": "Чому купують саме у нас",
+        "description": "Сертифіковане обладнання напряму від виробника, гарантія, готовність до інтеграції та стабільна робота за будь-яких умов."
+      },
+      "process": {
+        "tag": "Як купити",
+        "title": "Як оформити замовлення",
+        "description": "Прозорий процес покупки — від вибору типу порушення до узгодження комплектації та постачання обладнання."
+      },
+      "solutions": {
+        "tag": "Підбір за задачею",
+        "title": "Яке порушення потрібно фіксувати?",
+        "description": "Оберіть свою ситуацію — ми одразу покажемо відповідний комплекс із каталогу з потрібним типом фіксації.",
+        "problemLabel": "Задача",
+        "solutionLabel": "Рішення",
+        "cta": "Підібрати комплекс",
+        "footnote": "Не знайшли свою задачу? Залиште заявку — підберемо комплекс під ваш обʼєкт.",
+        "footCta": "Отримати консультацію",
+        "guarantees": [
+          {
+            "icon": "BadgeCheck",
+            "title": "Сертифіковано",
+            "text": "Сертифікати відповідності та протоколи випробувань на кожен комплекс."
+          },
+          {
+            "icon": "ShieldCheck",
+            "title": "Гарантія 12 місяців",
+            "text": "Офіційна гарантія та термін служби обладнання до 5 років."
+          },
+          {
+            "icon": "Factory",
+            "title": "Від виробника",
+            "text": "Прямі постачання без посередників і націнок."
+          },
+          {
+            "icon": "Truck",
+            "title": "Постачання по СНД",
+            "text": "Відвантаження зі складу та під замовлення в узгоджені терміни."
+          }
+        ]
+      },
+      "testimonials": {
+        "tag": "Відгуки та проєкти",
+        "title": "Результати впровадження",
+        "description": "Наші рішення використовуються на перехрестях, магістралях та обʼєктах міської інфраструктури."
+      },
+      "projects": {
+        "tag": "Портфоліо",
+        "title": "Наші проєкти",
+        "description": "Приклади встановлення комплексів OLAN HIGH TECH PROJECT на дорогах та міських обʼєктах. Натисніть на фотографію, щоб відкрити її на весь екран.",
+        "close": "Закрити",
+        "prev": "Попереднє",
+        "next": "Наступне"
+      },
+      "faq": {
+        "tag": "FAQ",
+        "title": "Поширені запитання",
+        "description": "Зібрали відповіді на основні запитання замовників щодо впровадження та обслуговування комплексів."
+      },
+      "contact": {
+        "tag": "Контакти",
+        "title": "Звʼяжіться з нами",
+        "description": "Надішліть повідомлення, і фахівці OLAN HIGH TECH PROJECT підготують рішення під ваш обʼєкт.",
+        "formTitle": "Надіслати повідомлення",
+        "name": "Ваше імʼя",
+        "email": "Email",
+        "phone": "Телефон",
+        "message": "Повідомлення",
+        "namePlaceholder": "Наприклад, Алішер",
+        "emailPlaceholder": "you@example.com",
+        "phonePlaceholder": "+998 90 123 45 67",
+        "messagePlaceholder": "Опишіть задачу, обʼєкт та комплекси, що цікавлять...",
+        "addressLabel": "Адреса",
+        "hoursLabel": "Час роботи",
+        "messengers": "Месенджери",
+        "sendSuccess": "Заявку надіслано. Ми звʼяжемося з вами найближчим часом.",
+        "sendFallback": "Не вдалося надіслати заявку. Перевірте, чи запущено сервер, або напишіть нам в онлайн-чат."
+      },
+      "auth": {
+        "loginTitle": "Вхід у систему",
+        "registerTitle": "Реєстрація",
+        "loginDescription": "Увійдіть, щоб надсилати заявки швидше.",
+        "registerDescription": "Створіть акаунт для роботи із заявками та консультаціями.",
+        "name": "Імʼя",
+        "confirmPassword": "Підтвердьте пароль",
+        "password": "Пароль",
+        "noAccount": "Немає акаунта?",
+        "haveAccount": "Вже є акаунт?",
+        "switchToRegister": "Реєстрація",
+        "switchToLogin": "Вхід",
+        "submitLogin": "Увійти",
+        "submitRegister": "Зареєструватися",
+        "loginSuccess": "Ви успішно увійшли в систему.",
+        "registerSuccess": "Реєстрацію виконано. Тепер ви можете увійти.",
+        "passwordMismatch": "Паролі не збігаються."
+      },
+      "footer": {
+        "products": "Продукти",
+        "company": "Компанія",
+        "support": "Інформація",
+        "privacy": "Політика конфіденційності",
+        "terms": "Умови використання",
+        "copyright": "© 2026 OLAN HIGH TECH PROJECT. Усі права захищені.",
+        "description": "Виробник і постачальник сертифікованих комплексів автоматичної фіксації порушень дорожнього руху."
+      },
+      "misc": {
+        "recommended": "Рекомендуємо",
+        "new": "Новинка",
+        "engineer": "Інженерне рішення",
+        "userGreeting": "Вітаємо"
+      }
+    },
+    "zh": {
+      "brand": "OLAN HIGH TECH",
+      "nav": {
+        "about": "关于公司",
+        "catalog": "产品目录",
+        "benefits": "优势",
+        "process": "如何购买",
+        "testimonials": "评价",
+        "projects": "我们的项目",
+        "solutions": "解决方案",
+        "faq": "常见问题",
+        "contact": "联系我们"
+      },
+      "actions": {
+        "contact": "联系我们",
+        "login": "登录",
+        "logout": "退出",
+        "openCatalog": "查看目录",
+        "consultation": "获取咨询",
+        "details": "详情",
+        "buy": "提交申请",
+        "close": "关闭",
+        "save": "保存",
+        "send": "发送消息",
+        "chooseEquipment": "选择设备",
+        "backToTop": "返回顶部",
+        "morePhotos": "照片",
+        "themeLight": "浅色主题",
+        "themeDark": "深色主题",
+        "language": "语言",
+        "openCard": "打开卡片"
+      },
+      "hero": {
+        "badge": "智能系统 • 认证设备",
+        "title1": "道路安全",
+        "title2": "管控技术",
+        "description": "我们设计并生产用于记录交通违章的高科技系统。",
+        "descriptionLine2": "完整流程——从研发到成品设备的生产。",
+        "stats": [
+          {
+            "value": "15+",
+            "label": "市场经验（年）"
+          },
+          {
+            "value": "3000+",
+            "label": "已交付系统"
+          },
+          {
+            "value": "12 个月",
+            "label": "设备保修"
+          }
+        ],
+        "scroll": "向下滚动"
+      },
+      "about": {
+        "tag": "关于公司",
+        "title": "违章记录系统制造商",
+        "description": "OLAN HIGH TECH PROJECT 是认证高科技自动交通违章记录系统的制造商和供应商",
+        "stats": [
+          {
+            "value": "15+",
+            "label": "市场经验（年）"
+          },
+          {
+            "value": "100+",
+            "label": "已交付系统"
+          },
+          {
+            "value": "12 个月",
+            "label": "保修"
+          },
+          {
+            "value": "5 年",
+            "label": "使用寿命"
+          }
+        ]
+      },
+      "catalog": {
+        "tag": "系统目录",
+        "title": "按违章类型分类的系统目录",
+        "description": "选择违章类型并打开系统卡片——其中包含规格、图库和应用场景。所有系统均已认证并提供保修。",
+        "filters": "筛选",
+        "stockYes": "现货",
+        "stockNo": "按订单生产",
+        "priceLabel": "价格",
+        "specsTitle": "主要规格",
+        "galleryTitle": "产品图库",
+        "appsTitle": "应用场景",
+        "addHint": "可在 src/app/data/siteData.js 文件中添加新系统",
+        "all": "全部系统",
+        "categories": {
+          "speed": "速度 (1-320公里/小时)",
+          "roadside": "占用路肩行驶",
+          "lane": "逆向车道",
+          "beltPhone": "安全带-手机",
+          "video": "车辆查找",
+          "trafficLight": "闯 \n 红灯🚦",
+          "buss": "公交专用道 (A)",
+          "parking": "停车",
+          "pedestrianCrossing": "人行横道",
+          "railwayCrossings": "铁路道口"
+        }
+      },
+      "benefits": {
+        "tag": "优势",
+        "title": "客户为何选择我们",
+        "description": "直接来自制造商的认证设备、保修、可集成性以及在任何条件下的稳定运行。"
+      },
+      "process": {
+        "tag": "如何购买",
+        "title": "如何下单",
+        "description": "透明的采购流程——从选择违章类型到确定配置和设备交付。"
+      },
+      "solutions": {
+        "tag": "按需求选择",
+        "title": "您需要记录哪种违章？",
+        "description": "选择您的情况——我们会立即从目录中展示具有相应记录类型的合适系统。",
+        "problemLabel": "需求",
+        "solutionLabel": "解决方案",
+        "cta": "选择系统",
+        "footnote": "没有找到您的需求？提交申请——我们会为您的现场挑选系统。",
+        "footCta": "获取咨询",
+        "guarantees": [
+          {
+            "icon": "BadgeCheck",
+            "title": "已认证",
+            "text": "每套系统均配有合格证书和测试报告。"
+          },
+          {
+            "icon": "ShieldCheck",
+            "title": "12 个月保修",
+            "text": "正式保修，设备使用寿命可达 5 年。"
+          },
+          {
+            "icon": "Factory",
+            "title": "来自制造商",
+            "text": "直接供货，无中间商，无加价。"
+          },
+          {
+            "icon": "Truck",
+            "title": "独联体范围内交付",
+            "text": "现货发货及按订单在约定期限内交付。"
+          }
+        ]
+      },
+      "testimonials": {
+        "tag": "评价与项目",
+        "title": "实施成果",
+        "description": "我们的解决方案应用于交叉路口、高速公路和城市基础设施场所。"
+      },
+      "projects": {
+        "tag": "作品集",
+        "title": "我们的项目",
+        "description": "OLAN HIGH TECH PROJECT 系统在道路和城市场所安装的示例。点击照片可全屏打开。",
+        "close": "关闭",
+        "prev": "上一张",
+        "next": "下一张"
+      },
+      "faq": {
+        "tag": "常见问题",
+        "title": "常见问题",
+        "description": "我们整理了客户关于系统实施和维护的主要问题解答。"
+      },
+      "contact": {
+        "tag": "联系我们",
+        "title": "与我们联系",
+        "description": "发送消息，OLAN HIGH TECH PROJECT 的专家将为您的现场准备解决方案。",
+        "formTitle": "发送消息",
+        "name": "您的姓名",
+        "email": "邮箱",
+        "phone": "电话",
+        "message": "消息",
+        "namePlaceholder": "例如，Alisher",
+        "emailPlaceholder": "you@example.com",
+        "phonePlaceholder": "+998 90 123 45 67",
+        "messagePlaceholder": "请描述需求、现场和您感兴趣的系统……",
+        "addressLabel": "地址",
+        "hoursLabel": "工作时间",
+        "messengers": "即时通讯",
+        "sendSuccess": "申请已发送。我们会尽快与您联系。",
+        "sendFallback": "无法发送申请。请检查服务器是否运行，或在在线聊天中给我们留言。"
+      },
+      "auth": {
+        "loginTitle": "登录系统",
+        "registerTitle": "注册",
+        "loginDescription": "登录以更快地提交申请。",
+        "registerDescription": "创建账户以处理申请和咨询。",
+        "name": "姓名",
+        "confirmPassword": "确认密码",
+        "password": "密码",
+        "noAccount": "没有账户？",
+        "haveAccount": "已有账户？",
+        "switchToRegister": "注册",
+        "switchToLogin": "登录",
+        "submitLogin": "登录",
+        "submitRegister": "注册",
+        "loginSuccess": "您已成功登录。",
+        "registerSuccess": "注册完成。现在您可以登录了。",
+        "passwordMismatch": "两次密码不一致。"
+      },
+      "footer": {
+        "products": "产品",
+        "company": "公司",
+        "support": "信息",
+        "privacy": "隐私政策",
+        "terms": "使用条款",
+        "copyright": "© 2026 OLAN HIGH TECH PROJECT. 版权所有。",
+        "description": "认证自动交通违章记录系统的制造商和供应商。"
+      },
+      "misc": {
+        "recommended": "推荐",
+        "new": "新品",
+        "engineer": "工程解决方案",
+        "userGreeting": "您好"
+      }
+    },
+    "kk": {
+      "brand": "OLAN HIGH TECH",
+      "nav": {
+        "about": "Компания туралы",
+        "catalog": "Каталог",
+        "benefits": "Артықшылықтар",
+        "process": "Қалай сатып алу",
+        "testimonials": "Пікірлер",
+        "projects": "Біздің жобалар",
+        "solutions": "Шешім",
+        "faq": "FAQ",
+        "contact": "Байланыс"
+      },
+      "actions": {
+        "contact": "Байланысу",
+        "login": "Кіру",
+        "logout": "Шығу",
+        "openCatalog": "Каталогты қарау",
+        "consultation": "Кеңес алу",
+        "details": "Толығырақ",
+        "buy": "Өтінім қалдыру",
+        "close": "Жабу",
+        "save": "Сақтау",
+        "send": "Хабарлама жіберу",
+        "chooseEquipment": "Жабдықты таңдау",
+        "backToTop": "Жоғарыға",
+        "morePhotos": "Фотолар",
+        "themeLight": "Ашық тақырып",
+        "themeDark": "Қараңғы тақырып",
+        "language": "Тіл",
+        "openCard": "Картаны ашу"
+      },
+      "hero": {
+        "badge": "Интеллектуалды кешендер • Сертификатталған жабдық",
+        "title1": "Жол қауіпсіздігін",
+        "title2": "бақылау технологиялары",
+        "description": "Жол қозғалысы ережелерінің бұзылуын тіркейтін жоғары технологиялық кешендерді жобалаймыз және өндіреміз.",
+        "descriptionLine2": "Толық цикл — әзірлеуден дайын жабдық шығаруға дейін.",
+        "stats": [
+          {
+            "value": "15+",
+            "label": "Нарықтағы жыл"
+          },
+          {
+            "value": "3000+",
+            "label": "Жеткізілген кешендер"
+          },
+          {
+            "value": "12 ай",
+            "label": "Жабдыққа кепілдік"
+          }
+        ],
+        "scroll": "Төмен айналдырыңыз"
+      },
+      "about": {
+        "tag": "Компания туралы",
+        "title": "Бұзушылықтарды тіркеу кешендерінің өндірушісі",
+        "description": "OLAN HIGH TECH PROJECT — жол қозғалысы ережелерінің бұзылуын автоматты тіркейтін сертификатталған жоғары технологиялық кешендердің өндірушісі әрі жеткізушісі",
+        "stats": [
+          {
+            "value": "15+",
+            "label": "Нарықтағы жыл"
+          },
+          {
+            "value": "100+",
+            "label": "Жеткізілген кешендер"
+          },
+          {
+            "value": "12 ай",
+            "label": "Кепілдік"
+          },
+          {
+            "value": "5 жыл",
+            "label": "Қызмет мерзімі"
+          }
+        ]
+      },
+      "catalog": {
+        "tag": "Кешендер каталогы",
+        "title": "Бұзушылық түрлері бойынша кешендер каталогы",
+        "description": "Бұзушылық түрін таңдап, кешен картасын ашыңыз — онда сипаттамалар, галерея және қолдану салалары бар. Барлық кешендер сертификатталған және кепілдікпен жеткізіледі.",
+        "filters": "Сүзгілер",
+        "stockYes": "Қоймада бар",
+        "stockNo": "Тапсырыс бойынша",
+        "priceLabel": "Бағасы",
+        "specsTitle": "Негізгі сипаттамалар",
+        "galleryTitle": "Тауар галереясы",
+        "appsTitle": "Қайда қолданылады",
+        "addHint": "Жаңа кешендерді src/app/data/siteData.js файлына қосуға болады",
+        "all": "Барлық кешендер",
+        "categories": {
+          "speed": "Жылдамдық (1-320км/сағ)",
+          "roadside": "Жол жиегімен жүру",
+          "lane": "Қарсы жолақ",
+          "beltPhone": "Белдік-Телефон",
+          "video": "КҚ іздеу",
+          "trafficLight": "Қызыл жарыққа \n өту🚦",
+          "buss": "А жолағы",
+          "parking": "Тұрақ",
+          "pedestrianCrossing": "Жаяу жүргіншілер өткелі",
+          "railwayCrossings": "Темір жол өткелдері"
+        }
+      },
+      "benefits": {
+        "tag": "Артықшылықтар",
+        "title": "Неге дәл бізден сатып алады",
+        "description": "Өндірушіден тікелей сертификатталған жабдық, кепілдік, интеграцияға дайындық және кез келген жағдайда тұрақты жұмыс."
+      },
+      "process": {
+        "tag": "Қалай сатып алу",
+        "title": "Тапсырысты қалай рәсімдеу",
+        "description": "Ашық сатып алу процесі — бұзушылық түрін таңдаудан жинақтауды келісу мен жабдықты жеткізуге дейін."
+      },
+      "solutions": {
+        "tag": "Тапсырма бойынша таңдау",
+        "title": "Қандай бұзушылықты тіркеу керек?",
+        "description": "Өз жағдайыңызды таңдаңыз — біз бірден каталогтан қажетті тіркеу түрі бар лайықты кешенді көрсетеміз.",
+        "problemLabel": "Тапсырма",
+        "solutionLabel": "Шешім",
+        "cta": "Кешенді таңдау",
+        "footnote": "Тапсырмаңызды таппадыңыз ба? Өтінім қалдырыңыз — нысаныңызға кешен таңдаймыз.",
+        "footCta": "Кеңес алу",
+        "guarantees": [
+          {
+            "icon": "BadgeCheck",
+            "title": "Сертификатталған",
+            "text": "Әр кешенге сәйкестік сертификаттары және сынақ хаттамалары."
+          },
+          {
+            "icon": "ShieldCheck",
+            "title": "12 ай кепілдік",
+            "text": "Ресми кепілдік және жабдықтың қызмет мерзімі 5 жылға дейін."
+          },
+          {
+            "icon": "Factory",
+            "title": "Өндірушіден",
+            "text": "Делдалсыз және үстемесіз тікелей жеткізу."
+          },
+          {
+            "icon": "Truck",
+            "title": "ТМД бойынша жеткізу",
+            "text": "Қоймадан және тапсырыс бойынша келісілген мерзімде жөнелту."
+          }
+        ]
+      },
+      "testimonials": {
+        "tag": "Пікірлер мен жобалар",
+        "title": "Енгізу нәтижелері",
+        "description": "Біздің шешімдер қиылыстарда, магистральдарда және қалалық инфрақұрылым нысандарында қолданылады."
+      },
+      "projects": {
+        "tag": "Портфолио",
+        "title": "Біздің жобалар",
+        "description": "OLAN HIGH TECH PROJECT кешендерінің жолдар мен қалалық нысандарда орнатылу мысалдары. Фотосуретті толық экранда ашу үшін басыңыз.",
+        "close": "Жабу",
+        "prev": "Алдыңғы",
+        "next": "Келесі"
+      },
+      "faq": {
+        "tag": "FAQ",
+        "title": "Жиі қойылатын сұрақтар",
+        "description": "Кешендерді енгізу мен қызмет көрсету бойынша тапсырыс берушілердің негізгі сұрақтарына жауаптарды жинадық."
+      },
+      "contact": {
+        "tag": "Байланыс",
+        "title": "Бізбен байланысыңыз",
+        "description": "Хабарлама жіберіңіз, OLAN HIGH TECH PROJECT мамандары нысаныңызға шешім дайындайды.",
+        "formTitle": "Хабарлама жіберу",
+        "name": "Атыңыз",
+        "email": "Email",
+        "phone": "Телефон",
+        "message": "Хабарлама",
+        "namePlaceholder": "Мысалы, Алишер",
+        "emailPlaceholder": "you@example.com",
+        "phonePlaceholder": "+998 90 123 45 67",
+        "messagePlaceholder": "Тапсырманы, нысанды және қызықтыратын кешендерді сипаттаңыз...",
+        "addressLabel": "Мекенжай",
+        "hoursLabel": "Жұмыс уақыты",
+        "messengers": "Мессенджерлер",
+        "sendSuccess": "Өтінім жіберілді. Жақын арада сізбен байланысамыз.",
+        "sendFallback": "Өтінімді жіберу мүмкін болмады. Сервер іске қосылғанын тексеріңіз немесе онлайн чатқа жазыңыз."
+      },
+      "auth": {
+        "loginTitle": "Жүйеге кіру",
+        "registerTitle": "Тіркелу",
+        "loginDescription": "Өтінімдерді тезірек жіберу үшін кіріңіз.",
+        "registerDescription": "Өтінімдер мен кеңестермен жұмыс істеу үшін аккаунт жасаңыз.",
+        "name": "Аты",
+        "confirmPassword": "Құпиясөзді растаңыз",
+        "password": "Құпиясөз",
+        "noAccount": "Аккаунт жоқ па?",
+        "haveAccount": "Аккаунтыңыз бар ма?",
+        "switchToRegister": "Тіркелу",
+        "switchToLogin": "Кіру",
+        "submitLogin": "Кіру",
+        "submitRegister": "Тіркелу",
+        "loginSuccess": "Сіз жүйеге сәтті кірдіңіз.",
+        "registerSuccess": "Тіркелу аяқталды. Енді кіре аласыз.",
+        "passwordMismatch": "Құпиясөздер сәйкес келмейді."
+      },
+      "footer": {
+        "products": "Өнімдер",
+        "company": "Компания",
+        "support": "Ақпарат",
+        "privacy": "Құпиялылық саясаты",
+        "terms": "Пайдалану шарттары",
+        "copyright": "© 2026 OLAN HIGH TECH PROJECT. Барлық құқықтар қорғалған.",
+        "description": "Жол қозғалысы ережелерінің бұзылуын автоматты тіркейтін сертификатталған кешендердің өндірушісі әрі жеткізушісі."
+      },
+      "misc": {
+        "recommended": "Ұсынамыз",
+        "new": "Жаңа",
+        "engineer": "Инженерлік шешім",
+        "userGreeting": "Сәлеметсіз бе"
+      }
+    },
+    "be": {
+      "brand": "OLAN HIGH TECH",
+      "nav": {
+        "about": "Пра кампанію",
+        "catalog": "Каталог",
+        "benefits": "Перавагі",
+        "process": "Як купіць",
+        "testimonials": "Водгукі",
+        "projects": "Нашы праекты",
+        "solutions": "Рашэнне",
+        "faq": "FAQ",
+        "contact": "Кантакты"
+      },
+      "actions": {
+        "contact": "Звязацца",
+        "login": "Увайсці",
+        "logout": "Выйсці",
+        "openCatalog": "Глядзець каталог",
+        "consultation": "Атрымаць кансультацыю",
+        "details": "Падрабязней",
+        "buy": "Пакінуць заяўку",
+        "close": "Зачыніць",
+        "save": "Захаваць",
+        "send": "Адправіць паведамленне",
+        "chooseEquipment": "Выбраць абсталяванне",
+        "backToTop": "Уверх",
+        "morePhotos": "Фотаздымкі",
+        "themeLight": "Светлая тэма",
+        "themeDark": "Цёмная тэма",
+        "language": "Мова",
+        "openCard": "Адкрыць картку"
+      },
+      "hero": {
+        "badge": "Інтэлектуальныя комплексы • Сертыфікаванае абсталяванне",
+        "title1": "Тэхналогіі кантролю",
+        "title2": "дарожнай бяспекі",
+        "description": "Праектуем і вырабляем высокатэхналагічныя комплексы для фіксацыі парушэнняў ПДР.",
+        "descriptionLine2": "Поўны цыкл — ад распрацоўкі да выпуску гатовага абсталявання.",
+        "stats": [
+          {
+            "value": "15+",
+            "label": "Гадоў на рынку"
+          },
+          {
+            "value": "3000+",
+            "label": "Пастаўленых комплексаў"
+          },
+          {
+            "value": "12 мес",
+            "label": "Гарантыя на абсталяванне"
+          }
+        ],
+        "scroll": "Пракруціце ўніз"
+      },
+      "about": {
+        "tag": "Пра кампанію",
+        "title": "Вытворца комплексаў фіксацыі парушэнняў",
+        "description": "OLAN HIGH TECH PROJECT — вытворца і пастаўшчык сертыфікаваных высокатэхналагічных комплексаў аўтаматычнай фіксацыі парушэнняў ПДР",
+        "stats": [
+          {
+            "value": "15+",
+            "label": "Гадоў на рынку"
+          },
+          {
+            "value": "100+",
+            "label": "Пастаўлена комплексаў"
+          },
+          {
+            "value": "12 мес",
+            "label": "Гарантыя"
+          },
+          {
+            "value": "5 гадоў",
+            "label": "Тэрмін службы"
+          }
+        ]
+      },
+      "catalog": {
+        "tag": "Каталог комплексаў",
+        "title": "Каталог комплексаў па тыпах парушэнняў",
+        "description": "Выберыце тып парушэння і адкрыйце картку комплексу — там характарыстыкі, галерэя і сферы прымянення. Усе комплексы сертыфікаваны і пастаўляюцца з гарантыяй.",
+        "filters": "Фільтры",
+        "stockYes": "У наяўнасці",
+        "stockNo": "Пад замову",
+        "priceLabel": "Кошт",
+        "specsTitle": "Ключавыя характарыстыкі",
+        "galleryTitle": "Галерэя тавару",
+        "appsTitle": "Дзе прымяняецца",
+        "addHint": "Новыя комплексы можна дадаваць у файл src/app/data/siteData.js",
+        "all": "Усе комплексы",
+        "categories": {
+          "speed": "Хуткасць (1-320км/г)",
+          "roadside": "Рух па ўзбочыне",
+          "lane": "Сустрэчная паласа",
+          "beltPhone": "Рэмень-Тэлефон",
+          "video": "Вышук ТС",
+          "trafficLight": "Праезд на \n чырвонае святло🚦",
+          "buss": "Паласа А",
+          "parking": "Паркоўка",
+          "pedestrianCrossing": "Пешаходны пераход",
+          "railwayCrossings": "Чыгуначныя пераезды"
+        }
+      },
+      "benefits": {
+        "tag": "Перавагі",
+        "title": "Чаму купляюць менавіта ў нас",
+        "description": "Сертыфікаванае абсталяванне напрамую ад вытворцы, гарантыя, гатоўнасць да інтэграцыі і стабільная праца ў любых умовах."
+      },
+      "process": {
+        "tag": "Як купіць",
+        "title": "Як аформіць замову",
+        "description": "Празрысты працэс пакупкі — ад выбару тыпу парушэння да ўзгаднення камплектацыі і пастаўкі абсталявання."
+      },
+      "solutions": {
+        "tag": "Падбор па задачы",
+        "title": "Якое парушэнне трэба фіксаваць?",
+        "description": "Выберыце сваю сітуацыю — мы адразу пакажам прыдатны комплекс з каталога з патрэбным тыпам фіксацыі.",
+        "problemLabel": "Задача",
+        "solutionLabel": "Рашэнне",
+        "cta": "Падабраць комплекс",
+        "footnote": "Не знайшлі сваю задачу? Пакіньце заяўку — падбяром комплекс пад ваш абʼект.",
+        "footCta": "Атрымаць кансультацыю",
+        "guarantees": [
+          {
+            "icon": "BadgeCheck",
+            "title": "Сертыфікавана",
+            "text": "Сертыфікаты адпаведнасці і пратаколы выпрабаванняў на кожны комплекс."
+          },
+          {
+            "icon": "ShieldCheck",
+            "title": "Гарантыя 12 месяцаў",
+            "text": "Афіцыйная гарантыя і тэрмін службы абсталявання да 5 гадоў."
+          },
+          {
+            "icon": "Factory",
+            "title": "Ад вытворцы",
+            "text": "Прамыя пастаўкі без пасрэднікаў і нацэнак."
+          },
+          {
+            "icon": "Truck",
+            "title": "Пастаўка па СНД",
+            "text": "Адгрузка са склада і пад замову ва ўзгодненыя тэрміны."
+          }
+        ]
+      },
+      "testimonials": {
+        "tag": "Водгукі і праекты",
+        "title": "Вынікі ўкаранення",
+        "description": "Нашы рашэнні выкарыстоўваюцца на скрыжаваннях, магістралях і абʼектах гарадской інфраструктуры."
+      },
+      "projects": {
+        "tag": "Партфоліа",
+        "title": "Нашы праекты",
+        "description": "Прыклады ўсталявання комплексаў OLAN HIGH TECH PROJECT на дарогах і гарадскіх абʼектах. Націсніце на фотаздымак, каб адкрыць яго на ўвесь экран.",
+        "close": "Зачыніць",
+        "prev": "Папярэдняе",
+        "next": "Наступнае"
+      },
+      "faq": {
+        "tag": "FAQ",
+        "title": "Частыя пытанні",
+        "description": "Сабралі адказы на асноўныя пытанні заказчыкаў па ўкараненні і абслугоўванні комплексаў."
+      },
+      "contact": {
+        "tag": "Кантакты",
+        "title": "Звяжыцеся з намі",
+        "description": "Адпраўце паведамленне, і спецыялісты OLAN HIGH TECH PROJECT падрыхтуюць рашэнне пад ваш абʼект.",
+        "formTitle": "Адправіць паведамленне",
+        "name": "Ваша імя",
+        "email": "Email",
+        "phone": "Тэлефон",
+        "message": "Паведамленне",
+        "namePlaceholder": "Напрыклад, Алішэр",
+        "emailPlaceholder": "you@example.com",
+        "phonePlaceholder": "+998 90 123 45 67",
+        "messagePlaceholder": "Апішыце задачу, абʼект і комплексы, якія цікавяць...",
+        "addressLabel": "Адрас",
+        "hoursLabel": "Час працы",
+        "messengers": "Месэнджары",
+        "sendSuccess": "Заяўка адпраўлена. Мы звяжамся з вамі ў бліжэйшы час.",
+        "sendFallback": "Не ўдалося адправіць заяўку. Праверце, ці запушчаны сервер, або напішыце нам у анлайн-чат."
+      },
+      "auth": {
+        "loginTitle": "Уваход у сістэму",
+        "registerTitle": "Рэгістрацыя",
+        "loginDescription": "Увайдзіце, каб адпраўляць заяўкі хутчэй.",
+        "registerDescription": "Стварыце акаўнт для працы з заяўкамі і кансультацыямі.",
+        "name": "Імя",
+        "confirmPassword": "Пацвердзіце пароль",
+        "password": "Пароль",
+        "noAccount": "Няма акаўнта?",
+        "haveAccount": "Ужо ёсць акаўнт?",
+        "switchToRegister": "Рэгістрацыя",
+        "switchToLogin": "Уваход",
+        "submitLogin": "Увайсці",
+        "submitRegister": "Зарэгістравацца",
+        "loginSuccess": "Вы паспяхова ўвайшлі ў сістэму.",
+        "registerSuccess": "Рэгістрацыя выканана. Цяпер вы можаце ўвайсці.",
+        "passwordMismatch": "Паролі не супадаюць."
+      },
+      "footer": {
+        "products": "Прадукты",
+        "company": "Кампанія",
+        "support": "Інфармацыя",
+        "privacy": "Палітыка канфідэнцыяльнасці",
+        "terms": "Умовы выкарыстання",
+        "copyright": "© 2026 OLAN HIGH TECH PROJECT. Усе правы абаронены.",
+        "description": "Вытворца і пастаўшчык сертыфікаваных комплексаў аўтаматычнай фіксацыі парушэнняў дарожнага руху."
+      },
+      "misc": {
+        "recommended": "Рэкамендуем",
+        "new": "Навінка",
+        "engineer": "Інжынернае рашэнне",
+        "userGreeting": "Вітаем"
+      }
+    }
+  },
+  "PRODUCTS": [
+    {
+      "id": "w-space",
+      "category": [
+        "speed",
+        "video",
+        "lane"
+      ],
+      "brand": "W-Space S",
+      "price": {
+        "ru": "По запросу",
+        "uz": "Soʻrov boʻyicha",
+        "en": "On request",
+        "uk": "За запитом",
+        "zh": "按需报价",
+        "kk": "Сұраныс бойынша",
+        "be": "Па запыце"
+      },
+      "badge": {
+        "ru": "Рекомендуем",
+        "uz": "Tavsiya etamiz",
+        "en": "Recommended",
+        "uk": "Рекомендуємо",
+        "zh": "推荐",
+        "kk": "Ұсынамыз",
+        "be": "Рэкамендуем"
+      },
+      "inStock": true,
+      "name": {
+        "ru": "Радарный комплекс\nконтроля скорости\nW-Space S",
+        "uz": "Tezlik nazorati\nradar majmuasi\nW-Space S",
+        "en": "W-Space S\nspeed control\nradar system",
+        "uk": "Радарний комплекс\nконтролю швидкості\nW-Space S",
+        "zh": "W-Space S\n雷达测速系统",
+        "kk": "Жылдамдықты бақылау\nрадар кешені\nW-Space S",
+        "be": "Радарны комплекс\nкантролю хуткасці\nW-Space S"
+      },
+      "short": {
+        "ru": "Дальнобойный комплекс для измерения скорости и фиксации нарушений на магистралях и городских дорогах.",
+        "uz": "Magistrallar va shahar yoʻllarida tezlikni oʻlchash va qoidabuzarliklarni qayd etish uchun uzoq masofali majmua.",
+        "en": "A long-range system for measuring speed and recording violations on highways and city roads.",
+        "uk": "Далекобійний комплекс для вимірювання швидкості та фіксації порушень на магістралях і міських дорогах.",
+        "zh": "用于在高速公路和城市道路上测速并记录违章的远距离系统。",
+        "kk": "Магистральдар мен қала жолдарында жылдамдықты өлшеуге және бұзушылықтарды тіркеуге арналған алыс қашықтықты кешен.",
+        "be": "Далькабойны комплекс для вымярэння хуткасці і фіксацыі парушэнняў на магістралях і гарадскіх дарогах."
+      },
+      "description": {
+        "ru": "Комплекс объединяет радиолокационный модуль, камеру высокого разрешения и вычислительный блок для автоматической фиксации превышения скорости.",
+        "uz": "Majmua tezlikdan oshishni avtomatik qayd etish uchun radiolokatsion modul, yuqori aniqlikdagi kamera va hisoblash blokini birlashtiradi.",
+        "en": "The system combines a radar module, a high-resolution camera and a computing unit for automatic speeding detection.",
+        "uk": "Комплекс поєднує радіолокаційний модуль, камеру високої роздільності та обчислювальний блок для автоматичної фіксації перевищення швидкості.",
+        "zh": "该系统集成了雷达模块、高分辨率摄像机和计算单元，可自动记录超速。",
+        "kk": "Кешен жылдамдықтан асуды автоматты тіркеу үшін радиолокациялық модульді, жоғары ажыратымдылықты камераны және есептеу блогын біріктіреді.",
+        "be": "Комплекс аб’ядноўвае радыёлакацыйны модуль, камеру высокага разрашэння і вылічальны блок для аўтаматычнай фіксацыі перавышэння хуткасці."
+      },
+      "specs": {
+        "ru": [
+          "Дальность контроля: от 30 м до 250 м",
+          "Гарантия: 12 мес.",
+          "Защита корпуса: IP66",
+          "Фиксация скорости: от 1 до 330 км/ч",
+          "Температура окружающей среды: от -40°С до +60°С",
+          "Срок службы: 5 лет."
+        ],
+        "uz": [
+          "Nazorat masofasi: 30 m dan 250 m gacha",
+          "Kafolat: 12 oy",
+          "Korpus himoyasi: IP66",
+          "Tezlikni qayd etish: 1 dan 330 km/s gacha",
+          "Atrof-muhit harorati: -40°C dan +60°C gacha",
+          "Xizmat muddati: 5 yil"
+        ],
+        "en": [
+          "Control range: from 30 m to 250 m",
+          "Warranty: 12 months",
+          "Enclosure rating: IP66",
+          "Speed recording: from 1 to 330 km/h",
+          "Ambient temperature: from -40°C to +60°C",
+          "Service life: 5 years"
+        ],
+        "uk": [
+          "Дальність контролю: від 30 м до 250 м",
+          "Гарантія: 12 міс.",
+          "Захист корпусу: IP66",
+          "Фіксація швидкості: від 1 до 330 км/год",
+          "Температура довкілля: від -40°С до +60°С",
+          "Термін служби: 5 років"
+        ],
+        "zh": [
+          "监控距离：30 米至 250 米",
+          "保修：12 个月",
+          "外壳防护：IP66",
+          "测速记录：1 至 330 公里/小时",
+          "环境温度：-40°C 至 +60°C",
+          "使用寿命：5 年"
+        ],
+        "kk": [
+          "Бақылау қашықтығы: 30 м-ден 250 м-ге дейін",
+          "Кепілдік: 12 ай",
+          "Корпус қорғанысы: IP66",
+          "Жылдамдықты тіркеу: 1-ден 330 км/сағ-қа дейін",
+          "Қоршаған орта температурасы: -40°C-ден +60°C-ге дейін",
+          "Қызмет мерзімі: 5 жыл"
+        ],
+        "be": [
+          "Дальнасць кантролю: ад 30 м да 250 м",
+          "Гарантыя: 12 мес.",
+          "Абарона корпуса: IP66",
+          "Фіксацыя хуткасці: ад 1 да 330 км/г",
+          "Тэмпература навакольнага асяроддзя: ад -40°С да +60°С",
+          "Тэрмін службы: 5 гадоў"
+        ]
+      },
+      "applications": {
+        "ru": [
+          "Магистрали",
+          "Городские скоростные коридоры",
+          "Опасные участки дорог",
+          "Полосы общественного транспорта"
+        ],
+        "uz": [
+          "Magistrallar",
+          "Shahar tezyurar yoʻlaklari",
+          "Yoʻllarning xavfli uchastkalari",
+          "Jamoat transporti yoʻlaklari"
+        ],
+        "en": [
+          "Highways",
+          "Urban speed corridors",
+          "Dangerous road sections",
+          "Bus lanes"
+        ],
+        "uk": [
+          "Магістралі",
+          "Міські швидкісні коридори",
+          "Небезпечні ділянки доріг",
+          "Смуги громадського транспорту"
+        ],
+        "zh": [
+          "高速公路",
+          "城市快速通道",
+          "危险路段",
+          "公交专用道"
+        ],
+        "kk": [
+          "Магистральдар",
+          "Қалалық жылдам дәліздер",
+          "Жолдардың қауіпті учаскелері",
+          "Қоғамдық көлік жолақтары"
+        ],
+        "be": [
+          "Магістралі",
+          "Гарадскія хуткасныя калідоры",
+          "Небяспечныя ўчасткі дарог",
+          "Палосы грамадскага транспарту"
+        ]
+      },
+      "images": [
+        "/products/olan-complex-1.png",
+        "/products/w-space2.png",
+        "/products/w-space3.png"
+      ]
+    },
+    {
+      "id": "lanevision",
+      "category": [
+        "speed"
+      ],
+      "brand": "URALAN-P",
+      "price": {
+        "ru": "По запросу",
+        "uz": "Soʻrov boʻyicha",
+        "en": "On request",
+        "uk": "За запитом",
+        "zh": "按需报价",
+        "kk": "Сұраныс бойынша",
+        "be": "Па запыце"
+      },
+      "badge": {
+        "ru": "Инженерное решение",
+        "uz": "Muhandislik yechimi",
+        "en": "Engineering solution",
+        "uk": "Інженерне рішення",
+        "zh": "工程解决方案",
+        "kk": "Инженерлік шешім",
+        "be": "Інжынернае рашэнне"
+      },
+      "inStock": true,
+      "name": {
+        "ru": "Мобильный радарный\nкомплекс URALAN-P",
+        "uz": "Mobil radar\nmajmuasi URALAN-P",
+        "en": "URALAN-P mobile\nradar system",
+        "uk": "Мобільний радарний\nкомплекс URALAN-P",
+        "zh": "URALAN-P\n移动雷达系统",
+        "kk": "Мобильді радар\nкешені URALAN-P",
+        "be": "Мабільны радарны\nкомплекс URALAN-P"
+      },
+      "short": {
+        "ru": "Мобильный радарный комплекс для точного контроля скорости и фиксации нарушений ПДД",
+        "uz": "Tezlikni aniq nazorat qilish va YHQ buzilishini qayd etish uchun mobil radar majmuasi",
+        "en": "A mobile radar system for accurate speed control and recording of traffic violations",
+        "uk": "Мобільний радарний комплекс для точного контролю швидкості та фіксації порушень ПДР",
+        "zh": "用于精确测速和记录交通违章的移动雷达系统",
+        "kk": "Жылдамдықты дәл бақылауға және ЖҚЕ бұзылуын тіркеуге арналған мобильді радар кешені",
+        "be": "Мабільны радарны комплекс для дакладнага кантролю хуткасці і фіксацыі парушэнняў ПДР"
+      },
+      "description": {
+        "ru": "Мобильный радарный комплекс для оперативного контроля скорости и фиксации нарушений ПДД. Быстро разворачивается, работает в любых дорожных условиях и обеспечивает точную фиксацию на трассах и магистралях",
+        "uz": "Tezlikni operativ nazorat qilish va YHQ buzilishini qayd etish uchun mobil radar majmuasi. Tez oʻrnatiladi, har qanday yoʻl sharoitida ishlaydi va trassalar hamda magistrallarda aniq qayd etishni taʼminlaydi",
+        "en": "A mobile radar system for rapid speed control and recording of traffic violations. It deploys quickly, works in any road conditions and ensures accurate recording on roads and highways",
+        "uk": "Мобільний радарний комплекс для оперативного контролю швидкості та фіксації порушень ПДР. Швидко розгортається, працює в будь-яких дорожніх умовах і забезпечує точну фіксацію на трасах і магістралях",
+        "zh": "用于快速测速和记录交通违章的移动雷达系统。部署迅速，可在任何路况下工作，并在公路和高速公路上实现精确记录",
+        "kk": "Жылдамдықты жедел бақылауға және ЖҚЕ бұзылуын тіркеуге арналған мобильді радар кешені. Тез орнатылады, кез келген жол жағдайында жұмыс істейді және трассалар мен магистральдарда дәл тіркеуді қамтамасыз етеді",
+        "be": "Мабільны радарны комплекс для аператыўнага кантролю хуткасці і фіксацыі парушэнняў ПДР. Хутка разгортваецца, працуе ў любых дарожных умовах і забяспечвае дакладную фіксацыю на трасах і магістралях"
+      },
+      "specs": {
+        "ru": [
+          "Контроль до 6 полос",
+          "Распознавание типа ТС",
+          "Ночная фиксация и архив видео",
+          "Дальность контроля: от 20 м до 250 м",
+          "Гарантия: 12 мес.",
+          "Защита корпуса: IP66",
+          "Фиксация скорости: от 1 до 330 км/ч",
+          "Температура окружающей среды: от -50°С до +70°С",
+          "Срок службы: 5 лет.",
+          "Распознование ТС"
+        ],
+        "uz": [
+          "6 tagacha yoʻlakni nazorat",
+          "TV turini aniqlash",
+          "Tungi qayd etish va video arxiv",
+          "Nazorat masofasi: 20 m dan 250 m gacha",
+          "Kafolat: 12 oy",
+          "Korpus himoyasi: IP66",
+          "Tezlikni qayd etish: 1 dan 330 km/s gacha",
+          "Atrof-muhit harorati: -50°C dan +70°C gacha",
+          "Xizmat muddati: 5 yil",
+          "TVni aniqlash"
+        ],
+        "en": [
+          "Control of up to 6 lanes",
+          "Vehicle type recognition",
+          "Night recording and video archive",
+          "Control range: from 20 m to 250 m",
+          "Warranty: 12 months",
+          "Enclosure rating: IP66",
+          "Speed recording: from 1 to 330 km/h",
+          "Ambient temperature: from -50°C to +70°C",
+          "Service life: 5 years",
+          "Vehicle recognition"
+        ],
+        "uk": [
+          "Контроль до 6 смуг",
+          "Розпізнавання типу ТЗ",
+          "Нічна фіксація та архів відео",
+          "Дальність контролю: від 20 м до 250 м",
+          "Гарантія: 12 міс.",
+          "Захист корпусу: IP66",
+          "Фіксація швидкості: від 1 до 330 км/год",
+          "Температура довкілля: від -50°С до +70°С",
+          "Термін служби: 5 років",
+          "Розпізнавання ТЗ"
+        ],
+        "zh": [
+          "可监控多达 6 条车道",
+          "识别车辆类型",
+          "夜间记录及视频存档",
+          "监控距离：20 米至 250 米",
+          "保修：12 个月",
+          "外壳防护：IP66",
+          "测速记录：1 至 330 公里/小时",
+          "环境温度：-50°C 至 +70°C",
+          "使用寿命：5 年",
+          "车辆识别"
+        ],
+        "kk": [
+          "6 жолаққа дейін бақылау",
+          "КҚ түрін тану",
+          "Түнгі тіркеу және бейне архив",
+          "Бақылау қашықтығы: 20 м-ден 250 м-ге дейін",
+          "Кепілдік: 12 ай",
+          "Корпус қорғанысы: IP66",
+          "Жылдамдықты тіркеу: 1-ден 330 км/сағ-қа дейін",
+          "Қоршаған орта температурасы: -50°C-ден +70°C-ге дейін",
+          "Қызмет мерзімі: 5 жыл",
+          "КҚ тану"
+        ],
+        "be": [
+          "Кантроль да 6 палос",
+          "Распазнаванне тыпу ТС",
+          "Начная фіксацыя і архіў відэа",
+          "Дальнасць кантролю: ад 20 м да 250 м",
+          "Гарантыя: 12 мес.",
+          "Абарона корпуса: IP66",
+          "Фіксацыя хуткасці: ад 1 да 330 км/г",
+          "Тэмпература навакольнага асяроддзя: ад -50°С да +70°С",
+          "Тэрмін службы: 5 гадоў",
+          "Распазнаванне ТС"
+        ]
+      },
+      "applications": {
+        "ru": [
+          "Кольцевые дороги вокруг города",
+          "Магистрали",
+          "Опасные участки дорог",
+          "Городские скоростные коридоры"
+        ],
+        "uz": [
+          "Shahar atrofidagi halqa yoʻllar",
+          "Magistrallar",
+          "Yoʻllarning xavfli uchastkalari",
+          "Shahar tezyurar yoʻlaklari"
+        ],
+        "en": [
+          "Ring roads around the city",
+          "Highways",
+          "Dangerous road sections",
+          "Urban speed corridors"
+        ],
+        "uk": [
+          "Кільцеві дороги навколо міста",
+          "Магістралі",
+          "Небезпечні ділянки доріг",
+          "Міські швидкісні коридори"
+        ],
+        "zh": [
+          "城市环路",
+          "高速公路",
+          "危险路段",
+          "城市快速通道"
+        ],
+        "kk": [
+          "Қаланы айналған сақина жолдар",
+          "Магистральдар",
+          "Жолдардың қауіпті учаскелері",
+          "Қалалық жылдам дәліздер"
+        ],
+        "be": [
+          "Кальцавыя дарогі вакол горада",
+          "Магістралі",
+          "Небяспечныя ўчасткі дарог",
+          "Гарадскія хуткасныя калідоры"
+        ]
+      },
+      "images": [
+        "/products/uralan-p.png",
+        "/products/uralan-p1.png",
+        "/products/uralan-p2.png"
+      ]
+    },
+    {
+      "id": "redvision",
+      "category": [
+        "roadside",
+        "speed",
+        "video",
+        "trafficLight",
+        "lane"
+      ],
+      "brand": "TRC",
+      "price": {
+        "ru": "По запросу",
+        "uz": "Soʻrov boʻyicha",
+        "en": "On request",
+        "uk": "За запитом",
+        "zh": "按需报价",
+        "kk": "Сұраныс бойынша",
+        "be": "Па запыце"
+      },
+      "badge": {
+        "ru": "Новинка",
+        "uz": "Yangi",
+        "en": "New",
+        "uk": "Новинка",
+        "zh": "新品",
+        "kk": "Жаңа",
+        "be": "Навінка"
+      },
+      "inStock": true,
+      "name": {
+        "ru": "Радарный комплекс контроля\nперекрёстков TRC",
+        "uz": "Chorrahalarni nazorat qiluvchi\nradar majmuasi TRC",
+        "en": "TRC intersection control\nradar system",
+        "uk": "Радарний комплекс контролю\nперехресть TRC",
+        "zh": "TRC 路口管控\n雷达系统",
+        "kk": "Қиылыстарды бақылайтын\nрадар кешені TRC",
+        "be": "Радарны комплекс кантролю\nскрыжаванняў TRC"
+      },
+      "short": {
+        "ru": "Решение для регулируемых перекрёстков с синхронизацией по фазам светофора и видео фиксацией события.",
+        "uz": "Svetofor fazalari boʻyicha sinxronizatsiya va voqeani video qayd etish bilan tartibga solinadigan chorrahalar uchun yechim.",
+        "en": "A solution for signalized intersections with traffic light phase synchronization and video recording of the event.",
+        "uk": "Рішення для регульованих перехресть із синхронізацією за фазами світлофора та відеофіксацією події.",
+        "zh": "适用于信号灯路口的解决方案，可与信号灯相位同步并对事件进行视频记录。",
+        "kk": "Бағдаршам фазалары бойынша синхрондау және оқиғаны бейне тіркеумен реттелетін қиылыстарға арналған шешім.",
+        "be": "Рашэнне для рэгуляваных скрыжаванняў з сінхранізацыяй па фазах святлафора і відэафіксацыяй падзеі."
+      },
+      "description": {
+        "ru": "Комплекс фиксирует стоп-линию, измеряет скорость ТС, траекторию движения и сохраняет фото и видео доказательства нарушения.",
+        "uz": "Majmua stop-chiziqni qayd etadi, TV tezligini va harakat trayektoriyasini oʻlchaydi hamda qoidabuzarlikning foto va video dalillarini saqlaydi.",
+        "en": "The system records the stop line, measures vehicle speed and trajectory, and stores photo and video evidence of the violation.",
+        "uk": "Комплекс фіксує стоп-лінію, вимірює швидкість ТЗ, траєкторію руху та зберігає фото- і відеодокази порушення.",
+        "zh": "系统记录停止线，测量车辆速度和行驶轨迹，并保存违章的照片和视频证据。",
+        "kk": "Кешен тоқтау сызығын тіркейді, КҚ жылдамдығы мен қозғалыс траекториясын өлшейді және бұзушылықтың фото және бейне дәлелдерін сақтайды.",
+        "be": "Комплекс фіксуе стоп-лінію, вымярае хуткасць ТС, траекторыю руху і захоўвае фота- і відэадоказы парушэння."
+      },
+      "specs": {
+        "ru": [
+          "Синхронизация с фазами светофора",
+          "4K камера фиксации",
+          "Архив доказательств и журнал событий",
+          "Дальность контроля: от 30 м до 350 м",
+          "Гарантия: 12 мес.",
+          "Защита корпуса: IP66",
+          "Фиксация скорости ТС: от 1 до 330 км/ч",
+          "Распознование ТС"
+        ],
+        "uz": [
+          "Svetofor fazalari bilan sinxronizatsiya",
+          "4K qayd etish kamerasi",
+          "Dalillar arxivi va voqealar jurnali",
+          "Nazorat masofasi: 30 m dan 350 m gacha",
+          "Kafolat: 12 oy",
+          "Korpus himoyasi: IP66",
+          "TV tezligini qayd etish: 1 dan 330 km/s gacha",
+          "TVni aniqlash"
+        ],
+        "en": [
+          "Synchronization with traffic light phases",
+          "4K capture camera",
+          "Evidence archive and event log",
+          "Control range: from 30 m to 350 m",
+          "Warranty: 12 months",
+          "Enclosure rating: IP66",
+          "Vehicle speed recording: from 1 to 330 km/h",
+          "Vehicle recognition"
+        ],
+        "uk": [
+          "Синхронізація з фазами світлофора",
+          "4K камера фіксації",
+          "Архів доказів та журнал подій",
+          "Дальність контролю: від 30 м до 350 м",
+          "Гарантія: 12 міс.",
+          "Захист корпусу: IP66",
+          "Фіксація швидкості ТЗ: від 1 до 330 км/год",
+          "Розпізнавання ТЗ"
+        ],
+        "zh": [
+          "与信号灯相位同步",
+          "4K 抓拍摄像机",
+          "证据存档与事件日志",
+          "监控距离：30 米至 350 米",
+          "保修：12 个月",
+          "外壳防护：IP66",
+          "车速记录：1 至 330 公里/小时",
+          "车辆识别"
+        ],
+        "kk": [
+          "Бағдаршам фазаларымен синхрондау",
+          "4K тіркеу камерасы",
+          "Дәлелдер архиві және оқиғалар журналы",
+          "Бақылау қашықтығы: 30 м-ден 350 м-ге дейін",
+          "Кепілдік: 12 ай",
+          "Корпус қорғанысы: IP66",
+          "КҚ жылдамдығын тіркеу: 1-ден 330 км/сағ-қа дейін",
+          "КҚ тану"
+        ],
+        "be": [
+          "Сінхранізацыя з фазамі святлафора",
+          "4K камера фіксацыі",
+          "Архіў доказаў і журнал падзей",
+          "Дальнасць кантролю: ад 30 м да 350 м",
+          "Гарантыя: 12 мес.",
+          "Абарона корпуса: IP66",
+          "Фіксацыя хуткасці ТС: ад 1 да 330 км/г",
+          "Распазнаванне ТС"
+        ]
+      },
+      "applications": {
+        "ru": [
+          "Регулируемые перекрёстки",
+          "Городские магистрали",
+          "Участки с высоким трафиком"
+        ],
+        "uz": [
+          "Tartibga solinadigan chorrahalar",
+          "Shahar magistrallari",
+          "Tirband uchastkalar"
+        ],
+        "en": [
+          "Signalized intersections",
+          "Urban highways",
+          "High-traffic sections"
+        ],
+        "uk": [
+          "Регульовані перехрестя",
+          "Міські магістралі",
+          "Ділянки з високим трафіком"
+        ],
+        "zh": [
+          "信号灯路口",
+          "城市主干道",
+          "高流量路段"
+        ],
+        "kk": [
+          "Реттелетін қиылыстар",
+          "Қалалық магистральдар",
+          "Трафигі жоғары учаскелер"
+        ],
+        "be": [
+          "Рэгуляваныя скрыжаванні",
+          "Гарадскія магістралі",
+          "Участкі з высокім трафікам"
+        ]
+      },
+      "images": [
+        "/products/TRC2.png",
+        "/products/TRC1.png",
+        "/products/TRC.png"
+      ]
+    },
+    {
+      "id": "photofix",
+      "category": [
+        "video",
+        "railwayCrossings",
+        "parking"
+      ],
+      "brand": "PARKING",
+      "price": {
+        "ru": "По запросу",
+        "uz": "Soʻrov boʻyicha",
+        "en": "On request",
+        "uk": "За запитом",
+        "zh": "按需报价",
+        "kk": "Сұраныс бойынша",
+        "be": "Па запыце"
+      },
+      "badge": {
+        "ru": "Рекомендуем",
+        "uz": "Tavsiya etamiz",
+        "en": "Recommended",
+        "uk": "Рекомендуємо",
+        "zh": "推荐",
+        "kk": "Ұсынамыз",
+        "be": "Рэкамендуем"
+      },
+      "inStock": true,
+      "name": {
+        "ru": "Комплекс фиксации нарушений правил порковки PARKING",
+        "uz": "Toʻxtash qoidalari buzilishini qayd etuvchi majmua PARKING",
+        "en": "PARKING violation recording system",
+        "uk": "Комплекс фіксації порушень правил паркування PARKING",
+        "zh": "PARKING 违停记录系统",
+        "kk": "Тұрақ ережелерінің бұзылуын тіркейтін кешен PARKING",
+        "be": "Комплекс фіксацыі парушэнняў правіл паркоўкі PARKING"
+      },
+      "short": {
+        "ru": "Универсальный модуль для фиксации различных типов нарушений с передачей данных на сервер.",
+        "uz": "Maʼlumotlarni serverga uzatish bilan turli xil qoidabuzarliklarni qayd etish uchun universal modul.",
+        "en": "A universal module for recording various violation types with data transfer to a server.",
+        "uk": "Універсальний модуль для фіксації різних типів порушень із передачею даних на сервер.",
+        "zh": "用于记录各类违章并向服务器传输数据的通用模块。",
+        "kk": "Деректерді серверге беру арқылы әртүрлі бұзушылық түрлерін тіркеуге арналған әмбебап модуль.",
+        "be": "Універсальны модуль для фіксацыі розных тыпаў парушэнняў з перадачай даных на сервер."
+      },
+      "description": {
+        "ru": "Используется как самостоятельный блок или как часть большого комплекса с интеграцией в центр обработки данных.",
+        "uz": "Mustaqil blok sifatida yoki maʼlumotlarni qayta ishlash markaziga integratsiyalangan katta majmuaning qismi sifatida ishlatiladi.",
+        "en": "Used as a standalone unit or as part of a larger system integrated into a data center.",
+        "uk": "Використовується як самостійний блок або як частина великого комплексу з інтеграцією в центр обробки даних.",
+        "zh": "可作为独立单元使用，也可作为集成到数据中心的大型系统的一部分。",
+        "kk": "Дербес блок ретінде немесе деректерді өңдеу орталығына интеграцияланған үлкен кешеннің бөлігі ретінде қолданылады.",
+        "be": "Выкарыстоўваецца як самастойны блок або як частка вялікага комплексу з інтэграцыяй у цэнтр апрацоўкі даных."
+      },
+      "specs": {
+        "ru": [
+          "Full HD / 4K режимы",
+          "Передача данных на сервер",
+          "Архив фото и видео событий",
+          "Распознование ТС",
+          "Гарантия: 12 мес.",
+          "Срок службы: 5 лет."
+        ],
+        "uz": [
+          "Full HD / 4K rejimlar",
+          "Maʼlumotlarni serverga uzatish",
+          "Foto va video voqealar arxivi",
+          "TVni aniqlash",
+          "Kafolat: 12 oy",
+          "Xizmat muddati: 5 yil"
+        ],
+        "en": [
+          "Full HD / 4K modes",
+          "Data transfer to server",
+          "Photo and video event archive",
+          "Vehicle recognition",
+          "Warranty: 12 months",
+          "Service life: 5 years"
+        ],
+        "uk": [
+          "Режими Full HD / 4K",
+          "Передача даних на сервер",
+          "Архів фото та відео подій",
+          "Розпізнавання ТЗ",
+          "Гарантія: 12 міс.",
+          "Термін служби: 5 років"
+        ],
+        "zh": [
+          "Full HD / 4K 模式",
+          "向服务器传输数据",
+          "照片和视频事件存档",
+          "车辆识别",
+          "保修：12 个月",
+          "使用寿命：5 年"
+        ],
+        "kk": [
+          "Full HD / 4K режимдері",
+          "Деректерді серверге беру",
+          "Фото және бейне оқиғалар архиві",
+          "КҚ тану",
+          "Кепілдік: 12 ай",
+          "Қызмет мерзімі: 5 жыл"
+        ],
+        "be": [
+          "Рэжымы Full HD / 4K",
+          "Перадача даных на сервер",
+          "Архіў фота і відэа падзей",
+          "Распазнаванне ТС",
+          "Гарантыя: 12 мес.",
+          "Тэрмін службы: 5 гадоў"
+        ]
+      },
+      "applications": {
+        "ru": [
+          "Мобильные посты",
+          "Стационарные рубежи",
+          "Интегрированные системы"
+        ],
+        "uz": [
+          "Mobil postlar",
+          "Statsionar nuqtalar",
+          "Integratsiyalashgan tizimlar"
+        ],
+        "en": [
+          "Mobile posts",
+          "Stationary checkpoints",
+          "Integrated systems"
+        ],
+        "uk": [
+          "Мобільні пости",
+          "Стаціонарні рубежі",
+          "Інтегровані системи"
+        ],
+        "zh": [
+          "移动岗位",
+          "固定卡口",
+          "集成系统"
+        ],
+        "kk": [
+          "Мобильді бекеттер",
+          "Стационарлық бекеттер",
+          "Интеграцияланған жүйелер"
+        ],
+        "be": [
+          "Мабільныя пасты",
+          "Стацыянарныя рубяжы",
+          "Інтэграваныя сістэмы"
+        ]
+      },
+      "images": [
+        "/products/sova.png",
+        "/products/sova1.png",
+        "/products/sova2.png"
+      ]
+    },
+    {
+      "id": "bussStrip",
+      "category": [
+        "buss"
+      ],
+      "brand": "W-Space A",
+      "price": {
+        "ru": "По запросу",
+        "uz": "Soʻrov boʻyicha",
+        "en": "On request",
+        "uk": "За запитом",
+        "zh": "按需报价",
+        "kk": "Сұраныс бойынша",
+        "be": "Па запыце"
+      },
+      "badge": {
+        "ru": "Рекомендуем",
+        "uz": "Tavsiya etamiz",
+        "en": "Recommended",
+        "uk": "Рекомендуємо",
+        "zh": "推荐",
+        "kk": "Ұсынамыз",
+        "be": "Рэкамендуем"
+      },
+      "inStock": true,
+      "name": {
+        "ru": "Комплекс контроля\nполосы общественного\nтранспорта W-Space A",
+        "uz": "Jamoat transporti yoʻlagini\nnazorat qiluvchi majmua\nW-Space A",
+        "en": "W-Space A bus lane\ncontrol system",
+        "uk": "Комплекс контролю\nсмуги громадського\nтранспорту W-Space A",
+        "zh": "W-Space A\n公交专用道管控系统",
+        "kk": "Қоғамдық көлік жолағын\nбақылайтын кешен\nW-Space A",
+        "be": "Комплекс кантролю\nпаласы грамадскага\nтранспарту W-Space A"
+      },
+      "short": {
+        "ru": "Комплекс для фиксации нарушений пересечение полосы общественного транспорта на городских дорогах.",
+        "uz": "Shahar yoʻllarida jamoat transporti yoʻlagini kesib oʻtish qoidabuzarliklarini qayd etish uchun majmua.",
+        "en": "A system for recording violations of bus lane crossing on city roads.",
+        "uk": "Комплекс для фіксації порушень перетину смуги громадського транспорту на міських дорогах.",
+        "zh": "用于记录在城市道路上违规驶入公交专用道的系统。",
+        "kk": "Қала жолдарында қоғамдық көлік жолағын кесіп өту бұзушылықтарын тіркеуге арналған кешен.",
+        "be": "Комплекс для фіксацыі парушэнняў перасячэння паласы грамадскага транспарту на гарадскіх дарогах."
+      },
+      "description": {
+        "ru": "Комплекс объединяет, камеру высокого разрешения и вычислительный блок для автоматической фиксации нарушение.",
+        "uz": "Majmua qoidabuzarlikni avtomatik qayd etish uchun yuqori aniqlikdagi kamera va hisoblash blokini birlashtiradi.",
+        "en": "The system combines a high-resolution camera and a computing unit for automatic violation recording.",
+        "uk": "Комплекс поєднує камеру високої роздільності та обчислювальний блок для автоматичної фіксації порушення.",
+        "zh": "该系统集成了高分辨率摄像机和计算单元，可自动记录违章。",
+        "kk": "Кешен бұзушылықты автоматты тіркеу үшін жоғары ажыратымдылықты камераны және есептеу блогын біріктіреді.",
+        "be": "Комплекс аб’ядноўвае камеру высокага разрашэння і вылічальны блок для аўтаматычнай фіксацыі парушэння."
+      },
+      "specs": {
+        "ru": [
+          "Дальность контроля: от 30 м до 250 м",
+          "Гарантия: 12 мес.",
+          "Распознование ТС",
+          "Защита корпуса: IP66",
+          "Температура окружающей среды: от -40°С до +60°С",
+          "Срок службы: 5 лет."
+        ],
+        "uz": [
+          "Nazorat masofasi: 30 m dan 250 m gacha",
+          "Kafolat: 12 oy",
+          "TVni aniqlash",
+          "Korpus himoyasi: IP66",
+          "Atrof-muhit harorati: -40°C dan +60°C gacha",
+          "Xizmat muddati: 5 yil"
+        ],
+        "en": [
+          "Control range: from 30 m to 250 m",
+          "Warranty: 12 months",
+          "Vehicle recognition",
+          "Enclosure rating: IP66",
+          "Ambient temperature: from -40°C to +60°C",
+          "Service life: 5 years"
+        ],
+        "uk": [
+          "Дальність контролю: від 30 м до 250 м",
+          "Гарантія: 12 міс.",
+          "Розпізнавання ТЗ",
+          "Захист корпусу: IP66",
+          "Температура довкілля: від -40°С до +60°С",
+          "Термін служби: 5 років"
+        ],
+        "zh": [
+          "监控距离：30 米至 250 米",
+          "保修：12 个月",
+          "车辆识别",
+          "外壳防护：IP66",
+          "环境温度：-40°C 至 +60°C",
+          "使用寿命：5 年"
+        ],
+        "kk": [
+          "Бақылау қашықтығы: 30 м-ден 250 м-ге дейін",
+          "Кепілдік: 12 ай",
+          "КҚ тану",
+          "Корпус қорғанысы: IP66",
+          "Қоршаған орта температурасы: -40°C-ден +60°C-ге дейін",
+          "Қызмет мерзімі: 5 жыл"
+        ],
+        "be": [
+          "Дальнасць кантролю: ад 30 м да 250 м",
+          "Гарантыя: 12 мес.",
+          "Распазнаванне ТС",
+          "Абарона корпуса: IP66",
+          "Тэмпература навакольнага асяроддзя: ад -40°С да +60°С",
+          "Тэрмін службы: 5 гадоў"
+        ]
+      },
+      "applications": {
+        "ru": [
+          "Городские дороги",
+          "Полосы общественного транспорта"
+        ],
+        "uz": [
+          "Shahar yoʻllari",
+          "Jamoat transporti yoʻlaklari"
+        ],
+        "en": [
+          "Urban roads",
+          "Bus lanes"
+        ],
+        "uk": [
+          "Міські дороги",
+          "Смуги громадського транспорту"
+        ],
+        "zh": [
+          "城市道路",
+          "公交专用道"
+        ],
+        "kk": [
+          "Қала жолдары",
+          "Қоғамдық көлік жолақтары"
+        ],
+        "be": [
+          "Гарадскія дарогі",
+          "Палосы грамадскага транспарту"
+        ]
+      },
+      "images": [
+        "/products/w-space a3.png",
+        "/products/w-space a.png",
+        "/products/w-space a1.png",
+        "/products/w-space a2.png"
+      ]
+    },
+    {
+      "id": "WSpaceTyp",
+      "category": [
+        "speed",
+        "video",
+        "lane"
+      ],
+      "brand": "W-Space Typ-1",
+      "price": {
+        "ru": "По запросу",
+        "uz": "Soʻrov boʻyicha",
+        "en": "On request",
+        "uk": "За запитом",
+        "zh": "按需报价",
+        "kk": "Сұраныс бойынша",
+        "be": "Па запыце"
+      },
+      "badge": {
+        "ru": "Рекомендуем",
+        "uz": "Tavsiya etamiz",
+        "en": "Recommended",
+        "uk": "Рекомендуємо",
+        "zh": "推荐",
+        "kk": "Ұсынамыз",
+        "be": "Рэкамендуем"
+      },
+      "inStock": true,
+      "name": {
+        "ru": "Радарный комплекс\nконтроля скорости\nW-Space Typ-1",
+        "uz": "Tezlik nazorati\nradar majmuasi\nW-Space Typ-1",
+        "en": "W-Space Typ-1\nspeed control\nradar system",
+        "uk": "Радарний комплекс\nконтролю швидкості\nW-Space Typ-1",
+        "zh": "W-Space Typ-1\n雷达测速系统",
+        "kk": "Жылдамдықты бақылау\nрадар кешені\nW-Space Typ-1",
+        "be": "Радарны комплекс\nкантролю хуткасці\nW-Space Typ-1"
+      },
+      "short": {
+        "ru": "Дальнобойный комплекс для измерения скорости и фиксации нарушений на магистралях и городских дорогах.",
+        "uz": "Magistrallar va shahar yoʻllarida tezlikni oʻlchash va qoidabuzarliklarni qayd etish uchun uzoq masofali majmua.",
+        "en": "A long-range system for measuring speed and recording violations on highways and city roads.",
+        "uk": "Далекобійний комплекс для вимірювання швидкості та фіксації порушень на магістралях і міських дорогах.",
+        "zh": "用于在高速公路和城市道路上测速并记录违章的远距离系统。",
+        "kk": "Магистральдар мен қала жолдарында жылдамдықты өлшеуге және бұзушылықтарды тіркеуге арналған алыс қашықтықты кешен.",
+        "be": "Далькабойны комплекс для вымярэння хуткасці і фіксацыі парушэнняў на магістралях і гарадскіх дарогах."
+      },
+      "description": {
+        "ru": "Комплекс объединяет радиолокационный модуль, камеру высокого разрешения и вычислительный блок для автоматической фиксации превышения скорости.",
+        "uz": "Majmua tezlikdan oshishni avtomatik qayd etish uchun radiolokatsion modul, yuqori aniqlikdagi kamera va hisoblash blokini birlashtiradi.",
+        "en": "The system combines a radar module, a high-resolution camera and a computing unit for automatic speeding detection.",
+        "uk": "Комплекс поєднує радіолокаційний модуль, камеру високої роздільності та обчислювальний блок для автоматичної фіксації перевищення швидкості.",
+        "zh": "该系统集成了雷达模块、高分辨率摄像机和计算单元，可自动记录超速。",
+        "kk": "Кешен жылдамдықтан асуды автоматты тіркеу үшін радиолокациялық модульді, жоғары ажыратымдылықты камераны және есептеу блогын біріктіреді.",
+        "be": "Комплекс аб’ядноўвае радыёлакацыйны модуль, камеру высокага разрашэння і вылічальны блок для аўтаматычнай фіксацыі перавышэння хуткасці."
+      },
+      "specs": {
+        "ru": [
+          "Дальность контроля: от 30 м до 250 м",
+          "Гарантия: 12 мес.",
+          "Защита корпуса: IP66",
+          "Фиксация скорости: от 1 до 330 км/ч",
+          "Температура окружающей среды: от -40°С до +60°С",
+          "Распознование ТС",
+          "Срок службы: 5 лет."
+        ],
+        "uz": [
+          "Nazorat masofasi: 30 m dan 250 m gacha",
+          "Kafolat: 12 oy",
+          "Korpus himoyasi: IP66",
+          "Tezlikni qayd etish: 1 dan 330 km/s gacha",
+          "Atrof-muhit harorati: -40°C dan +60°C gacha",
+          "TVni aniqlash",
+          "Xizmat muddati: 5 yil"
+        ],
+        "en": [
+          "Control range: from 30 m to 250 m",
+          "Warranty: 12 months",
+          "Enclosure rating: IP66",
+          "Speed recording: from 1 to 330 km/h",
+          "Ambient temperature: from -40°C to +60°C",
+          "Vehicle recognition",
+          "Service life: 5 years"
+        ],
+        "uk": [
+          "Дальність контролю: від 30 м до 250 м",
+          "Гарантія: 12 міс.",
+          "Захист корпусу: IP66",
+          "Фіксація швидкості: від 1 до 330 км/год",
+          "Температура довкілля: від -40°С до +60°С",
+          "Розпізнавання ТЗ",
+          "Термін служби: 5 років"
+        ],
+        "zh": [
+          "监控距离：30 米至 250 米",
+          "保修：12 个月",
+          "外壳防护：IP66",
+          "测速记录：1 至 330 公里/小时",
+          "环境温度：-40°C 至 +60°C",
+          "车辆识别",
+          "使用寿命：5 年"
+        ],
+        "kk": [
+          "Бақылау қашықтығы: 30 м-ден 250 м-ге дейін",
+          "Кепілдік: 12 ай",
+          "Корпус қорғанысы: IP66",
+          "Жылдамдықты тіркеу: 1-ден 330 км/сағ-қа дейін",
+          "Қоршаған орта температурасы: -40°C-ден +60°C-ге дейін",
+          "КҚ тану",
+          "Қызмет мерзімі: 5 жыл"
+        ],
+        "be": [
+          "Дальнасць кантролю: ад 30 м да 250 м",
+          "Гарантыя: 12 мес.",
+          "Абарона корпуса: IP66",
+          "Фіксацыя хуткасці: ад 1 да 330 км/г",
+          "Тэмпература навакольнага асяроддзя: ад -40°С да +60°С",
+          "Распазнаванне ТС",
+          "Тэрмін службы: 5 гадоў"
+        ]
+      },
+      "applications": {
+        "ru": [
+          "Магистрали",
+          "Городские скоростные коридоры",
+          "Опасные участки дорог",
+          "Полосы общественного транспорта"
+        ],
+        "uz": [
+          "Magistrallar",
+          "Shahar tezyurar yoʻlaklari",
+          "Yoʻllarning xavfli uchastkalari",
+          "Jamoat transporti yoʻlaklari"
+        ],
+        "en": [
+          "Highways",
+          "Urban speed corridors",
+          "Dangerous road sections",
+          "Bus lanes"
+        ],
+        "uk": [
+          "Магістралі",
+          "Міські швидкісні коридори",
+          "Небезпечні ділянки доріг",
+          "Смуги громадського транспорту"
+        ],
+        "zh": [
+          "高速公路",
+          "城市快速通道",
+          "危险路段",
+          "公交专用道"
+        ],
+        "kk": [
+          "Магистральдар",
+          "Қалалық жылдам дәліздер",
+          "Жолдардың қауіпті учаскелері",
+          "Қоғамдық көлік жолақтары"
+        ],
+        "be": [
+          "Магістралі",
+          "Гарадскія хуткасныя калідоры",
+          "Небяспечныя ўчасткі дарог",
+          "Палосы грамадскага транспарту"
+        ]
+      },
+      "images": [
+        "/products/w-space-tip3.png",
+        "/products/w-space-tip.png",
+        "/products/w-space-tip1.png",
+        "/products/w-space-tip2.png"
+      ]
+    }
+  ],
+  "VIOLATION_SOLUTIONS": [
+    {
+      "id": "speed",
+      "category": "speed",
+      "icon": "Gauge",
+      "title": {
+        "ru": "Превышение скорости",
+        "uz": "Tezlikdan oshish",
+        "en": "Speeding",
+        "uk": "Перевищення швидкості",
+        "zh": "超速",
+        "kk": "Жылдамдықтан асу",
+        "be": "Перавышэнне хуткасці"
+      },
+      "problem": {
+        "ru": "У вас есть участок дороги, где водители превышают скорость и растёт аварийные ситуации.",
+        "uz": "Sizda haydovchilar tezlikdan oshadigan va avariyalar koʻpayayotgan yoʻl uchastkasi bor.",
+        "en": "You have a road section where drivers exceed the speed limit and accidents are increasing.",
+        "uk": "У вас є ділянка дороги, де водії перевищують швидкість і зростає аварійність.",
+        "zh": "您有一段道路，驾驶员超速行驶且事故增多。",
+        "kk": "Сізде жүргізушілер жылдамдықтан асатын және авариялар көбейіп жатқан жол учаскесі бар.",
+        "be": "У вас ёсць участак дарогі, дзе вадзіцелі перавышаюць хуткасць і расце аварыйнасць."
+      },
+      "solution": {
+        "ru": "Радарный комплекс OLAN автоматически измеряет скорость каждого ТС (от 1 до 330 км/ч) и фиксирует нарушение с фото и видео доказательством.",
+        "uz": "OLAN radar majmuasi har bir TV tezligini (1 dan 330 km/s gacha) avtomatik oʻlchaydi va qoidabuzarlikni foto va video dalil bilan qayd etadi.",
+        "en": "The OLAN radar system automatically measures the speed of every vehicle (from 1 to 330 km/h) and records the violation with photo and video evidence.",
+        "uk": "Радарний комплекс OLAN автоматично вимірює швидкість кожного ТЗ (від 1 до 330 км/год) і фіксує порушення з фото- та відеодоказом.",
+        "zh": "OLAN 雷达系统自动测量每辆车的速度（1 至 330 公里/小时），并以照片和视频证据记录违章。",
+        "kk": "OLAN радар кешені әр КҚ жылдамдығын (1-ден 330 км/сағ-қа дейін) автоматты өлшейді және бұзушылықты фото және бейне дәлелмен тіркейді.",
+        "be": "Радарны комплекс OLAN аўтаматычна вымярае хуткасць кожнага ТС (ад 1 да 330 км/г) і фіксуе парушэнне з фота- і відэадоказам."
+      }
+    },
+    {
+      "id": "trafficLight",
+      "category": "trafficLight",
+      "icon": "CircleDot",
+      "title": {
+        "ru": "Проезд на красный свет",
+        "uz": "Qizil chiroqda oʻtish",
+        "en": "Running a red light",
+        "uk": "Проїзд на червоне світло",
+        "zh": "闯红灯",
+        "kk": "Қызыл жарықта өту",
+        "be": "Праезд на чырвонае святло"
+      },
+      "problem": {
+        "ru": "На вашем перекрёстке проезжают на запрещающий сигнал светофора и создают аварийные ситуации",
+        "uz": "Sizning chorrahangizda svetoforning taqiqlovchi signalida oʻtishadi va avariyalarga sabab boʻlishadi",
+        "en": "At your intersection drivers run the prohibiting traffic light signal and create accident risks",
+        "uk": "На вашому перехресті проїжджають на заборонний сигнал світлофора і створюють аварійні ситуації",
+        "zh": "在您的路口，车辆闯红灯并制造事故隐患",
+        "kk": "Сіздің қиылысыңызда бағдаршамның тыйым салушы белгісінде өтеді және авариялық жағдай туғызады",
+        "be": "На вашым скрыжаванні праязджаюць на забараняльны сігнал святлафора і ствараюць аварыйныя сітуацыі"
+      },
+      "solution": {
+        "ru": "Комплек OLAN синхронизируется с фазами светофора, фиксирует пересечение стоп-линии на запрещающий сигнал светофора и сохраняет доказательную базу.",
+        "uz": "OLAN majmuasi svetofor fazalari bilan sinxronlanadi, taqiqlovchi signalda stop-chiziqni kesib oʻtishni qayd etadi va dalillar bazasini saqlaydi.",
+        "en": "The OLAN system synchronizes with the traffic light phases, records crossing the stop line on a prohibiting signal and stores the evidence base.",
+        "uk": "Комплекс OLAN синхронізується з фазами світлофора, фіксує перетин стоп-лінії на заборонний сигнал і зберігає доказову базу.",
+        "zh": "OLAN 系统与信号灯相位同步，记录在红灯时越过停止线的行为，并保存证据库。",
+        "kk": "OLAN кешені бағдаршам фазаларымен синхрондалады, тыйым салушы белгіде тоқтау сызығын кесіп өтуді тіркейді және дәлелдер базасын сақтайды.",
+        "be": "Комплекс OLAN сінхранізуецца з фазамі святлафора, фіксуе перасячэнне стоп-лініі на забараняльны сігнал і захоўвае доказную базу."
+      }
+    },
+    {
+      "id": "parking",
+      "category": "parking",
+      "icon": "SquareParking",
+      "title": {
+        "ru": "Нарушение правил парковки",
+        "uz": "Toʻxtash qoidalarining buzilishi",
+        "en": "Parking violations",
+        "uk": "Порушення правил паркування",
+        "zh": "违停",
+        "kk": "Тұрақ ережелерінің бұзылуы",
+        "be": "Парушэнне правіл паркоўкі"
+      },
+      "problem": {
+        "ru": "Транспорт паркуется в запрещённых местах и мешает движению авто и пешеходам.",
+        "uz": "Transport taqiqlangan joylarda toʻxtab, avtomobillar va piyodalar harakatiga xalaqit beradi.",
+        "en": "Vehicles park in prohibited places and obstruct traffic and pedestrians.",
+        "uk": "Транспорт паркується в заборонених місцях і заважає руху авто та пішоходам.",
+        "zh": "车辆在禁停区域停放，妨碍车辆和行人通行。",
+        "kk": "Көлік тыйым салынған жерлерде тұрып, автокөлік пен жаяу жүргіншілер қозғалысына кедергі келтіреді.",
+        "be": "Транспарт паркуецца ў забароненых месцах і замінае руху аўто і пешаходам."
+      },
+      "solution": {
+        "ru": "Наш комплекс видео и фотофиксации распознаёт ТС в зоне контроля парковки и автоматически формирует материалы о нарушении.",
+        "uz": "Bizning video va foto qayd etish majmuamiz toʻxtash nazorati hududidagi TVni aniqlaydi va qoidabuzarlik haqida materiallarni avtomatik shakllantiradi.",
+        "en": "Our video and photo recording system identifies vehicles in the parking control zone and automatically generates violation materials.",
+        "uk": "Наш комплекс відео- та фотофіксації розпізнає ТЗ у зоні контролю паркування і автоматично формує матеріали про порушення.",
+        "zh": "我们的视频和照片记录系统可识别停车管控区内的车辆，并自动生成违章材料。",
+        "kk": "Біздің бейне және фото тіркеу кешені тұрақ бақылау аймағындағы КҚ-ны таниды және бұзушылық туралы материалдарды автоматты қалыптастырады.",
+        "be": "Наш комплекс відэа- і фотафіксацыі распазнае ТС у зоне кантролю паркоўкі і аўтаматычна фарміруе матэрыялы аб парушэнні."
+      }
+    },
+    {
+      "id": "railwayCrossings",
+      "category": "railwayCrossings",
+      "icon": "TrainFront",
+      "title": {
+        "ru": "Железнодорожные переезды",
+        "uz": "Temir yoʻl kechuvlari",
+        "en": "Railway crossings",
+        "uk": "Залізничні переїзди",
+        "zh": "铁路道口",
+        "kk": "Темір жол өткелдері",
+        "be": "Чыгуначныя пераезды"
+      },
+      "problem": {
+        "ru": "Водители выезжают на Ж/Д переезд на запрещающий сигнал, создавая угрозу жизни.",
+        "uz": "Haydovchilar temir yoʻl kechuviga taqiqlovchi signalda chiqib, hayotga xavf tugʻdiradi.",
+        "en": "Drivers enter the railway crossing on a prohibiting signal, creating a threat to life.",
+        "uk": "Водії виїжджають на залізничний переїзд на заборонний сигнал, створюючи загрозу життю.",
+        "zh": "驾驶员在禁行信号下驶入铁路道口，危及生命安全。",
+        "kk": "Жүргізушілер темір жол өткеліне тыйым салушы белгіде шығып, өмірге қауіп төндіреді.",
+        "be": "Вадзіцелі выязджаюць на чыгуначны пераезд на забараняльны сігнал, ствараючы пагрозу жыццю."
+      },
+      "solution": {
+        "ru": "Наш комплекс автоматически контролирует переезд 24/7 и фиксирует проезд на запрещающий сигнал, а также проезд без остановки у стоп-линии в зоне знака STOP .",
+        "uz": "Bizning majmua kechuvni 24/7 avtomatik nazorat qiladi va taqiqlovchi signalda oʻtishni, shuningdek STOP belgisi hududida stop-chiziq oldida toʻxtamasdan oʻtishni qayd etadi.",
+        "en": "Our system monitors the crossing 24/7 and records driving on a prohibiting signal, as well as passing without stopping at the stop line in the STOP sign zone.",
+        "uk": "Наш комплекс автоматично контролює переїзд 24/7 і фіксує проїзд на заборонний сигнал, а також проїзд без зупинки біля стоп-лінії в зоні знака STOP.",
+        "zh": "我们的系统全天候监控道口，记录闯禁行信号的行为，以及在 STOP 标志区域未在停止线前停车的行为。",
+        "kk": "Біздің кешен өткелді 24/7 автоматты бақылайды және тыйым салушы белгіде өтуді, сондай-ақ STOP белгісі аймағында тоқтау сызығында тоқтамай өтуді тіркейді.",
+        "be": "Наш комплекс аўтаматычна кантралюе пераезд 24/7 і фіксуе праезд на забараняльны сігнал, а таксама праезд без прыпынку каля стоп-лініі ў зоне знака STOP."
+      }
+    },
+    {
+      "id": "buss",
+      "category": "buss",
+      "icon": "BusFront",
+      "title": {
+        "ru": "Полоса общественного транспорта (А)",
+        "uz": "Jamoat transporti yoʻlagi (A)",
+        "en": "Bus lane (A)",
+        "uk": "Смуга громадського транспорту (А)",
+        "zh": "公交专用道 (A)",
+        "kk": "Қоғамдық көлік жолағы (А)",
+        "be": "Паласа грамадскага транспарту (А)"
+      },
+      "problem": {
+        "ru": "Личный транспорт выезжает на выделенную полосу «А» для общественного транспорта.",
+        "uz": "Shaxsiy transport jamoat transporti uchun ajratilgan «A» yoʻlagiga chiqadi.",
+        "en": "Private vehicles enter the dedicated bus lane (A).",
+        "uk": "Особистий транспорт виїжджає на виділену смугу «А» для громадського транспорту.",
+        "zh": "私家车驶入公交专用的“A”车道。",
+        "kk": "Жеке көлік қоғамдық көлікке арналған «А» жолағына шығады.",
+        "be": "Асабісты транспарт выязджае на выдзеленую паласу «А» для грамадскага транспарту."
+      },
+      "solution": {
+        "ru": "Комплекс W-Space A фиксирует выезд на полосу общественного транспорта на городских дорогах с фото- и видеодоказательством.",
+        "uz": "W-Space A majmuasi shahar yoʻllarida jamoat transporti yoʻlagiga chiqishni foto va video dalil bilan qayd etadi.",
+        "en": "The W-Space A system records entering the bus lane on city roads with photo and video evidence.",
+        "uk": "Комплекс W-Space A фіксує виїзд на смугу громадського транспорту на міських дорогах із фото- та відеодоказом.",
+        "zh": "W-Space A 系统以照片和视频证据记录在城市道路上驶入公交专用道的行为。",
+        "kk": "W-Space A кешені қала жолдарында қоғамдық көлік жолағына шығуды фото және бейне дәлелмен тіркейді.",
+        "be": "Комплекс W-Space A фіксуе выезд на паласу грамадскага транспарту на гарадскіх дарогах з фота- і відэадоказам."
+      }
+    }
+  ],
+  "PROJECTS": [
+    {
+      "id": "proj-speed-highway",
+      "title": {
+        "ru": "Контроль скорости на магистрали",
+        "uz": "Magistralda tezlik nazorati",
+        "en": "Speed control on a highway",
+        "uk": "Контроль швидкості на магістралі",
+        "zh": "高速公路测速",
+        "kk": "Магистральда жылдамдықты бақылау",
+        "be": "Кантроль хуткасці на магістралі"
+      },
+      "location": {
+        "ru": "Магистраль между городами",
+        "uz": "Shaharlararo magistral",
+        "en": "Intercity highway",
+        "uk": "Магістраль між містами",
+        "zh": "城际高速公路",
+        "kk": "Қалааралық магистраль",
+        "be": "Магістраль паміж гарадамі"
+      },
+      "image": "/products/uralan-pTest.png"
+    },
+    {
+      "id": "proj-redlight",
+      "title": {
+        "ru": "Фиксация проезда на красный свет",
+        "uz": "Qizil chiroqda oʻtishni qayd etish",
+        "en": "Recording red-light running",
+        "uk": "Фіксація проїзду на червоне світло",
+        "zh": "记录闯红灯",
+        "kk": "Қызыл жарықта өтуді тіркеу",
+        "be": "Фіксацыя праезду на чырвонае святло"
+      },
+      "location": {
+        "ru": "Регулируемый перекрёсток",
+        "uz": "Tartibga solinadigan chorraha",
+        "en": "Signalized intersection",
+        "uk": "Регульоване перехрестя",
+        "zh": "信号灯路口",
+        "kk": "Реттелетін қиылыс",
+        "be": "Рэгуляванае скрыжаванне"
+      },
+      "image": "/products/comoto4.png"
+    },
+    {
+      "id": "proj-buss",
+      "title": {
+        "ru": "Контроль полосы общественного транспорта",
+        "uz": "Jamoat transporti yoʻlagini nazorat qilish",
+        "en": "Bus lane control",
+        "uk": "Контроль смуги громадського транспорту",
+        "zh": "公交专用道管控",
+        "kk": "Қоғамдық көлік жолағын бақылау",
+        "be": "Кантроль паласы грамадскага транспарту"
+      },
+      "location": {
+        "ru": "«А» Полоса",
+        "uz": "«A» yoʻlak",
+        "en": "Lane “A”",
+        "uk": "Смуга «А»",
+        "zh": "“A”车道",
+        "kk": "«А» жолағы",
+        "be": "Паласа «А»"
+      },
+      "image": "/products/w-space a.png"
+    },
+    {
+      "id": "proj-parking",
+      "title": {
+        "ru": "Фотофиксация нарушений парковки",
+        "uz": "Toʻxtash qoidabuzarliklarini foto qayd etish",
+        "en": "Photo recording of parking violations",
+        "uk": "Фотофіксація порушень паркування",
+        "zh": "违停照片记录",
+        "kk": "Тұрақ бұзушылықтарын фото тіркеу",
+        "be": "Фотафіксацыя парушэнняў паркоўкі"
+      },
+      "location": {
+        "ru": "Городская парковочная зона",
+        "uz": "Shahar toʻxtash hududi",
+        "en": "Urban parking zone",
+        "uk": "Міська паркувальна зона",
+        "zh": "城市停车区",
+        "kk": "Қалалық тұрақ аймағы",
+        "be": "Гарадская паркавальная зона"
+      },
+      "image": "/products/sovaTest.png"
+    },
+    {
+      "id": "proj-intersection",
+      "title": {
+        "ru": "Комплекс фиксации на перекрёстке",
+        "uz": "Chorrahada qayd etish majmuasi",
+        "en": "Recording system at an intersection",
+        "uk": "Комплекс фіксації на перехресті",
+        "zh": "路口记录系统",
+        "kk": "Қиылыстағы тіркеу кешені",
+        "be": "Комплекс фіксацыі на скрыжаванні"
+      },
+      "location": {
+        "ru": "Городской перекрёсток",
+        "uz": "Shahar chorrahasi",
+        "en": "Urban intersection",
+        "uk": "Міське перехрестя",
+        "zh": "城市路口",
+        "kk": "Қалалық қиылыс",
+        "be": "Гарадское скрыжаванне"
+      },
+      "image": "/products/TRC2.png"
+    },
+    {
+      "id": "proj-speed-road",
+      "title": {
+        "ru": "Радарный комплекс контроля скорости",
+        "uz": "Tezlik nazorati radar majmuasi",
+        "en": "Speed control radar system",
+        "uk": "Радарний комплекс контролю швидкості",
+        "zh": "雷达测速系统",
+        "kk": "Жылдамдықты бақылау радар кешені",
+        "be": "Радарны комплекс кантролю хуткасці"
+      },
+      "location": {
+        "ru": "Загородная трасса",
+        "uz": "Shahardan tashqari trassa",
+        "en": "Suburban road",
+        "uk": "Заміська траса",
+        "zh": "郊区公路",
+        "kk": "Қала сыртындағы трасса",
+        "be": "Загарадная траса"
+      },
+      "image": "/products/w-spaceTest.png"
+    }
+  ],
+  "ABOUT_FEATURES": [
+    {
+      "id": "certification",
+      "icon": "ShieldCheck",
+      "title": {
+        "ru": "Сертификация",
+        "uz": "Sertifikatlash",
+        "en": "Certification",
+        "uk": "Сертифікація",
+        "zh": "认证",
+        "kk": "Сертификаттау",
+        "be": "Сертыфікацыя"
+      },
+      "short": {
+        "ru": "Все комплексы проходят обязательные испытания и комплектуются технической документацией.",
+        "uz": "Barcha majmualar majburiy sinovlardan oʻtadi va texnik hujjatlar bilan toʻldiriladi.",
+        "en": "All systems undergo mandatory testing and come with technical documentation.",
+        "uk": "Усі комплекси проходять обовʼязкові випробування та комплектуються технічною документацією.",
+        "zh": "所有系统都经过强制测试并配有技术文档。",
+        "kk": "Барлық кешендер міндетті сынақтан өтеді және техникалық құжаттамамен жинақталады.",
+        "be": "Усе комплексы праходзяць абавязковыя выпрабаванні і камплектуюцца тэхнічнай дакументацыяй."
+      },
+      "details": {
+        "ru": [
+          "Сертификаты соответствия и протоколы испытаний.",
+          "Технический паспорт, инструкции и схемы подключения.",
+          "Гарантийный талон и полный комплект документов на оборудование."
+        ],
+        "uz": [
+          "Muvofiqlik sertifikatlari va sinov bayonnomalari.",
+          "Texnik pasport, yoʻriqnomalar va ulanish sxemalari.",
+          "Kafolat taloni va jihozga toʻliq hujjatlar toʻplami."
+        ],
+        "en": [
+          "Certificates of conformity and test reports.",
+          "Technical passport, manuals and wiring diagrams.",
+          "Warranty card and a full set of equipment documents."
+        ],
+        "uk": [
+          "Сертифікати відповідності та протоколи випробувань.",
+          "Технічний паспорт, інструкції та схеми підключення.",
+          "Гарантійний талон і повний комплект документів на обладнання."
+        ],
+        "zh": [
+          "合格证书和测试报告。",
+          "技术护照、说明书和接线图。",
+          "保修卡和整套设备文件。"
+        ],
+        "kk": [
+          "Сәйкестік сертификаттары және сынақ хаттамалары.",
+          "Техникалық паспорт, нұсқаулықтар және қосылу сұлбалары.",
+          "Кепілдік талоны және жабдыққа толық құжаттар жинағы."
+        ],
+        "be": [
+          "Сертыфікаты адпаведнасці і пратаколы выпрабаванняў.",
+          "Тэхнічны пашпарт, інструкцыі і схемы падключэння.",
+          "Гарантыйны талон і поўны камплект дакументаў на абсталяванне."
+        ]
+      }
+    },
+    {
+      "id": "experience",
+      "icon": "Award",
+      "title": {
+        "ru": "Опыт",
+        "uz": "Tajriba",
+        "en": "Experience",
+        "uk": "Досвід",
+        "zh": "经验",
+        "kk": "Тәжірибе",
+        "be": "Досвед"
+      },
+      "short": {
+        "ru": "Более 15 лет инженерной практики в дорожной безопасности и автоматической фиксации.",
+        "uz": "Yoʻl xavfsizligi va avtomatik qayd etishda 15 yildan ortiq muhandislik tajribasi.",
+        "en": "Over 15 years of engineering practice in road safety and automatic recording.",
+        "uk": "Понад 15 років інженерної практики у дорожній безпеці та автоматичній фіксації.",
+        "zh": "在道路安全和自动记录领域拥有超过 15 年的工程实践经验。",
+        "kk": "Жол қауіпсіздігі мен автоматты тіркеуде 15 жылдан астам инженерлік тәжірибе.",
+        "be": "Больш за 15 гадоў інжынернай практыкі ў дарожнай бяспецы і аўтаматычнай фіксацыі."
+      },
+      "details": {
+        "ru": [
+          "Городские перекрёстки, магистрали и промышленные объекты.",
+          "Подбор конфигураций под климат, трафик и инфраструктуру.",
+          "Поможем подобрать комплекс под ваши задачи."
+        ],
+        "uz": [
+          "Shahar chorrahalari, magistrallar va sanoat obyektlari.",
+          "Iqlim, tirbandlik va infratuzilmaga mos konfiguratsiyalarni tanlash.",
+          "Vazifalaringizga mos majmuani tanlashga yordam beramiz."
+        ],
+        "en": [
+          "Urban intersections, highways and industrial facilities.",
+          "Selecting configurations for climate, traffic and infrastructure.",
+          "We will help choose a system for your tasks."
+        ],
+        "uk": [
+          "Міські перехрестя, магістралі та промислові обʼєкти.",
+          "Підбір конфігурацій під клімат, трафік та інфраструктуру.",
+          "Допоможемо підібрати комплекс під ваші задачі."
+        ],
+        "zh": [
+          "城市交叉路口、高速公路和工业设施。",
+          "根据气候、交通和基础设施选择配置。",
+          "我们将帮助为您的任务挑选系统。"
+        ],
+        "kk": [
+          "Қалалық қиылыстар, магистральдар және өнеркәсіптік нысандар.",
+          "Климатқа, трафикке және инфрақұрылымға сай конфигурацияларды таңдау.",
+          "Тапсырмаларыңызға сай кешенді таңдауға көмектесеміз."
+        ],
+        "be": [
+          "Гарадскія скрыжаванні, магістралі і прамысловыя абʼекты.",
+          "Падбор канфігурацый пад клімат, трафік і інфраструктуру.",
+          "Дапаможам падабраць комплекс пад вашы задачы."
+        ]
+      }
+    },
+    {
+      "id": "support",
+      "icon": "Factory",
+      "title": {
+        "ru": "Собственное производство",
+        "uz": "Oʻz ishlab chiqarishimiz",
+        "en": "In-house production",
+        "uk": "Власне виробництво",
+        "zh": "自有生产",
+        "kk": "Жеке өндіріс",
+        "be": "Уласная вытворчасць"
+      },
+      "short": {
+        "ru": "Комплексы выпускаются на собственном производстве — прямые поставки без посредников и наценок.",
+        "uz": "Majmualar oʻz ishlab chiqarishimizda chiqariladi — vositachilarsiz va ustamasiz toʻgʻridan-toʻgʻri yetkazib berish.",
+        "en": "Systems are produced at our own facility — direct supply with no intermediaries or markups.",
+        "uk": "Комплекси випускаються на власному виробництві — прямі постачання без посередників і націнок.",
+        "zh": "系统在自有工厂生产——直接供货，无中间商，无加价。",
+        "kk": "Кешендер жеке өндірісте шығарылады — делдалсыз және үстемесіз тікелей жеткізу.",
+        "be": "Комплексы выпускаюцца на ўласнай вытворчасці — прамыя пастаўкі без пасрэднікаў і нацэнак."
+      },
+      "details": {
+        "ru": [
+          "Контроль качества на каждом этапе сборки.",
+          "Прямые цены от производителя без посредников.",
+          "Возможность поставки партиями под крупные проекты."
+        ],
+        "uz": [
+          "Yigʻishning har bir bosqichida sifat nazorati.",
+          "Vositachilarsiz ishlab chiqaruvchidan toʻgʻridan-toʻgʻri narxlar.",
+          "Yirik loyihalar uchun partiyalab yetkazib berish imkoniyati."
+        ],
+        "en": [
+          "Quality control at every assembly stage.",
+          "Direct manufacturer prices with no intermediaries.",
+          "Batch supply available for large projects."
+        ],
+        "uk": [
+          "Контроль якості на кожному етапі складання.",
+          "Прямі ціни від виробника без посередників.",
+          "Можливість постачання партіями під великі проєкти."
+        ],
+        "zh": [
+          "每个组装环节都进行质量控制。",
+          "来自制造商的直接价格，无中间商。",
+          "可为大型项目批量供货。"
+        ],
+        "kk": [
+          "Жинақтаудың әр кезеңінде сапа бақылауы.",
+          "Делдалсыз өндірушіден тікелей бағалар.",
+          "Ірі жобаларға топтап жеткізу мүмкіндігі."
+        ],
+        "be": [
+          "Кантроль якасці на кожным этапе зборкі.",
+          "Прамыя цэны ад вытворцы без пасрэднікаў.",
+          "Магчымасць пастаўкі партыямі пад буйныя праекты."
+        ]
+      }
+    },
+    {
+      "id": "installation",
+      "icon": "BadgeCheck",
+      "title": {
+        "ru": "Гарантия и документация",
+        "uz": "Kafolat va hujjatlar",
+        "en": "Warranty and documentation",
+        "uk": "Гарантія та документація",
+        "zh": "保修与文档",
+        "kk": "Кепілдік және құжаттама",
+        "be": "Гарантыя і дакументацыя"
+      },
+      "short": {
+        "ru": "Каждый комплекс поставляется с гарантией, техническим паспортом и полным пакетом документов.",
+        "uz": "Har bir majmua kafolat, texnik pasport va toʻliq hujjatlar paketi bilan yetkaziladi.",
+        "en": "Every system comes with a warranty, technical passport and a full set of documents.",
+        "uk": "Кожен комплекс постачається з гарантією, технічним паспортом і повним пакетом документів.",
+        "zh": "每套系统都配有保修、技术护照和整套文件。",
+        "kk": "Әр кешен кепілдікпен, техникалық паспортпен және толық құжаттар пакетімен жеткізіледі.",
+        "be": "Кожны комплекс пастаўляецца з гарантыяй, тэхнічным пашпартам і поўным пакетам дакументаў."
+      },
+      "details": {
+        "ru": [
+          "Гарантия 12 месяцев, срок службы до 5 лет.",
+          "Сертификаты соответствия и протоколы испытаний.",
+          "Технический паспорт, инструкции и схемы подключения в комплекте."
+        ],
+        "uz": [
+          "12 oy kafolat, xizmat muddati 5 yilgacha.",
+          "Muvofiqlik sertifikatlari va sinov bayonnomalari.",
+          "Texnik pasport, yoʻriqnomalar va ulanish sxemalari toʻplamda."
+        ],
+        "en": [
+          "12-month warranty, service life up to 5 years.",
+          "Certificates of conformity and test reports.",
+          "Technical passport, manuals and wiring diagrams included."
+        ],
+        "uk": [
+          "Гарантія 12 місяців, термін служби до 5 років.",
+          "Сертифікати відповідності та протоколи випробувань.",
+          "Технічний паспорт, інструкції та схеми підключення в комплекті."
+        ],
+        "zh": [
+          "12 个月保修，使用寿命可达 5 年。",
+          "合格证书和测试报告。",
+          "随附技术护照、说明书和接线图。"
+        ],
+        "kk": [
+          "12 ай кепілдік, қызмет мерзімі 5 жылға дейін.",
+          "Сәйкестік сертификаттары және сынақ хаттамалары.",
+          "Техникалық паспорт, нұсқаулықтар және қосылу сұлбалары жинақта."
+        ],
+        "be": [
+          "Гарантыя 12 месяцаў, тэрмін службы да 5 гадоў.",
+          "Сертыфікаты адпаведнасці і пратаколы выпрабаванняў.",
+          "Тэхнічны пашпарт, інструкцыі і схемы падключэння ў камплекце."
+        ]
+      }
+    }
+  ],
+  "BENEFITS": [
+    {
+      "id": "precision",
+      "icon": "Radar",
+      "title": {
+        "ru": "Высокая точность",
+        "uz": "Yuqori aniqlik",
+        "en": "High precision",
+        "uk": "Висока точність",
+        "zh": "高精度",
+        "kk": "Жоғары дәлдік",
+        "be": "Высокая дакладнасць"
+      },
+      "description": {
+        "ru": "Точное измерение скорости и идентификация нарушений в реальном времени.",
+        "uz": "Tezlikni aniq oʻlchash va qoidabuzarliklarni real vaqtda aniqlash.",
+        "en": "Accurate speed measurement and real-time violation identification.",
+        "uk": "Точне вимірювання швидкості та ідентифікація порушень у реальному часі.",
+        "zh": "精确测速并实时识别违章。",
+        "kk": "Жылдамдықты дәл өлшеу және бұзушылықтарды нақты уақытта анықтау.",
+        "be": "Дакладнае вымярэнне хуткасці і ідэнтыфікацыя парушэнняў у рэальным часе."
+      }
+    },
+    {
+      "id": "integration",
+      "icon": "Cpu",
+      "title": {
+        "ru": "Интеграция",
+        "uz": "Integratsiya",
+        "en": "Integration",
+        "uk": "Інтеграція",
+        "zh": "集成",
+        "kk": "Интеграция",
+        "be": "Інтэграцыя"
+      },
+      "description": {
+        "ru": "Подключение к центрам обработки данных, серверным и существующей инфраструктуре.",
+        "uz": "Maʼlumotlarni qayta ishlash markazlari, serverlar va mavjud infratuzilmaga ulanish.",
+        "en": "Connection to data centers, server rooms and existing infrastructure.",
+        "uk": "Підключення до центрів обробки даних, серверних та наявної інфраструктури.",
+        "zh": "可接入数据中心、服务器机房和现有基础设施。",
+        "kk": "Деректерді өңдеу орталықтарына, серверлік және бар инфрақұрылымға қосылу.",
+        "be": "Падключэнне да цэнтраў апрацоўкі даных, сервернай і існуючай інфраструктуры."
+      }
+    },
+    {
+      "id": "security",
+      "icon": "Shield",
+      "title": {
+        "ru": "Надёжность",
+        "uz": "Ishonchlilik",
+        "en": "Reliability",
+        "uk": "Надійність",
+        "zh": "可靠性",
+        "kk": "Сенімділік",
+        "be": "Надзейнасць"
+      },
+      "description": {
+        "ru": "Промышленное исполнение, защита от погодных условий и стабильная работа 24/7.",
+        "uz": "Sanoat ijrosi, ob-havodan himoya va 24/7 barqaror ishlash.",
+        "en": "Industrial design, weather protection and stable 24/7 operation.",
+        "uk": "Промислове виконання, захист від погодних умов та стабільна робота 24/7.",
+        "zh": "工业级设计、防恶劣天气，24/7 稳定运行。",
+        "kk": "Өнеркәсіптік орындау, ауа райынан қорғау және 24/7 тұрақты жұмыс.",
+        "be": "Прамысловае выкананне, абарона ад надворʼя і стабільная праца 24/7."
+      }
+    },
+    {
+      "id": "service",
+      "icon": "BadgeCheck",
+      "title": {
+        "ru": "Гарантия и сертификаты",
+        "uz": "Kafolat va sertifikatlar",
+        "en": "Warranty and certificates",
+        "uk": "Гарантія та сертифікати",
+        "zh": "保修与证书",
+        "kk": "Кепілдік және сертификаттар",
+        "be": "Гарантыя і сертыфікаты"
+      },
+      "description": {
+        "ru": "Сертификаты соответствия, протоколы испытаний, гарантия 12 месяцев и срок службы до 5 лет на каждый комплекс.",
+        "uz": "Har bir majmua uchun muvofiqlik sertifikatlari, sinov bayonnomalari, 12 oy kafolat va 5 yilgacha xizmat muddati.",
+        "en": "Certificates of conformity, test reports, a 12-month warranty and up to 5 years of service life for every system.",
+        "uk": "Сертифікати відповідності, протоколи випробувань, гарантія 12 місяців і термін служби до 5 років на кожен комплекс.",
+        "zh": "每套系统均配有合格证书、测试报告、12 个月保修和长达 5 年的使用寿命。",
+        "kk": "Әр кешенге сәйкестік сертификаттары, сынақ хаттамалары, 12 ай кепілдік және 5 жылға дейін қызмет мерзімі.",
+        "be": "Сертыфікаты адпаведнасці, пратаколы выпрабаванняў, гарантыя 12 месяцаў і тэрмін службы да 5 гадоў на кожны комплекс."
+      }
+    }
+  ],
+  "PROCESS_STEPS": [
+    {
+      "id": "audit",
+      "icon": "Search",
+      "number": "01",
+      "title": {
+        "ru": "Выбор типа нарушения",
+        "uz": "Qoidabuzarlik turini tanlash",
+        "en": "Choosing the violation type",
+        "uk": "Вибір типу порушення",
+        "zh": "选择违章类型",
+        "kk": "Бұзушылық түрін таңдау",
+        "be": "Выбар тыпу парушэння"
+      },
+      "description": {
+        "ru": "Определяете, какое нарушение нужно фиксировать: скорость, красный свет, парковку, Ж/Д переезд или полосу общественного транспорта.",
+        "uz": "Qaysi qoidabuzarlikni qayd etish kerakligini aniqlaysiz: tezlik, qizil chiroq, toʻxtash joyi, temir yoʻl kechuvi yoki jamoat transporti yoʻlagi.",
+        "en": "You determine which violation to record: speed, red light, parking, a railway crossing or a bus lane.",
+        "uk": "Визначаєте, яке порушення потрібно фіксувати: швидкість, червоне світло, паркування, залізничний переїзд чи смугу громадського транспорту.",
+        "zh": "您确定要记录哪种违章：超速、闯红灯、违停、铁路道口或公交专用道。",
+        "kk": "Қандай бұзушылықты тіркеу керектігін анықтайсыз: жылдамдық, қызыл жарық, тұрақ, темір жол өткелі немесе қоғамдық көлік жолағы.",
+        "be": "Вызначаеце, якое парушэнне трэба фіксаваць: хуткасць, чырвонае святло, паркоўку, чыгуначны пераезд ці паласу грамадскага транспарту."
+      }
+    },
+    {
+      "id": "proposal",
+      "icon": "MessageSquare",
+      "number": "02",
+      "title": {
+        "ru": "Подбор комплекса",
+        "uz": "Majmuani tanlash",
+        "en": "Selecting a system",
+        "uk": "Підбір комплексу",
+        "zh": "挑选系统",
+        "kk": "Кешенді таңдау",
+        "be": "Падбор комплексу"
+      },
+      "description": {
+        "ru": "В каталоге выбираете подходящий комплекс. При необходимости поможем подобрать модель и подготовим коммерческое предложение.",
+        "uz": "Katalogdan mos majmuani tanlaysiz. Zarur boʻlsa, modelni tanlashga yordam beramiz va tijoriy taklif tayyorlaymiz.",
+        "en": "You choose a suitable system in the catalog. If needed, we will help select a model and prepare a commercial offer.",
+        "uk": "У каталозі обираєте відповідний комплекс. За потреби допоможемо підібрати модель і підготуємо комерційну пропозицію.",
+        "zh": "在目录中选择合适的系统。如有需要，我们将协助选型并准备报价。",
+        "kk": "Каталогтан лайықты кешенді таңдайсыз. Қажет болса, модельді таңдауға көмектесіп, коммерциялық ұсыныс дайындаймыз.",
+        "be": "У каталогу выбіраеце прыдатны комплекс. Пры неабходнасці дапаможам падабраць мадэль і падрыхтуем камерцыйную прапанову."
+      }
+    },
+    {
+      "id": "deployment",
+      "icon": "ShoppingBag",
+      "number": "03",
+      "title": {
+        "ru": "Заявка и согласование",
+        "uz": "Ariza va kelishish",
+        "en": "Request and approval",
+        "uk": "Заявка та узгодження",
+        "zh": "申请与确认",
+        "kk": "Өтінім және келісу",
+        "be": "Заяўка і ўзгадненне"
+      },
+      "description": {
+        "ru": "Оставляете заявку, согласовываем комплектацию, стоимость и сроки поставки. Заключаем договор.",
+        "uz": "Ariza qoldirasiz, komplektatsiya, narx va yetkazib berish muddatlarini kelishamiz. Shartnoma tuzamiz.",
+        "en": "You send a request, we agree on configuration, price and delivery times. We sign a contract.",
+        "uk": "Залишаєте заявку, узгоджуємо комплектацію, вартість і терміни постачання. Укладаємо договір.",
+        "zh": "您提交申请，我们确定配置、价格和交付时间，并签订合同。",
+        "kk": "Өтінім қалдырасыз, жинақтауды, бағаны және жеткізу мерзімдерін келісеміз. Шарт жасаймыз.",
+        "be": "Пакідаеце заяўку, узгадняем камплектацыю, кошт і тэрміны пастаўкі. Заключаем дагавор."
+      }
+    },
+    {
+      "id": "launch",
+      "icon": "Truck",
+      "number": "04",
+      "title": {
+        "ru": "Поставка оборудования",
+        "uz": "Jihozni yetkazib berish",
+        "en": "Equipment delivery",
+        "uk": "Постачання обладнання",
+        "zh": "设备交付",
+        "kk": "Жабдықты жеткізу",
+        "be": "Пастаўка абсталявання"
+      },
+      "description": {
+        "ru": "Отгружаем комплекс с гарантией, техническим паспортом и полным пакетом документов в согласованные сроки.",
+        "uz": "Majmuani kafolat, texnik pasport va toʻliq hujjatlar paketi bilan kelishilgan muddatda joʻnatamiz.",
+        "en": "We ship the system with a warranty, technical passport and a full set of documents within the agreed timeframe.",
+        "uk": "Відвантажуємо комплекс із гарантією, технічним паспортом і повним пакетом документів в узгоджені терміни.",
+        "zh": "我们在约定期限内交付系统，并附带保修、技术护照和整套文件。",
+        "kk": "Кешенді кепілдікпен, техникалық паспортпен және толық құжаттар пакетімен келісілген мерзімде жөнелтеміз.",
+        "be": "Адгружаем комплекс з гарантыяй, тэхнічным пашпартам і поўным пакетам дакументаў ва ўзгодненыя тэрміны."
+      }
+    }
+  ],
+  "FAQ_ITEMS": [
+    {
+      "id": 1,
+      "question": {
+        "ru": "Как подобрать комплекс под нужный тип нарушения?",
+        "uz": "Kerakli qoidabuzarlik turiga majmuani qanday tanlash mumkin?",
+        "en": "How do I select a system for the right violation type?",
+        "uk": "Як підібрати комплекс під потрібний тип порушення?",
+        "zh": "如何为所需的违章类型挑选系统？",
+        "kk": "Қажетті бұзушылық түріне кешенді қалай таңдауға болады?",
+        "be": "Як падабраць комплекс пад патрэбны тып парушэння?"
+      },
+      "answer": {
+        "ru": "В разделе «Подбор по задаче» выберите тип нарушения — мы покажем подходящие комплексы. В карточке каждого комплекса указано, какие нарушения он фиксирует. Если сомневаетесь — оставьте заявку, и мы поможем с выбором.",
+        "uz": "«Vazifa boʻyicha tanlash» boʻlimida qoidabuzarlik turini tanlang — biz mos majmualarni koʻrsatamiz. Har bir majmua kartasida u qaysi qoidabuzarliklarni qayd etishi koʻrsatilgan. Shubhalansangiz — ariza qoldiring, tanlovda yordam beramiz.",
+        "en": "In the “Pick by task” section choose the violation type — we will show suitable systems. Each system card states which violations it records. If in doubt, send a request and we will help you choose.",
+        "uk": "У розділі «Підбір за задачею» оберіть тип порушення — ми покажемо відповідні комплекси. У картці кожного комплексу зазначено, які порушення він фіксує. Якщо вагаєтеся — залиште заявку, і ми допоможемо з вибором.",
+        "zh": "在“按需求选择”部分选择违章类型——我们将显示合适的系统。每个系统卡片都注明了它可记录的违章类型。如有疑问，请提交申请，我们将协助您选择。",
+        "kk": "«Тапсырма бойынша таңдау» бөлімінде бұзушылық түрін таңдаңыз — біз лайықты кешендерді көрсетеміз. Әр кешен картасында ол қандай бұзушылықтарды тіркейтіні көрсетілген. Күмәндансаңыз — өтінім қалдырыңыз, таңдауға көмектесеміз.",
+        "be": "У раздзеле «Падбор па задачы» выберыце тып парушэння — мы пакажам прыдатныя комплексы. У картцы кожнага комплексу пазначана, якія парушэнні ён фіксуе. Калі сумняваецеся — пакіньце заяўку, і мы дапаможам з выбарам."
+      }
+    },
+    {
+      "id": 2,
+      "question": {
+        "ru": "Можно ли интегрировать комплекс с существующей инфраструктурой?",
+        "uz": "Majmuani mavjud infratuzilmaga integratsiya qilish mumkinmi?",
+        "en": "Can the system be integrated with existing infrastructure?",
+        "uk": "Чи можна інтегрувати комплекс з наявною інфраструктурою?",
+        "zh": "系统能否与现有基础设施集成？",
+        "kk": "Кешенді бар инфрақұрылыммен интеграциялауға бола ма?",
+        "be": "Ці можна інтэграваць комплекс з існуючай інфраструктурай?"
+      },
+      "answer": {
+        "ru": "Да. Комплексы поддерживают передачу данных на сервер и интеграцию с серверной инфраструктурой, центром обработки данных и каналами связи, а также экспорт фото- и видеоматериалов.",
+        "uz": "Ha. Majmualar serverga maʼlumot uzatishni va server infratuzilmasi, maʼlumotlarni qayta ishlash markazi hamda aloqa kanallari bilan integratsiyani, shuningdek foto va video materiallarni eksport qilishni qoʻllab-quvvatlaydi.",
+        "en": "Yes. The systems support data transfer to a server and integration with server infrastructure, a data center and communication channels, as well as export of photo and video materials.",
+        "uk": "Так. Комплекси підтримують передачу даних на сервер та інтеграцію із серверною інфраструктурою, центром обробки даних і каналами звʼязку, а також експорт фото- та відеоматеріалів.",
+        "zh": "可以。系统支持向服务器传输数据，并与服务器基础设施、数据中心和通信渠道集成，还支持导出照片和视频资料。",
+        "kk": "Иә. Кешендер серверге деректер беруді және серверлік инфрақұрылыммен, деректерді өңдеу орталығымен және байланыс арналарымен интеграцияны, сондай-ақ фото және бейне материалдарды экспорттауды қолдайды.",
+        "be": "Так. Комплексы падтрымліваюць перадачу даных на сервер і інтэграцыю з сервернай інфраструктурай, цэнтрам апрацоўкі даных і каналамі сувязі, а таксама экспарт фота- і відэаматэрыялаў."
+      }
+    },
+    {
+      "id": 3,
+      "question": {
+        "ru": "Какая гарантия и какие документы идут в комплекте?",
+        "uz": "Qanday kafolat va qanday hujjatlar toʻplamda boʻladi?",
+        "en": "What warranty and documents are included?",
+        "uk": "Яка гарантія та які документи йдуть у комплекті?",
+        "zh": "提供什么保修以及随附哪些文件？",
+        "kk": "Қандай кепілдік және қандай құжаттар жинақта болады?",
+        "be": "Якая гарантыя і якія дакументы ідуць у камплекце?"
+      },
+      "answer": {
+        "ru": "Каждый комплекс поставляется с гарантией 12 месяцев и сроком службы до 5 лет. В комплект входят сертификаты соответствия, протоколы испытаний, технический паспорт и инструкции.",
+        "uz": "Har bir majmua 12 oy kafolat va 5 yilgacha xizmat muddati bilan yetkaziladi. Toʻplamga muvofiqlik sertifikatlari, sinov bayonnomalari, texnik pasport va yoʻriqnomalar kiradi.",
+        "en": "Every system comes with a 12-month warranty and a service life of up to 5 years. The kit includes certificates of conformity, test reports, a technical passport and manuals.",
+        "uk": "Кожен комплекс постачається з гарантією 12 місяців і терміном служби до 5 років. До комплекту входять сертифікати відповідності, протоколи випробувань, технічний паспорт та інструкції.",
+        "zh": "每套系统均提供 12 个月保修，使用寿命可达 5 年。套件包含合格证书、测试报告、技术护照和说明书。",
+        "kk": "Әр кешен 12 ай кепілдікпен және 5 жылға дейін қызмет мерзімімен жеткізіледі. Жинаққа сәйкестік сертификаттары, сынақ хаттамалары, техникалық паспорт және нұсқаулықтар кіреді.",
+        "be": "Кожны комплекс пастаўляецца з гарантыяй 12 месяцаў і тэрмінам службы да 5 гадоў. У камплект уваходзяць сертыфікаты адпаведнасці, пратаколы выпрабаванняў, тэхнічны пашпарт і інструкцыі."
+      }
+    },
+    {
+      "id": 4,
+      "question": {
+        "ru": "Как оформить заказ и какие сроки поставки?",
+        "uz": "Buyurtmani qanday rasmiylashtirish va yetkazib berish muddatlari qanday?",
+        "en": "How do I place an order and what are the delivery times?",
+        "uk": "Як оформити замовлення та які терміни постачання?",
+        "zh": "如何下单，交付时间是多久？",
+        "kk": "Тапсырысты қалай рәсімдеу және жеткізу мерзімдері қандай?",
+        "be": "Як аформіць замову і якія тэрміны пастаўкі?"
+      },
+      "answer": {
+        "ru": "Выберите комплекс в каталоге и оставьте заявку через форму на сайте или по телефону. Мы подтвердим наличие, согласуем комплектацию, стоимость и сроки поставки. Цена и сроки зависят от модели и объёма заказа.",
+        "uz": "Katalogdan majmuani tanlang va saytdagi forma orqali yoki telefon orqali ariza qoldiring. Mavjudligini tasdiqlaymiz, komplektatsiya, narx va yetkazib berish muddatlarini kelishamiz. Narx va muddatlar modelga va buyurtma hajmiga bogʻliq.",
+        "en": "Choose a system in the catalog and send a request through the website form or by phone. We will confirm availability and agree on configuration, price and delivery times. Price and timing depend on the model and order volume.",
+        "uk": "Оберіть комплекс у каталозі та залиште заявку через форму на сайті або за телефоном. Ми підтвердимо наявність, узгодимо комплектацію, вартість і терміни постачання. Ціна і терміни залежать від моделі та обсягу замовлення.",
+        "zh": "在目录中选择系统，并通过网站表单或电话提交申请。我们将确认库存，并商定配置、价格和交付时间。价格和时间取决于型号和订单量。",
+        "kk": "Каталогтан кешенді таңдап, сайттағы форма арқылы немесе телефон арқылы өтінім қалдырыңыз. Бар-жоғын растап, жинақтауды, бағаны және жеткізу мерзімдерін келісеміз. Баға мен мерзім модельге және тапсырыс көлеміне байланысты.",
+        "be": "Выберыце комплекс у каталогу і пакіньце заяўку праз форму на сайце або па тэлефоне. Мы пацвердзім наяўнасць, узгаднім камплектацыю, кошт і тэрміны пастаўкі. Цана і тэрміны залежаць ад мадэлі і абʼёму замовы."
+      }
+    }
+  ],
+  "TESTIMONIALS": [
+    {
+      "id": 1,
+      "name": "City Traffic Center",
+      "position": {
+        "ru": "Муниципальный заказчик",
+        "uz": "Munitsipal buyurtmachi",
+        "en": "Municipal customer",
+        "uk": "Муніципальний замовник",
+        "zh": "市政客户",
+        "kk": "Муниципалдық тапсырыс беруші",
+        "be": "Муніцыпальны заказчык"
+      },
+      "company": "Smart City Program",
+      "image": "https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=400&auto=format&fit=crop",
+      "rating": 5,
+      "text": {
+        "ru": "Комплексы OLAN позволили централизованно контролировать несколько перекрёстков и существенно сократить нарушения.",
+        "uz": "OLAN majmualari bir nechta chorrahani markazlashgan holda nazorat qilish va qoidabuzarliklarni sezilarli kamaytirish imkonini berdi.",
+        "en": "OLAN systems made it possible to centrally monitor several intersections and significantly reduce violations.",
+        "uk": "Комплекси OLAN дозволили централізовано контролювати кілька перехресть і суттєво скоротити порушення.",
+        "zh": "OLAN 系统实现了对多个路口的集中监控，并显著减少了违章。",
+        "kk": "OLAN кешендері бірнеше қиылысты орталықтандырылған түрде бақылауға және бұзушылықтарды айтарлықтай азайтуға мүмкіндік берді.",
+        "be": "Комплексы OLAN дазволілі цэнтралізавана кантраляваць некалькі скрыжаванняў і істотна скараціць парушэнні."
+      },
+      "metrics": {
+        "label": {
+          "ru": "Контролируемых перекрёстков",
+          "uz": "Nazorat qilinadigan chorrahalar",
+          "en": "Monitored intersections",
+          "uk": "Контрольованих перехресть",
+          "zh": "受监控路口",
+          "kk": "Бақыланатын қиылыстар",
+          "be": "Кантраляваных скрыжаванняў"
+        },
+        "value": "18"
+      }
+    },
+    {
+      "id": 2,
+      "name": "Highway Operator",
+      "position": {
+        "ru": "Оператор магистрали",
+        "uz": "Magistral operatori",
+        "en": "Highway operator",
+        "uk": "Оператор магістралі",
+        "zh": "高速公路运营方",
+        "kk": "Магистраль операторы",
+        "be": "Аператар магістралі"
+      },
+      "company": "Regional Infra",
+      "image": "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&auto=format&fit=crop",
+      "rating": 5,
+      "text": {
+        "ru": "После запуска комплекса контроля скорости удалось повысить дисциплину на участке и сократить аварийность.",
+        "uz": "Tezlik nazorati majmuasi ishga tushirilgach, uchastkada intizomni oshirish va avariyalarni kamaytirishga erishildi.",
+        "en": "After launching the speed control system, we improved discipline on the section and reduced accident rates.",
+        "uk": "Після запуску комплексу контролю швидкості вдалося підвищити дисципліну на ділянці та скоротити аварійність.",
+        "zh": "启用测速系统后，该路段的驾驶纪律得到提升，事故率下降。",
+        "kk": "Жылдамдықты бақылау кешені іске қосылғаннан кейін учаскеде тәртіпті арттырып, авариялықты азайтуға қол жеткіздік.",
+        "be": "Пасля запуску комплексу кантролю хуткасці ўдалося павысіць дысцыпліну на ўчастку і скараціць аварыйнасць."
+      },
+      "metrics": {
+        "label": {
+          "ru": "Протяжённость участка",
+          "uz": "Uchastka uzunligi",
+          "en": "Section length",
+          "uk": "Протяжність ділянки",
+          "zh": "路段长度",
+          "kk": "Учаске ұзындығы",
+          "be": "Працягласць участка"
+        },
+        "value": "42 км"
+      }
+    }
+  ],
+  "CONTACT_INFO": {
+    "phone": "+998 (90) 123-45-67",
+    "phoneHref": "tel:+998901234567",
+    "email": "radarrgai@gmail.com",
+    "emailHref": "mailto:radarrgai@gmail.com",
+    "hours": {
+      "ru": "Пн-Пт: 09:00-18:00",
+      "uz": "Du-Ju: 09:00-18:00",
+      "en": "Mon-Fri: 09:00-18:00",
+      "uk": "Пн-Пт: 09:00-18:00",
+      "zh": "周一至周五：09:00-18:00",
+      "kk": "Дс-Жм: 09:00-18:00",
+      "be": "Пн-Пт: 09:00-18:00"
+    },
+    "address": {
+      "ru": "г. Ташкент, Алмазарский район, ул. Усташирин, 105",
+      "uz": "Toshkent sh., Olmazor tumani, Ustashirin koʻchasi, 105",
+      "en": "Tashkent, Almazar district, Ustashirin street, 105",
+      "uk": "м. Ташкент, Алмазарський район, вул. Усташирін, 105",
+      "zh": "塔什干市，阿尔马扎尔区，乌斯塔希林街 105 号",
+      "kk": "Ташкент қ., Алмазар ауданы, Усташирин көшесі, 105",
+      "be": "г. Ташкент, Алмазарскі раён, вул. Усташырын, 105"
+    },
+    "mapEmbed": "https://maps.google.com/maps?q=Tashkent%20Almazar%20Ustashirin%20105&t=&z=15&ie=UTF8&iwloc=&output=embed"
+  },
+  "LANGUAGE_OPTIONS": [
+    {
+      "code": "ru",
+      "label": "Русский"
+    },
+    {
+      "code": "uz",
+      "label": "Oʻzbekcha"
+    },
+    {
+      "code": "en",
+      "label": "English"
+    },
+    {
+      "code": "uk",
+      "label": "Українська"
+    },
+    {
+      "code": "zh",
+      "label": "中文"
+    },
+    {
+      "code": "kk",
+      "label": "Қазақша"
+    },
+    {
+      "code": "be",
+      "label": "Беларуская"
+    }
+  ]
+}
