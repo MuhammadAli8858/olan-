@@ -24,7 +24,15 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 
-const dataDir = path.join(__dirname, 'data');
+// Где хранить рабочие данные: чаты, заявки, учётки, бэкапы.
+//
+// На своём компьютере это server/data внутри проекта. На хостинге вроде
+// Render папка проекта пересоздаётся при каждом деплое, поэтому туда
+// подключают постоянный диск и указывают его в DATA_DIR — иначе переписка
+// и созданные сотрудники пропадут при первом же обновлении.
+const dataDir = process.env.DATA_DIR
+  ? path.resolve(process.env.DATA_DIR)
+  : path.join(__dirname, 'data');
 const backupsDir = path.join(dataDir, 'backups');
 const messagesFile = path.join(dataDir, 'messages.json');
 const chatsFile = path.join(dataDir, 'chats.json');
@@ -34,12 +42,32 @@ const assignmentsFile = path.join(dataDir, 'assignments.json');
 const sessionsFile = path.join(dataDir, 'sessions.json');
 const seedFile = path.join(__dirname, 'content.seed.json');
 
-// Путь к файлу контента сайта. Можно переопределить переменной SITE_DATA_FILE.
+// Файл контента сайта.
+//
+// По умолчанию — тот, что лежит в проекте: правки из админки видны в коде,
+// как и задумано при локальной работе.
+//
+// На хостинге его переносят на постоянный диск через SITE_DATA_FILE.
+// Тогда правки переживают деплой, но в репозиторий уже не попадают —
+// это осознанный размен, о нём написано в README.
+const repoSiteDataPath = path.join(rootDir, 'apps', 'site', 'src', 'app', 'data', 'siteData.js');
 const siteDataPath = process.env.SITE_DATA_FILE
   ? path.resolve(process.env.SITE_DATA_FILE)
-  : path.join(rootDir, 'apps', 'site', 'src', 'app', 'data', 'siteData.js');
+  : repoSiteDataPath;
 
 mkdirSync(dataDir, { recursive: true });
+
+// Первый запуск на постоянном диске: файла контента там ещё нет,
+// поэтому копируем его из репозитория, чтобы сайт не остался пустым.
+if (siteDataPath !== repoSiteDataPath && !existsSync(siteDataPath)) {
+  try {
+    mkdirSync(path.dirname(siteDataPath), { recursive: true });
+    writeFileSync(siteDataPath, readFileSync(repoSiteDataPath, 'utf8'), 'utf8');
+    console.log(`[content] Контент скопирован на постоянный диск: ${siteDataPath}`);
+  } catch (error) {
+    console.error('[content] Не удалось создать файл контента:', error.message);
+  }
+}
 mkdirSync(backupsDir, { recursive: true });
 if (!existsSync(messagesFile)) writeFileSync(messagesFile, '[]', 'utf8');
 if (!existsSync(chatsFile)) writeFileSync(chatsFile, '{}', 'utf8');
@@ -579,6 +607,8 @@ function handleInboxRequestStatus(body, response) {
 // apps/site/public/products/. В контенте остаётся короткий путь
 // вида /products/имя.png — тот же, что и раньше при ручном вводе.
 
+// Куда складывать загруженные картинки. На хостинге — на постоянный диск,
+// иначе они исчезнут вместе с папкой проекта при следующем деплое.
 const UPLOAD_DIR = process.env.UPLOAD_DIR
   ? path.resolve(process.env.UPLOAD_DIR)
   : path.join(rootDir, 'apps', 'site', 'public', 'products');
@@ -818,7 +848,7 @@ function watchSiteData() {
 }
 
 // Раздача собранных фронтендов включается сама, если есть папки dist.
-const serveStatic = createStaticHandler(rootDir);
+const serveStatic = createStaticHandler(rootDir, UPLOAD_DIR);
 
 const port = Number(process.env.PORT || 3001);
 const host = process.env.HOST || '0.0.0.0';

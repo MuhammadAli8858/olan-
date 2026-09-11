@@ -31,14 +31,23 @@ const MIME = {
   '.txt': 'text/plain; charset=utf-8',
 };
 
-export function createStaticHandler(rootDir) {
+export function createStaticHandler(rootDir, uploadsDir) {
   const mounts = [
+    // Загруженные картинки идут первыми: если включён постоянный диск,
+    // свежие файлы лежат там, а не в собранной папке сайта.
+    // Наличие папки не проверяем — при первом запуске её ещё нет,
+    // она появится после первой загрузки, а искать файл мы будем
+    // в момент запроса, а не сейчас.
+    ...(uploadsDir ? [{ prefix: '/products', dir: uploadsDir }] : []),
     { prefix: '/admin', dir: path.join(rootDir, 'apps', 'admin', 'dist') },
     { prefix: '/operator', dir: path.join(rootDir, 'apps', 'operator', 'dist') },
     { prefix: '/', dir: path.join(rootDir, 'apps', 'site', 'dist') },
   ].filter((m) => existsSync(m.dir));
 
-  if (mounts.length === 0) return null;
+  // Если собранных приложений нет, раздавать нечего — кроме случая,
+  // когда указана отдельная папка загрузок.
+  const hasApps = mounts.some((m) => m.prefix !== '/products');
+  if (!hasApps && !uploadsDir) return null;
 
   function send(response, filePath, status = 200) {
     const ext = path.extname(filePath).toLowerCase();
@@ -76,6 +85,13 @@ export function createStaticHandler(rootDir) {
     }
 
     if (existsSync(target) && statSync(target).isFile()) { send(response, target); return true; }
+
+    // Картинки: если на диске нет — пробуем найти в сборке сайта.
+    if (mount.prefix === '/products') {
+      const inSite = path.join(rootDir, 'apps', 'site', 'dist', 'products', rel);
+      if (existsSync(inSite) && statSync(inSite).isFile()) { send(response, inSite); return true; }
+      return false;
+    }
 
     // Запрос конкретного файла (есть расширение), которого нет — честная 404,
     // а не index.html. Иначе битые картинки и скрипты выглядят как «страница».

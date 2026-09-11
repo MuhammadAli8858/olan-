@@ -1,0 +1,49 @@
+# ---------------------------------------------------------------------------
+# Развёртывание всего проекта на Render одним сервисом.
+#
+# Сервер сам раздаёт сайт, админ-панель и кабинет оператора:
+#   https://ваш-адрес.onrender.com/           сайт
+#   https://ваш-адрес.onrender.com/admin/     админ-панель
+#   https://ваш-адрес.onrender.com/operator/  кабинет
+#
+# Постоянный диск обязателен: без него переписка, созданные сотрудники,
+# загруженные картинки и правки контента пропадут при первом же деплое.
+# ---------------------------------------------------------------------------
+
+services:
+  - type: web
+    name: olan
+    runtime: node
+    plan: starter          # бесплатный план засыпает и не даёт диск
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+
+    disk:
+      name: olan-data
+      mountPath: /var/data
+      sizeGB: 1
+
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: PORT
+        value: "3001"
+
+      # Рабочие данные на постоянном диске
+      - key: DATA_DIR
+        value: /var/data/server
+      - key: SITE_DATA_FILE
+        value: /var/data/content/siteData.js
+      - key: UPLOAD_DIR
+        value: /var/data/uploads
+
+      # Пароль администратора задайте вручную в панели Render
+      - key: ADMIN_USER
+        value: user
+      - key: ADMIN_KEY
+        sync: false
+
+      # Адрес сайта для OG-тегов и sitemap
+      - key: SITE_URL
+        sync: false
