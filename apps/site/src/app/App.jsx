@@ -40,8 +40,13 @@ function Deferred({ children, minHeight = 0 }) {
 
 function scrollToId(id) {
   const target = document.getElementById(id);
-  if (target) {
+  if (!target) return;
+  // Страховка: если прокрутка почему-то недоступна, переход не должен
+  // падать с ошибкой и обрывать работу кнопки.
+  if (typeof target.scrollIntoView === 'function') {
     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else if (typeof window !== 'undefined' && window.scrollTo) {
+    window.scrollTo({ top: target.offsetTop || 0, behavior: 'smooth' });
   }
 }
 
@@ -314,12 +319,12 @@ function AppContent() {
           <Team onOpenCard={openCard} />
         </Deferred>
       ) : route === 'faq' ? (
-        <Deferred minHeight={600}><FAQ /></Deferred>
+        <Deferred minHeight={600}><FAQ onContact={goContact} /></Deferred>
       ) : (
         /* ──────────────────────────── Главная страница ──────────────────────────── */
         <>
           <div className="dark">
-            <Hero />
+            <Hero onCatalog={() => navigate('catalog')} onContact={goContact} />
             <Deferred minHeight={500}><LiveMonitor /></Deferred>
           </div>
 
@@ -331,7 +336,7 @@ function AppContent() {
             {/* Как оформить заказ */}
             <Reveal><Process onCatalog={() => navigate('catalog')} /></Reveal>
             {/* Практическое подтверждение и что это значит для партнёра */}
-            <Reveal><PartnerValue onOpenCard={(key) => openCard('proof', key)} /></Reveal>
+            <Reveal><PartnerValue /></Reveal>
             {/* Контакты живут на главной — отдельной страницы им не нужно */}
             <Reveal><Contact /></Reveal>
           </Deferred>

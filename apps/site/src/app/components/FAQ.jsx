@@ -6,12 +6,17 @@ import { useSite } from '../context/SiteContext.jsx';
 
 function scrollToId(id) {
   const target = document.getElementById(id);
-  if (target) {
+  if (!target) return;
+  // Страховка: если прокрутка почему-то недоступна, переход не должен
+  // падать с ошибкой и обрывать работу кнопки.
+  if (typeof target.scrollIntoView === 'function') {
     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else if (typeof window !== 'undefined' && window.scrollTo) {
+    window.scrollTo({ top: target.offsetTop || 0, behavior: 'smooth' });
   }
 }
 
-export function FAQ() {
+export function FAQ({ onContact }) {
   const { language, text } = useSite();
   const [openId, setOpenId] = useState(FAQ_ITEMS[0]?.id ?? null);
 
@@ -66,7 +71,7 @@ export function FAQ() {
         <div className="mt-12 text-center">
           <button
             type="button"
-            onClick={() => scrollToId('contact')}
+            onClick={() => (onContact ? onContact() : scrollToId('contact'))}
             className="rounded-full border border-slate-200 dark:border-cyan-500/20 bg-white px-6 py-3 font-medium text-slate-700 transition hover:border-cyan-500/40 hover:text-cyan-600 dark:bg-slate-950 dark:text-slate-100"
           >
             {text.actions.contact}

@@ -1315,6 +1315,12 @@ export const COMPANY = {
         text: { ru: 'Локальная сборка ПАК и входной контроль комплектующих', en: 'Local assembly of systems and incoming inspection of components' },
         image: '/products/uralan.png',
         imageCaption: { ru: 'Производство и настройка', en: 'Manufacturing and configuration' },
+        details: [
+          { ru: 'Комплексы собираются в Узбекистане: входной контроль комплектующих, монтаж плат, сборка корпусов, настройка оптики и радарного модуля, выпускной контроль качества каждого изделия.', en: 'The systems are assembled in Uzbekistan: incoming inspection of components, board assembly, housing assembly, optics and radar module configuration, and final quality control of every unit.' },
+          { ru: 'Собственная схемотехника и встроенное программное обеспечение означают, что при изменении требований заказчика мы правим железо, а не ищем обходной путь в софте.', en: 'Owning the circuit design and embedded software means that when requirements change we modify the hardware rather than work around it in software.' },
+          { ru: 'Локальная сборка — это не только логистика. Это обучение персонала, местное содержание в проекте и возможность обслуживать оборудование без ожидания поставок из-за рубежа.', en: 'Local assembly is more than logistics. It is staff training, local content in the project and the ability to service equipment without waiting for deliveries from abroad.' },
+        ],
+        gallery: ['/products/uralan.png', '/products/olan-complex-1.png', '/products/cordon.png', '/products/astra.png'],
       },
       {
         icon: 'HardHat',
@@ -1322,6 +1328,12 @@ export const COMPANY = {
         text: { ru: 'Опоры, электропитание, связь, калибровка и пусконаладка', en: 'Poles, power, connectivity, calibration and commissioning' },
         image: '/products/cordon.png',
         imageCaption: { ru: 'Строительство и монтаж', en: 'Construction and installation' },
+        details: [
+          { ru: 'Полевая часть закрывается целиком: опоры, подвод электропитания, каналы связи, установка оборудования, калибровка и пусконаладка.', en: 'The field work is covered end to end: poles, power supply, connectivity, equipment installation, calibration and commissioning.' },
+          { ru: 'Это самый недооценённый этап инфраструктурного проекта. Именно на нём срываются сроки, когда подрядчиков несколько и каждый отвечает за свой кусок.', en: 'This is the most underestimated stage of an infrastructure project. It is where schedules slip when several contractors each own only their own piece.' },
+          { ru: 'Калибровка и приёмочные испытания проводятся по действующим документам — без них материал фиксации не имеет юридической силы.', en: 'Calibration and acceptance testing follow the applicable regulations — without them the recorded evidence has no legal force.' },
+        ],
+        gallery: ['/products/cordon.png', '/products/TRC.png', '/products/w-space.png', '/products/comoto.png'],
       },
       {
         icon: 'Headset',
@@ -1329,6 +1341,12 @@ export const COMPANY = {
         text: { ru: 'Проектный офис, SLA, удалённая диагностика и выездные бригады', en: 'PMO, SLA, remote diagnostics and field crews' },
         image: '/products/sova.png',
         imageCaption: { ru: 'Мониторинг и сервис', en: 'Monitoring and service' },
+        details: [
+          { ru: 'После запуска объект не остаётся без присмотра: проектный офис ведёт бюджет и обязательства, система мониторинга следит за состоянием каждого комплекса.', en: 'After launch the site is not left unattended: the project office tracks budget and commitments, and the monitoring system watches the condition of every unit.' },
+          { ru: 'Удалённая диагностика показывает неисправность до того, как она станет простоем. Выездные бригады и склад запасных частей закрывают то, что нельзя починить дистанционно.', en: 'Remote diagnostics reveal a fault before it becomes downtime. Field crews and a spare parts stock handle what cannot be fixed remotely.' },
+          { ru: 'Работа идёт по согласованному уровню сервиса: сроки восстановления зафиксированы, причины неисправностей разбираются, инфраструктура планово обновляется.', en: 'Work follows an agreed service level: restoration times are fixed, root causes are analysed and the infrastructure is modernized on schedule.' },
+        ],
+        gallery: ['/products/sova.png', '/products/TRC1.png', '/products/astra1.png', '/products/brav.png'],
       },
     ],
   },

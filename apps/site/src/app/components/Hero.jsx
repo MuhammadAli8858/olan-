@@ -6,12 +6,17 @@ import { AnimatedNumber } from './AnimatedNumber.jsx';
 
 function scrollToId(id) {
   const target = document.getElementById(id);
-  if (target) {
+  if (!target) return;
+  // Страховка: если прокрутка почему-то недоступна, переход не должен
+  // падать с ошибкой и обрывать работу кнопки.
+  if (typeof target.scrollIntoView === 'function') {
     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else if (typeof window !== 'undefined' && window.scrollTo) {
+    window.scrollTo({ top: target.offsetTop || 0, behavior: 'smooth' });
   }
 }
 
-export function Hero() {
+export function Hero({ onCatalog, onContact }) {
   const { text } = useSite();
 
   return (
@@ -88,7 +93,7 @@ export function Hero() {
           >
             <button
               type="button"
-              onClick={() => scrollToId('catalog')}
+              onClick={() => (onCatalog ? onCatalog() : scrollToId('catalog'))}
             className="olan-sweep inline-flex items-center gap-2 px-7 py-3.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-full font-medium text-lg hover:shadow-2xl hover:shadow-cyan-500/50 transition-all duration-300 hover:scale-105"
               // className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 px-7 py-3.5 text-lg font-semibold text-white shadow-xl shadow-cyan-500/20 transition hover:translate-y-[-1px]"
             >
@@ -97,7 +102,7 @@ export function Hero() {
             </button>
             <button
               type="button"
-              onClick={() => scrollToId('contact')}
+              onClick={() => (onContact ? onContact() : scrollToId('contact'))}
               className="olan-sweep inline-flex items-center gap-2 rounded-full border border-slate-200 dark:border-cyan-500/20 bg-white px-7 py-3.5 text-lg font-semibold text-slate-700 hover:shadow-2xl hover:shadow-cyan-500/35 backdrop-blur transition hover:border-cyan-500/50 hover:text-cyan-600 hover:scale-105 dark:bg-white/5 dark:text-white"
             >
               {text.actions.consultation}

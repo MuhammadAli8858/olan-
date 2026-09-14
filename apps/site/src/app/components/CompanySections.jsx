@@ -6,10 +6,12 @@
 //   • «Команда» — компетенции, которыми закрывается весь маршрут.
 // ---------------------------------------------------------------------------
 
+import { useState } from 'react';
 import { motion } from 'motion/react';
 import * as Icons from 'lucide-react';
 import { CheckCircle2, ShieldCheck, ArrowRight } from 'lucide-react';
 import { useSite } from '../context/SiteContext.jsx';
+import { PillarDetail } from './PillarDetail.jsx';
 import { localize, ENGAGEMENT_MODELS, WORKFLOW, TEAM, COMPANY } from '../data/siteData.js';
 
 function Icon({ name, className }) {
@@ -235,14 +237,18 @@ export function Team({ onOpenCard }) {
 
 // ──────────────────────── Один партнёр и локальный контур ────────────────────────
 
-export function PartnerValue({ onOpenCard }) {
+export function PartnerValue() {
   const { language } = useSite();
   const company = COMPANY || {};
   const partner = company.partner || {};
   const proof = company.proof || {};
+  // Карточка локального контура раскрывается окном поверх страницы,
+  // а не уводит на отдельный адрес: человек остаётся там, где читал.
+  const [openItem, setOpenItem] = useState(null);
 
   return (
     <section id="partner" className="relative overflow-hidden bg-slate-900 py-24 text-white">
+      <PillarDetail pillar={openItem} onClose={() => setOpenItem(null)} />
       <div className="olan-grid absolute inset-0 opacity-40" />
       <div className="container relative z-10 mx-auto px-4">
         {/* Локальный контур в Узбекистане */}
@@ -261,7 +267,7 @@ export function PartnerValue({ onOpenCard }) {
           <div className="space-y-4">
             {(proof.items || []).map((item, index) => (
               <button key={index} type="button"
-                onClick={() => onOpenCard && onOpenCard(index)}
+                onClick={() => setOpenItem(item)}
                 className="olan-card flex w-full items-start gap-4 rounded-3xl border border-white/10 bg-white/5 p-5 text-left">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/10">
                   <Icon name={item.icon} className="h-6 w-6 text-cyan-300" />

@@ -97,46 +97,51 @@ function Lightbox({ images, index, onClose, onPrev, onNext, alt }) {
 
 function PhotoStack({ images, alt, onOpen }) {
   if (!images || images.length === 0) return null;
+
+  // Показываем не больше трёх снимков позади: дальше стопка становится
+  // мешаниной и перестаёт читаться как стопка.
   const behind = images.slice(1, 4);
 
   return (
     <div className="relative">
-      {/* Снимки позади: сдвинуты и затемнены, создают ощущение стопки */}
-      {behind.map((src, index) => (
-        <div
-          key={src + index}
-          className="absolute inset-0 overflow-hidden rounded-3xl border border-slate-200 dark:border-slate-800"
-          style={{
-            transform: `translate(${(index + 1) * 14}px, ${(index + 1) * 14}px) rotate(${(index + 1) * 1.2}deg)`,
-            zIndex: behind.length - index,
-            filter: `brightness(${0.75 - index * 0.12})`,
-          }}
+      {/* Снимки позади выглядывают из-под главного нижним краем.
+          Каждый следующий чуть уже, ниже и темнее — получается стопка,
+          а не отдельный ряд миниатюр. */}
+      <div className="relative" style={{ paddingBottom: `${behind.length * 14}px` }}>
+        {behind.map((src, index) => {
+          const step = index + 1;
+          return (
+            <div
+              key={src + index}
+              className="absolute inset-x-0 top-0 overflow-hidden rounded-3xl border border-slate-200 shadow-lg dark:border-slate-800"
+              style={{
+                transform: `translateY(${step * 14}px) scale(${1 - step * 0.045})`,
+                zIndex: behind.length - index,
+                filter: `brightness(${0.7 - index * 0.14})`,
+                aspectRatio: '4 / 3',
+              }}
+            >
+              <img src={src} alt="" className="h-full w-full object-cover" />
+            </div>
+          );
+        })}
+
+        <button
+          type="button"
+          onClick={() => onOpen(0)}
+          className="group relative z-10 block w-full overflow-hidden rounded-3xl border border-slate-200 shadow-2xl transition hover:-translate-y-1 dark:border-cyan-500/25"
         >
-          <Picture src={src} alt="" className="h-full w-full object-cover" />
-        </div>
-      ))}
-
-      <button
-        type="button"
-        onClick={() => onOpen(0)}
-        className="group relative z-10 block w-full overflow-hidden rounded-3xl border border-slate-200 shadow-xl transition hover:-translate-y-1 dark:border-cyan-500/20"
-      >
-        <Picture src={images[0]} alt={alt} className="aspect-[4/3] w-full object-cover" />
-        <span className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-black/60 px-3 py-1.5 text-xs text-white opacity-0 transition group-hover:opacity-100">
-          <Expand className="h-3.5 w-3.5" /> Открыть
-        </span>
-      </button>
-
-      {images.length > 1 && (
-        <div className="relative z-10 mt-16 flex flex-wrap gap-2">
-          {images.map((src, index) => (
-            <button key={src + index} type="button" onClick={() => onOpen(index)}
-              className="h-16 w-20 overflow-hidden rounded-xl border border-slate-200 transition hover:border-cyan-500 dark:border-slate-700">
-              <Picture src={src} alt="" className="h-full w-full object-cover" />
-            </button>
-          ))}
-        </div>
-      )}
+          <Picture src={images[0]} alt={alt} className="aspect-[4/3] w-full object-cover" />
+          <span className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-black/60 px-3 py-1.5 text-xs text-white opacity-0 transition group-hover:opacity-100">
+            <Expand className="h-3.5 w-3.5" /> Открыть
+          </span>
+          {images.length > 1 && (
+            <span className="absolute bottom-3 left-3 rounded-full bg-black/60 px-3 py-1.5 text-xs text-white">
+              ещё {images.length - 1}
+            </span>
+          )}
+        </button>
+      </div>
     </div>
   );
 }

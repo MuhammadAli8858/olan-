@@ -7,8 +7,13 @@ const iconMap = { Search, MessageSquare, ShoppingBag, Truck };
 
 function scrollToId(id) {
   const target = document.getElementById(id);
-  if (target) {
+  if (!target) return;
+  // Страховка: если прокрутка почему-то недоступна, переход не должен
+  // падать с ошибкой и обрывать работу кнопки.
+  if (typeof target.scrollIntoView === 'function') {
     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else if (typeof window !== 'undefined' && window.scrollTo) {
+    window.scrollTo({ top: target.offsetTop || 0, behavior: 'smooth' });
   }
 }
 
