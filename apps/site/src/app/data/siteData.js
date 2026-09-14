@@ -1514,7 +1514,7 @@ export const PORTFOLIO = [
     meta: { ru: 'Windows · Linux · macOS · UNIX-подобные ОС', en: 'Windows · Linux · macOS · UNIX-like systems' },
     note: { ru: 'AutoSDK внедрён более чем в 50 странах мира.', en: 'AutoSDK is deployed in more than 50 countries worldwide.' },
     image: '/products/TRC.png',
-    imageCaption: { ru: 'Библиотека распознавания ГРЗ', en: 'Number plate recognition library', zh: '车牌识别程序库', ar: 'مكتبة التعرّف على لوحات المركبات' },
+    imageCaption: { ru: 'Библиотека распознавания ГРЗ', en: 'Number plate recognition library', zh: '车���识别程序库', ar: 'مكتبة التعرّف على لوحات المركبات' },
   },
   {
     id: 'complexes',
