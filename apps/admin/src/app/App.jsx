@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Save, LogOut, Plus, Trash2, RotateCcw, Box, Lightbulb, Type, Languages, Image as ImageIcon, Award, ListChecks, HelpCircle, Building2, Phone, RefreshCw, FileCode, Users } from 'lucide-react';
 import StaffSection from './components/StaffSection.jsx';
-import { Menu, X, Undo2, ArrowLeft, Globe } from 'lucide-react';
+import { Menu, X, Undo2, ArrowLeft, Globe, GitBranch, Download } from 'lucide-react';
 import { describeChange } from './lib/changes.js';
 import { ImageField, ImageListEditor } from './components/ImageUpload.jsx';
 import GenericEditor from './components/GenericEditor.jsx';
 import { Building2 as BuildingIcon, Layers, Package, Route, Workflow as WorkflowIcon, UsersRound } from 'lucide-react';
-import { getJson, postJson } from './lib/api.js';
+import { getJson, postJson, API_BASE_URL } from './lib/api.js';
 
 const KEY_STORE = 'olan-admin-key';
 
@@ -389,6 +389,9 @@ export default function App() {
   // Захватывать ли китайский и арабский при переводе. По умолчанию нет:
   // их правят руками, и затирать чужую работу не годится.
   const [withManual, setWithManual] = useState(false);
+  // Настроена ли выгрузка контента обратно в репозиторий.
+  const [gitInfo, setGitInfo] = useState(null);
+  const [publishing, setPublishing] = useState(false);
 
   const langs = useMemo(() => (content?.LANGUAGE_OPTIONS?.length ? content.LANGUAGE_OPTIONS : DEFAULT_LANGS), [content]);
 
@@ -468,7 +471,7 @@ export default function App() {
     }
   };
 
-  useEffect(() => { if (key) { loadContent(); refreshTranslationStatus(); } /* eslint-disable-next-line */ }, [key]);
+  useEffect(() => { if (key) { loadContent(); refreshTranslationStatus(); refreshGitStatus(); } /* eslint-disable-next-line */ }, [key]);
 
   // ---- Синхронизация «код → админка» ----
   // Каждые 2.5 секунды спрашиваем сервер, не менялся ли siteData.js.
@@ -540,7 +543,12 @@ export default function App() {
       setCodeChanged(false);
       setHistory([]);
       const added = res && res.autoTranslated ? ` Переведено строк: ${res.autoTranslated} (EN, UZ).` : '';
-      setStatus(`Сохранено в siteData.js.${added}`);
+      // Сервер мог сразу закоммитить файл в репозиторий — сообщаем об этом.
+      let git = '';
+      const p = res && res.published;
+      if (p && p.ok && !p.skipped) git = ` Выгружено в код: коммит ${p.sha}.`;
+      else if (p && p.ok === false) git = ` В GitHub не ушло: ${p.message}`;
+      setStatus(`Сохранено в siteData.js.${added}${git}`);
       refreshTranslationStatus();
     } catch (e) {
       setStatus(/ключ|401/i.test(e.message) ? 'Неверный ключ администратора.' : `Ошибка сохранения: ${e.message}`);
@@ -551,6 +559,32 @@ export default function App() {
     if (!confirm('Сбросить весь контент к исходному состоянию? Ваши изменения будут потеряны.')) return;
     try { await postJson('/api/admin/reset', { key }); await loadContent(); setStatus('Контент сброшен к исходному.'); }
     catch (e) { setStatus(`Ошибка сброса: ${e.message}`); }
+  };
+
+  // Умеет ли сервер возвращать правки в исходный код.
+  const refreshGitStatus = async () => {
+    try {
+      const res = await getJson(`/api/admin/publish/status?key=${encodeURIComponent(key)}`);
+      setGitInfo(res);
+    } catch { /* не критично */ }
+  };
+
+  // Ручная выгрузка в GitHub — на случай, когда автовыгрузка выключена
+  // или в прошлый раз не прошла (например, сервер был без интернета).
+  const publishToGit = async () => {
+    setPublishing(true);
+    try {
+      const res = await postJson('/api/admin/publish', { key });
+      if (res.skipped) setStatus('В репозитории уже та же версия — коммит не нужен.');
+      else setStatus(`Контент отправлен в ${res.repo}, ветка ${res.branch}. Коммит ${res.sha}.`);
+    } catch (e) {
+      setStatus(`Не удалось выгрузить в GitHub: ${e.message}`);
+    } finally { setPublishing(false); }
+  };
+
+  // Запасной путь: скачать файл и положить его в проект руками.
+  const downloadContentFile = () => {
+    window.open(`${API_BASE_URL}/api/admin/content/file?key=${encodeURIComponent(key)}`, '_blank');
   };
 
   // Сколько строк ещё без перевода — показываем числом у кнопки.
@@ -760,6 +794,26 @@ export default function App() {
                     </span>
                   )}
                 </button>
+
+                {/* Правки живут в файле siteData.js. Локально это файл проекта,
+                    на хостинге — файл на диске, поэтому его отдельно
+                    отправляют в репозиторий. */}
+                {gitInfo && !gitInfo.local && (
+                  <button type="button" onClick={publishToGit} disabled={publishing || !gitInfo.configured}
+                    className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-cyan-500/20 px-2.5 text-xs text-slate-300 transition hover:text-white disabled:opacity-40"
+                    title={gitInfo.configured
+                      ? `Отправить контент в ${gitInfo.repo}, ветка ${gitInfo.branch}`
+                      : 'Выгрузка в GitHub не настроена: добавьте GITHUB_TOKEN и GITHUB_REPO'}>
+                    <GitBranch className="h-4 w-4" />
+                    <span className="hidden sm:inline">{publishing ? 'Отправляю…' : 'В код'}</span>
+                  </button>
+                )}
+
+                {gitInfo && !gitInfo.local && !gitInfo.configured && (
+                  <button type="button" onClick={downloadContentFile}
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-cyan-500/20 text-slate-300 transition hover:text-white"
+                    title="Скачать siteData.js, чтобы положить его в проект вручную"><Download className="h-4 w-4" /></button>
+                )}
 
                 <button type="button" onClick={() => loadContent()}
                   className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-cyan-500/20 text-slate-300 transition hover:text-white"

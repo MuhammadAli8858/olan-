@@ -1514,7 +1514,7 @@ export const PORTFOLIO = [
     meta: { ru: 'Windows · Linux · macOS · UNIX-подобные ОС', en: 'Windows · Linux · macOS · UNIX-like systems' },
     note: { ru: 'AutoSDK внедрён более чем в 50 странах мира.', en: 'AutoSDK is deployed in more than 50 countries worldwide.' },
     image: '/products/TRC.png',
-    imageCaption: { ru: 'Библиотека распознавания ГРЗ', en: 'Number plate recognition library', zh: '车���识别程序库', ar: 'مكتبة التعرّف على لوحات المركبات' },
+    imageCaption: { ru: 'Библиотека распознавания ГРЗ', en: 'Number plate recognition library', zh: '车牌识别程序库', ar: 'مكتبة التعرّف على لوحات المركبات' },
   },
   {
     id: 'complexes',
@@ -1559,7 +1559,7 @@ export const PORTFOLIO = [
     description: { ru: 'Централизованный видеомониторинг в масштабе объекта, города или региона с подключением любых источников видеоданных.', en: 'Centralized video monitoring across a site, city or region, with any video source connected.' },
     features: [
       { ru: 'Модуль «Карта» — интерактивная карта города с удалённым доступом к каждому устройству', en: '“Map” module — interactive city map with remote access to every device' },
-      { ru: 'Мод��л�� RTMS — фиксация нарушителей и передача данных в единый реестр правонарушений', en: 'RTMS module — violation capture and data transfer to the national register of offences' },
+      { ru: 'Модуль RTMS — фиксация нарушителей и передача данных в единый реестр правонарушений', en: 'RTMS module — violation capture and data transfer to the national register of offences' },
       { ru: 'Модуль «Камеры» — управление списком камер и правами доступа операторов', en: '“Cameras” module — camera list management and operator access rights' },
       { ru: 'Развёртывание на базе существующего ситуационного центра', en: 'Deploys on top of an existing control room' },
       { ru: 'Интеграция с любым видеооборудованием, модульная структура и открытый API', en: 'Integration with any video equipment, modular architecture and open API' },

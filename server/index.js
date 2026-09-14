@@ -20,6 +20,7 @@ import { createStaticHandler } from './static.js';
 import { Staff } from './users.js';
 import { localName, needsExternalTranslation, transliterate } from './translit.js';
 import { translateOne, syncOnSave, fillMissing, countMissing, AUTO_LANGS, MANUAL_LANGS } from './translate.js';
+import { pushFile, checkAccess, gitConfig } from './github.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -111,15 +112,26 @@ function json(response, statusCode, payload) {
   response.end(JSON.stringify(payload));
 }
 
+// Тело запроса собираем БАЙТАМИ и только в конце переводим в текст.
+//
+// Почему так важно: русская или китайская буква занимает несколько байт,
+// и она запросто оказывается на границе двух сетевых кусков. Если склеивать
+// куски как строки (body += chunk), такая буква разваливается на два знака
+// «?» — и контент сайта тихо портится при каждом сохранении из админки.
 function parseBody(request) {
   return new Promise((resolve, reject) => {
-    let body = '';
+    const chunks = [];
+    let size = 0;
     request.on('data', (chunk) => {
-      body += chunk;
-      if (body.length > 20_000_000) { request.destroy(); reject(new Error('Payload too large')); }
+      chunks.push(chunk);
+      size += chunk.length;
+      if (size > 20_000_000) { request.destroy(); reject(new Error('Payload too large')); }
     });
     request.on('end', () => {
-      try { resolve(body ? JSON.parse(body) : {}); } catch { reject(new Error('Invalid JSON body')); }
+      try {
+        const body = Buffer.concat(chunks).toString('utf8');
+        resolve(body ? JSON.parse(body) : {});
+      } catch { reject(new Error('Invalid JSON body')); }
     });
     request.on('error', reject);
   });
@@ -331,16 +343,89 @@ async function handleAdminSave(body, response) {
   try {
     siteData.write(content);
     console.log('[admin] siteData.js перезаписан из админ-панели.');
+
+    // Возвращаем правку в репозиторий, чтобы она оказалась и в исходном коде.
+    // Настроено это или нет — сохранение в любом случае уже состоялось.
+    const published = await publishToGit('после сохранения');
+
     json(response, 200, {
       ok: true,
       version: siteData.version,
       file: siteDataPath,
       content,
       autoTranslated: auto.translated,
+      published,
     });
   } catch (error) {
     console.error('[admin] Ошибка записи siteData.js:', error.message);
     json(response, 500, { message: `Не удалось записать siteData.js: ${error.message}` });
+  }
+}
+
+// ---------- Выгрузка контента обратно в репозиторий ----------
+// На своём компьютере админка правит файл прямо в проекте, и код уже свежий.
+// На хостинге контент лежит на диске, поэтому его надо отдельно закоммитить.
+async function publishToGit(reason) {
+  const cfg = gitConfig();
+  if (!cfg.configured || !cfg.auto) return null;
+  try {
+    const result = await pushFile(siteDataPath, {});
+    if (result.skipped) return { ok: true, skipped: true };
+    console.log(`[git] Контент отправлен в ${result.repo}@${result.branch} (${reason}), коммит ${result.sha}.`);
+    return result;
+  } catch (error) {
+    // Не удалось — правки всё равно сохранены на диске и на сайте.
+    console.warn('[git] Не удалось выгрузить контент в репозиторий:', error.message);
+    return { ok: false, message: error.message };
+  }
+}
+
+async function handleAdminPublish(body, response) {
+  if (!body || body.key !== ADMIN_KEY) {
+    json(response, 401, { message: 'Неверный ключ администратора.' });
+    return;
+  }
+  const cfg = gitConfig();
+  if (!cfg.configured) {
+    json(response, 400, { message: 'Выгрузка в GitHub не настроена. Добавьте GITHUB_TOKEN и GITHUB_REPO в переменные окружения.' });
+    return;
+  }
+  try {
+    const result = await pushFile(siteDataPath, { message: body.message });
+    if (result.skipped) { json(response, 200, { ok: true, skipped: true, message: result.reason }); return; }
+    console.log(`[git] Контент отправлен вручную, коммит ${result.sha}.`);
+    json(response, 200, result);
+  } catch (error) {
+    json(response, 500, { message: error.message });
+  }
+}
+
+async function handlePublishStatus(response, query) {
+  if ((query.get('key') || '') !== ADMIN_KEY) {
+    json(response, 401, { message: 'Неверный ключ администратора.' });
+    return;
+  }
+  // Локальный запуск: файл и так лежит в проекте, выгружать никуда не нужно.
+  const local = siteDataPath === repoSiteDataPath;
+  json(response, 200, { ...(await checkAccess()), local, file: siteDataPath });
+}
+
+// Скачать текущий siteData.js — запасной путь, если GitHub не настроен:
+// файл кладут в проект руками и коммитят.
+function handleDownloadContentFile(response, query) {
+  if ((query.get('key') || '') !== ADMIN_KEY) {
+    json(response, 401, { message: 'Неверный ключ администратора.' });
+    return;
+  }
+  try {
+    const text = readFileSync(siteDataPath, 'utf8');
+    response.writeHead(200, {
+      'Content-Type': 'text/javascript; charset=utf-8',
+      'Content-Disposition': 'attachment; filename="siteData.js"',
+    });
+    response.end(text);
+  } catch (error) {
+    json(response, 500, { message: `Не удалось прочитать файл: ${error.message}` });
   }
 }
 
@@ -879,6 +964,9 @@ const server = createServer(async (request, response) => {
     if (request.method === 'POST' && pathname === '/api/admin/save') { await handleAdminSave(await parseBody(request), response); return; }
     if (request.method === 'POST' && pathname === '/api/admin/translate-all') { await handleAdminTranslateAll(await parseBody(request), response); return; }
     if (request.method === 'GET' && pathname === '/api/admin/translate/status') { await handleTranslateStatus(response, query); return; }
+    if (request.method === 'POST' && pathname === '/api/admin/publish') { await handleAdminPublish(await parseBody(request), response); return; }
+    if (request.method === 'GET' && pathname === '/api/admin/publish/status') { await handlePublishStatus(response, query); return; }
+    if (request.method === 'GET' && pathname === '/api/admin/content/file') { handleDownloadContentFile(response, query); return; }
     if (request.method === 'POST' && pathname === '/api/admin/reset') { handleAdminResetContent(await parseBody(request), response); return; }
     if (request.method === 'POST' && pathname === '/api/admin/translate') { await handleAdminTranslate(await parseBody(request), response); return; }
 
