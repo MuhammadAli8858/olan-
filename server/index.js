@@ -19,6 +19,7 @@ import { SiteDataFile } from './siteDataFile.js';
 import { createStaticHandler } from './static.js';
 import { Staff } from './users.js';
 import { localName, needsExternalTranslation, transliterate } from './translit.js';
+import { translateOne, syncOnSave, fillMissing, countMissing, AUTO_LANGS, MANUAL_LANGS } from './translate.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -295,7 +296,7 @@ function handleContentVersion(response) {
   json(response, 200, { version: siteData.version, stamp: siteData.stamp(), file: siteDataPath });
 }
 
-function handleAdminSave(body, response) {
+async function handleAdminSave(body, response) {
   if (!body || body.key !== ADMIN_KEY) {
     json(response, 401, { message: 'Неверный ключ администратора.' });
     return;
@@ -305,13 +306,90 @@ function handleAdminSave(body, response) {
     json(response, 400, { message: 'Некорректные данные контента.' });
     return;
   }
+
+  // Перед записью до��олняем русский, английский и узбекский.
+  // Смотрим, что изменилось с прошлого сохранения: правили русский —
+  // обновятся английский и узбекский, добавили новую карточку — переведётся
+  // целиком. Китайский и арабский остаются такими, какими их сделал человек.
+  let auto = { translated: 0, fields: 0 };
+  if (body.autoTranslate !== false) {
+    try {
+      const previous = await siteData.read().catch(() => ({}));
+      auto = await syncOnSave(previous, content, { targets: AUTO_LANGS });
+      if (auto.translated) {
+        console.log(`[translate] Автоперевод при сохранении: ${auto.translated} строк в ${auto.fields} полях.`);
+      }
+      if (auto.skipped) {
+        console.log(`[translate] Осталось ${auto.skipped} полей — доберём при следующем сохранении или кнопкой «Перевести сайт».`);
+      }
+    } catch (error) {
+      // Нет интернета — не повод терять правки. Сохраняем как есть.
+      console.warn('[translate] Автоперевод пропущен:', error.message);
+    }
+  }
+
   try {
     siteData.write(content);
     console.log('[admin] siteData.js перезаписан из админ-панели.');
-    json(response, 200, { ok: true, version: siteData.version, file: siteDataPath });
+    json(response, 200, {
+      ok: true,
+      version: siteData.version,
+      file: siteDataPath,
+      content,
+      autoTranslated: auto.translated,
+    });
   } catch (error) {
     console.error('[admin] Ошибка записи siteData.js:', error.message);
     json(response, 500, { message: `Не удалось записать siteData.js: ${error.message}` });
+  }
+}
+
+// ---------- Перевод всего сайта разом ----------
+// Админка вызывает этот эндпоинт по кругу, порциями: так видно прогресс,
+// а запрос не висит несколько минут и не обрывается по таймауту.
+async function handleAdminTranslateAll(body, response) {
+  if (!body || body.key !== ADMIN_KEY) {
+    json(response, 401, { message: 'Неверный ключ администратора.' });
+    return;
+  }
+  const targets = Array.isArray(body.targets) && body.targets.length ? body.targets : AUTO_LANGS;
+  const source = body.from || 'ru';
+  const force = body.force === true;
+  const limit = Number(body.limit) > 0 ? Number(body.limit) : 60;
+
+  try {
+    const content = await siteData.read();
+    const result = await fillMissing(content, { targets, source, force, limit });
+    if (result.translated) siteData.write(content);
+    const remaining = countMissing(content, { targets, source, force });
+    console.log(`[translate] Перевод сайта: +${result.translated} строк, осталось ${remaining}.`);
+    json(response, 200, {
+      ok: true,
+      translated: result.translated,
+      fields: result.fields,
+      remaining,
+      done: remaining === 0,
+      version: siteData.version,
+    });
+  } catch (error) {
+    console.error('[translate] Ошибка перевода сайта:', error.message);
+    json(response, 500, { message: `Не удалось перевести: ${error.message}` });
+  }
+}
+
+// Сколько строк ещё не переведено — админка показывает это числом.
+async function handleTranslateStatus(response, query) {
+  if ((query.get('key') || '') !== ADMIN_KEY) {
+    json(response, 401, { message: 'Неверный ключ администратора.' });
+    return;
+  }
+  try {
+    const content = await siteData.read();
+    const auto = countMissing(content, { targets: AUTO_LANGS });
+    const manual = countMissing(content, { targets: MANUAL_LANGS });
+    json(response, 200, { auto, manual, autoLangs: AUTO_LANGS, manualLangs: MANUAL_LANGS });
+  } catch (error) {
+    json(response, 500, { message: error.message });
   }
 }
 
@@ -331,24 +409,9 @@ function handleAdminResetContent(body, response) {
   }
 }
 
-// ---------- Автоперевод (бесплатный Google Translate, без ключа) ----------
-const GT_LANG = { zh: 'zh-CN' };
-async function translateOne(text, from, to) {
-  try {
-    const value = text == null ? '' : String(text);
-    if (!value.trim()) return value;
-    const sl = GT_LANG[from] || from;
-    const tl = GT_LANG[to] || to;
-    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${tl}&dt=t&q=${encodeURIComponent(value)}`;
-    const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
-    if (!res.ok) return value;
-    const data = await res.json();
-    const out = (data[0] || []).map((seg) => (seg && seg[0]) || '').join('');
-    return out || value;
-  } catch {
-    return text == null ? '' : String(text);
-  }
-}
+// ---------- Автоперевод ----------
+// Сам переводчик вынесен в server/translate.js: там же правила о том,
+// какие языки заполняются сами (ru/en/uz), а какие только вручную (zh/ar).
 
 // Языки, на которые переводим имена сотрудников. Берём из контента сайта,
 // чтобы список совпадал с переключателем языков.
@@ -813,7 +876,9 @@ const server = createServer(async (request, response) => {
 
     if (request.method === 'GET' && pathname === '/api/content') { await handleGetContent(response); return; }
     if (request.method === 'GET' && pathname === '/api/content/version') { handleContentVersion(response); return; }
-    if (request.method === 'POST' && pathname === '/api/admin/save') { handleAdminSave(await parseBody(request), response); return; }
+    if (request.method === 'POST' && pathname === '/api/admin/save') { await handleAdminSave(await parseBody(request), response); return; }
+    if (request.method === 'POST' && pathname === '/api/admin/translate-all') { await handleAdminTranslateAll(await parseBody(request), response); return; }
+    if (request.method === 'GET' && pathname === '/api/admin/translate/status') { await handleTranslateStatus(response, query); return; }
     if (request.method === 'POST' && pathname === '/api/admin/reset') { handleAdminResetContent(await parseBody(request), response); return; }
     if (request.method === 'POST' && pathname === '/api/admin/translate') { await handleAdminTranslate(await parseBody(request), response); return; }
 

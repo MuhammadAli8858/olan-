@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Save, LogOut, Plus, Trash2, RotateCcw, Box, Lightbulb, Type, Languages, Image as ImageIcon, Award, ListChecks, HelpCircle, Building2, Phone, RefreshCw, FileCode, Users } from 'lucide-react';
 import StaffSection from './components/StaffSection.jsx';
-import { Menu, X, Undo2, ArrowLeft } from 'lucide-react';
+import { Menu, X, Undo2, ArrowLeft, Globe } from 'lucide-react';
 import { describeChange } from './lib/changes.js';
 import { ImageField, ImageListEditor } from './components/ImageUpload.jsx';
 import GenericEditor from './components/GenericEditor.jsx';
@@ -9,6 +9,11 @@ import { Building2 as BuildingIcon, Layers, Package, Route, Workflow as Workflow
 import { getJson, postJson } from './lib/api.js';
 
 const KEY_STORE = 'olan-admin-key';
+
+// Русский, английский и узбекский сервер заполняет сам при каждом сохранении.
+const AUTO_LANGS = ['ru', 'en', 'uz'];
+// Китайский и арабский — только вручную или по отдельной команде.
+const MANUAL_LANGS = ['zh', 'ar'];
 const DEFAULT_LANGS = [
   { code: 'ru', label: 'Русский' },
   { code: 'uz', label: 'Oʻzbekcha' },
@@ -377,8 +382,22 @@ export default function App() {
   const [undoTarget, setUndoTarget] = useState(null);
   // Куда вернуться из раздела «Сотрудники».
   const [prevTab, setPrevTab] = useState('products');
+  // Сколько строк ещё не переведено: отдельно автоязыки и ручные.
+  const [transLeft, setTransLeft] = useState(null);
+  // Прогон перевода всего сайта: текст прогресса в шапке.
+  const [transRun, setTransRun] = useState('');
+  // Захватывать ли китайский и арабский при переводе. По умолчанию нет:
+  // их правят руками, и затирать чужую работу не годится.
+  const [withManual, setWithManual] = useState(false);
 
   const langs = useMemo(() => (content?.LANGUAGE_OPTIONS?.length ? content.LANGUAGE_OPTIONS : DEFAULT_LANGS), [content]);
+
+  // На какие языки переводим кнопками. Автоязыки всегда, ручные — по галочке.
+  const translateTargets = useMemo(() => {
+    const codes = langs.map((l) => l.code);
+    const allowed = withManual ? [...AUTO_LANGS, ...MANUAL_LANGS] : AUTO_LANGS;
+    return codes.filter((c) => allowed.includes(c) && c !== lang);
+  }, [langs, lang, withManual]);
 
   const patch = (fn) => {
     setDirty(true);
@@ -449,7 +468,7 @@ export default function App() {
     }
   };
 
-  useEffect(() => { if (key) loadContent(); /* eslint-disable-next-line */ }, [key]);
+  useEffect(() => { if (key) { loadContent(); refreshTranslationStatus(); } /* eslint-disable-next-line */ }, [key]);
 
   // ---- Синхронизация «код → админка» ----
   // Каждые 2.5 секунды спрашиваем сервер, не менялся ли siteData.js.
@@ -514,10 +533,15 @@ export default function App() {
         ignoreVersionRef.current = res.version;
         versionRef.current = res.version;
       }
+      // Сервер мог дописать английский и узбекский — забираем его версию,
+      // иначе в админке останется старый текст, а в файле будет новый.
+      if (res && res.content) setContent(res.content);
       setDirty(false);
       setCodeChanged(false);
       setHistory([]);
-      setStatus('Сохранено в siteData.js. Сайт обновится сам (Vite перезагрузит страницу).');
+      const added = res && res.autoTranslated ? ` Переведено строк: ${res.autoTranslated} (EN, UZ).` : '';
+      setStatus(`Сохранено в siteData.js.${added}`);
+      refreshTranslationStatus();
     } catch (e) {
       setStatus(/ключ|401/i.test(e.message) ? 'Неверный ключ администратора.' : `Ошибка сохранения: ${e.message}`);
     } finally { setSaving(false); }
@@ -529,12 +553,52 @@ export default function App() {
     catch (e) { setStatus(`Ошибка сброса: ${e.message}`); }
   };
 
+  // Сколько строк ещё без перевода — показываем числом у кнопки.
+  const refreshTranslationStatus = async () => {
+    try {
+      const res = await getJson(`/api/admin/translate/status?key=${encodeURIComponent(key)}`);
+      setTransLeft(res);
+    } catch { /* не критично: просто не покажем счётчик */ }
+  };
+
+  // Перевод всего сайта. Идём порциями: сервер переводит по 60 строк
+  // за запрос и сообщает, сколько осталось. Так видно прогресс и ничто
+  // не обрывается по таймауту на длинном контенте.
+  const translateWholeSite = async () => {
+    if (dirty) { setStatus('Сначала сохраните правки — перевод работает с тем, что записано в файл.'); return; }
+    const targets = withManual ? [...AUTO_LANGS, ...MANUAL_LANGS] : AUTO_LANGS;
+    const list = langs.map((l) => l.code).filter((c) => targets.includes(c) && c !== 'ru');
+    if (!confirm(`Перевести весь сайт на: ${list.join(', ').toUpperCase()}?\n\nЗаполнятся только пустые поля, уже написанные тексты останутся как есть.`)) return;
+
+    setTransRun('Считаю объём…');
+    let total = 0;
+    let done = 0;
+    try {
+      for (;;) {
+        // eslint-disable-next-line no-await-in-loop
+        const res = await postJson('/api/admin/translate-all', { key, targets: list, from: 'ru', limit: 60 });
+        done += res.translated || 0;
+        if (!total) total = done + (res.remaining || 0);
+        const percent = total ? Math.round((done / total) * 100) : 100;
+        setTransRun(`Перевод: ${done} из ${total} (${percent}%)`);
+        if (res.done || !res.translated) break;
+      }
+      await loadContent();
+      await refreshTranslationStatus();
+      setTransRun('');
+      setStatus(`Перевод завершён: ${done} строк. Проверьте текст и при необходимости поправьте вручную.`);
+    } catch (e) {
+      setTransRun('');
+      setStatus(`Не удалось перевести: ${e.message}. Проверьте, есть ли у сервера интернет.`);
+    }
+  };
+
   // Перевод одной карточки с текущего языка на остальные.
   const onTranslate = async (collection, index, stringKeys, arrayKeys, itemKey) => {
     setBusyId(itemKey); setStatus('Перевод…');
     try {
       const item = content[collection][index];
-      const targets = langs.map((l) => l.code).filter((c) => c !== lang);
+      const targets = translateTargets;
       const texts = [];
       stringKeys.forEach((k) => texts.push((item[k] && item[k][lang]) || ''));
       arrayKeys.forEach((k) => ((item[k] && item[k][lang]) || []).forEach((v) => texts.push(v || '')));
@@ -563,7 +627,7 @@ export default function App() {
     try {
       const source = (value && value[lang]) || '';
       if (!String(source).trim()) { setStatus('Поле пустое — переводить нечего.'); return; }
-      const targets = langs.map((l) => l.code).filter((c) => c !== lang);
+      const targets = translateTargets;
       const { translations } = await postJson('/api/admin/translate', { key, from: lang, to: targets, texts: [source] });
       const next = { ...value };
       targets.forEach((code) => {
@@ -581,7 +645,7 @@ export default function App() {
     setBusyId('contact'); setStatus('Перевод…');
     try {
       const ci = content.CONTACT_INFO || {};
-      const targets = langs.map((l) => l.code).filter((c) => c !== lang);
+      const targets = translateTargets;
       const texts = [(ci.hours && ci.hours[lang]) || '', (ci.address && ci.address[lang]) || ''];
       const { translations } = await postJson('/api/admin/translate', { key, from: lang, to: targets, texts });
       patch((c) => {
@@ -674,6 +738,28 @@ export default function App() {
                   className="rounded-xl border border-cyan-500/20 bg-slate-900 px-2 py-1.5 text-xs text-white sm:text-sm">
                   {langs.map((l) => <option key={l.code} value={l.code}>{l.label}</option>)}
                 </select>
+
+                {/* Перевод всего сайта. Русский, английский и узбекский
+                    сервер и так держит в актуальном состоянии при каждом
+                    сохранении — кнопка нужна для первого прогона и для
+                    китайского с арабским по галочке. */}
+                <label className="hidden items-center gap-1.5 rounded-xl border border-cyan-500/20 px-2 py-1.5 text-[11px] text-slate-300 xl:inline-flex"
+                  title="Захватить китайский и арабский. Обычно их правят вручную.">
+                  <input type="checkbox" checked={withManual} onChange={(e) => setWithManual(e.target.checked)} className="accent-cyan-500" />
+                  ZH / AR
+                </label>
+
+                <button type="button" onClick={translateWholeSite} disabled={!!transRun || !content}
+                  className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-cyan-500/20 px-2.5 text-xs text-slate-300 transition hover:text-white disabled:opacity-40"
+                  title="Перевести весь сайт: заполнить пустые поля на других языках">
+                  <Globe className="h-4 w-4" />
+                  <span className="hidden sm:inline">{transRun || 'Перевести сайт'}</span>
+                  {!transRun && transLeft && (transLeft.auto + (withManual ? transLeft.manual : 0)) > 0 && (
+                    <span className="rounded-full bg-amber-500/20 px-1.5 text-[10px] text-amber-300">
+                      {transLeft.auto + (withManual ? transLeft.manual : 0)}
+                    </span>
+                  )}
+                </button>
 
                 <button type="button" onClick={() => loadContent()}
                   className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-cyan-500/20 text-slate-300 transition hover:text-white"
