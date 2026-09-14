@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // Кабинет менеджера и оператора. Запуск: npm run operator
 // Все три приложения используют один общий node_modules в корне проекта.
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ mode, command }) => {
   const env = loadEnv(mode, process.cwd(), '');
 
   // По умолчанию слушаем только localhost — тогда в терминале выводится
@@ -13,7 +13,14 @@ export default defineConfig(({ mode }) => {
   //   VITE_HOST=192.168.1.65
   const host = env.VITE_HOST || 'localhost';
 
+  // Приложение живёт в подпапке домена (сервер раздаёт его по
+  // префиксу /operator/), поэтому ссылки на собранные файлы
+  // должны быть относительно этого префикса, а не корня сайта.
+  // В режиме разработки Vite слушает свой порт, там base не нужен.
+  const base = command === 'build' ? '/operator/' : '/';
+
   return {
+    base,
     root: 'apps/operator',
     envDir: '../../',
     plugins: [react(), tailwindcss()],
