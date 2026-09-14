@@ -10,7 +10,7 @@
       // темой на мгновение мелькнёт белый экран.
       (function () {
         try {
-          var saved = localStorage.getItem('olan-theme');
+          var saved = localStorage.getItem('olan-theme-choice');
           var dark = saved
             ? saved === 'dark'
             : window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;

@@ -202,17 +202,30 @@
    дальше растить бессмысленно, строка становится слишком длинной.
    ═══════════════════════════════════════════════════════════════════════ */
 html {
-  font-size: clamp(16.5px, 0.95rem + 0.35vw, 20px);
+  /* Только пиксели: rem внутри правила, которое сам rem и задаёт, —
+     ссылка на самого себя, и браузеры считают её от исходных 16px.
+     От этого размеры вели себя непредсказуемо. */
+  font-size: clamp(15.5px, 14px + 0.25vw, 18px);
   -webkit-text-size-adjust: 100%;
 }
 
-/* Крупные заголовки растут быстрее обычного текста, но тоже с потолком. */
-h1, .text-fluid-h1 { font-size: clamp(2rem, 1.5rem + 2.2vw, 3.4rem); line-height: 1.1; }
-h2, .text-fluid-h2 { font-size: clamp(1.6rem, 1.25rem + 1.5vw, 2.6rem); line-height: 1.15; }
+/* Золотая середина для заголовков.
 
-/* Длинные абзацы не должны растягиваться на весь монитор — глазу тяжело
-   возвращаться к началу строки. */
-p { max-width: 78ch; }
+   Нижняя граница — чтобы читалось на телефоне, верхняя — чтобы на большом
+   мониторе заголовок не превращался в вывеску. Растёт от ширины окна,
+   но упирается в потолок: дальше строка становится слишком длинной. */
+.text-h1 { font-size: clamp(1.75rem, 1rem + 2.1vw, 2.9rem); line-height: 1.12; letter-spacing: -0.02em; }
+.text-h2 { font-size: clamp(1.45rem, 0.95rem + 1.3vw, 2.15rem); line-height: 1.18; letter-spacing: -0.01em; }
+.text-h3 { font-size: clamp(1.15rem, 0.95rem + 0.5vw, 1.5rem);  line-height: 1.3; }
+.text-lead { font-size: clamp(1rem, 0.95rem + 0.3vw, 1.2rem); line-height: 1.65; }
+
+/* Те же размеры для обычных тегов, если класс не проставлен. */
+h1:not([class*="text-"]) { font-size: clamp(1.75rem, 1rem + 2.1vw, 2.9rem); line-height: 1.12; }
+h2:not([class*="text-"]) { font-size: clamp(1.45rem, 0.95rem + 1.3vw, 2.15rem); line-height: 1.18; }
+
+/* Длинные абзацы не растягиваем на весь монитор: возвращаться
+   к началу строки длиной в полтора метра тяжело. */
+p { max-width: 72ch; }
 p.max-w-none, .prose-wide p { max-width: none; }
 
 /* Отметка на радаре: вспыхивает при проходе луча и медленно гаснет.
@@ -258,12 +271,39 @@ p.max-w-none, .prose-wide p { max-width: none; }
 /* Экран ниже 720 px (типичный ноутбук 13–14") — ужимаем заголовок,
    иначе он съедает место у кнопок и цифр. */
 @media (max-height: 720px) {
-  .olan-hero h1,
-  .olan-hero .text-fluid-h1 { font-size: clamp(1.6rem, 3.2vh + 0.8rem, 2.6rem); }
+  .olan-hero .text-h1 { font-size: clamp(1.5rem, 2.6vh + 0.7rem, 2.3rem); }
+  .olan-hero .text-lead { font-size: clamp(0.95rem, 1.2vh + 0.6rem, 1.05rem); }
   .olan-hero .olan-stat { padding-top: 0.75rem; padding-bottom: 0.75rem; }
 }
 
 /* Совсем низкие окна: убираем прыгающую стрелку, она только мешает. */
 @media (max-height: 600px) {
   .olan-hero .animate-bounce { animation: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Радар в блоке мониторинга.
+   Луч делает оборот за 4 секунды. Отметка вспыхивает в тот момент,
+   когда луч доходит до её угла, и гаснет примерно за пол-оборота.
+   ═══════════════════════════════════════════════════════════════════════ */
+@keyframes olan-radar-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes olan-radar-blip {
+  0%   { opacity: 0; r: 2; }
+  3%   { opacity: 1; r: 5; }
+  12%  { opacity: 0.92; r: 3; }
+  45%  { opacity: 0.3; r: 3; }
+  62%  { opacity: 0; r: 2.5; }
+  100% { opacity: 0; r: 2; }
+}
+
+.olan-radar-rotate { animation: olan-radar-rotate 4s linear infinite; }
+.olan-radar-blip { opacity: 0; animation: olan-radar-blip 4s linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .olan-radar-rotate { animation: none; }
+  .olan-radar-blip { animation: none; opacity: 0.7; }
 }

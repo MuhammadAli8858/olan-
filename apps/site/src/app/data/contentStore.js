@@ -14,7 +14,26 @@ import {
   TESTIMONIALS,
   CONTACT_INFO,
   LANGUAGE_OPTIONS,
+  // Блоки из корпоративной презентации
+  COMPANY,
+  COMPANY_STATS,
+  DIRECTIONS,
+  PORTFOLIO,
+  ENGAGEMENT_MODELS,
+  WORKFLOW,
+  TEAM,
+  SOFTWARE_FEATURES,
+  FORM_FACTORS,
+  SERVICE_CASES,
 } from './siteData.js';
+
+// Объект заменяем не целиком, а по полям: ссылка на него разошлась
+// по компонентам, и подмена ссылки до них уже не дойдёт.
+function replaceObject(target, next) {
+  if (!next || typeof next !== 'object' || Array.isArray(next)) return;
+  Object.keys(target).forEach((key) => { delete target[key]; });
+  Object.assign(target, next);
+}
 
 function replaceArray(target, next) {
   if (!Array.isArray(next)) return;
@@ -43,6 +62,20 @@ export function applyServerContent(content) {
   if (Array.isArray(content.LANGUAGE_OPTIONS) && content.LANGUAGE_OPTIONS.length) {
     replaceArray(LANGUAGE_OPTIONS, content.LANGUAGE_OPTIONS);
   }
+
+  // Блоки из презентации. Без них правки из админ-панели в разделах
+  // «Профиль компании», «Продукты», «Команда» и прочих не доходили
+  // до собранного сайта — именно поэтому изменения не были видны.
+  replaceArray(COMPANY_STATS, content.COMPANY_STATS);
+  replaceArray(DIRECTIONS, content.DIRECTIONS);
+  replaceArray(PORTFOLIO, content.PORTFOLIO);
+  replaceArray(ENGAGEMENT_MODELS, content.ENGAGEMENT_MODELS);
+  replaceArray(SERVICE_CASES, content.SERVICE_CASES);
+  replaceObject(COMPANY, content.COMPANY);
+  replaceObject(WORKFLOW, content.WORKFLOW);
+  replaceObject(TEAM, content.TEAM);
+  replaceObject(SOFTWARE_FEATURES, content.SOFTWARE_FEATURES);
+  replaceObject(FORM_FACTORS, content.FORM_FACTORS);
 }
 
 export async function loadContent() {

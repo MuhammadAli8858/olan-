@@ -6,7 +6,14 @@ const SiteContext = createContext(null);
 const SUPPORTED = LANGUAGE_OPTIONS.map((option) => option.code);
 const DEFAULT_LANGUAGE = 'ru';
 const LANG_STORAGE_KEY = 'olan-lang';
-const THEME_STORAGE_KEY = 'olan-theme';
+// Ключ намеренно новый.
+//
+// Прежние версии сайта записывали тему в 'olan-theme' при каждом заходе,
+// даже когда посетитель её не выбирал. У всех, кто открывал сайт раньше,
+// там осталось «решение», из-за которого системная тема не срабатывала.
+// Новый ключ игнорирует эту запись: определение по системе снова работает,
+// а свой выбор посетитель сделает заново одним нажатием.
+const THEME_STORAGE_KEY = 'olan-theme-choice';
 
 // Какая тема стоит в системе у посетителя.
 function systemTheme() {

@@ -52,7 +52,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="mt-6 text-5xl font-black leading-tight md:text-7xl"
+            className="text-h1 mt-[clamp(1rem,2.5vh,1.5rem)] font-black"
           >
             <span className="block bg-gradient-to-r from-slate-900 via-cyan-700 to-slate-900 bg-clip-text text-transparent dark:from-white dark:via-cyan-100 dark:to-white">
               {text.hero.title1}
@@ -66,7 +66,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mx-auto mt-6 text-lg leading-8 text-slate-600 dark:text-slate-300 md:text-xl"
+            className="text-lead mx-auto mt-[clamp(0.75rem,2vh,1.5rem)] text-slate-600 dark:text-slate-300"
           >
             {text.hero.description}
           </motion.p>
@@ -75,7 +75,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mx-auto max-w-3xl text-lg leading-8 text-slate-600 dark:text-slate-300 md:text-xl"
+            className="text-lead mx-auto max-w-3xl text-slate-600 dark:text-slate-300"
           >
             {text.hero.descriptionLine2}
           </motion.p>
@@ -89,8 +89,8 @@ export function Hero() {
             <button
               type="button"
               onClick={() => scrollToId('catalog')}
-            className="olan-sweep inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-full font-medium text-lg hover:shadow-2xl hover:shadow-cyan-500/50 transition-all duration-300 hover:scale-105"
-              // className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 px-8 py-4 text-lg font-semibold text-white shadow-xl shadow-cyan-500/20 transition hover:translate-y-[-1px]"
+            className="olan-sweep inline-flex items-center gap-2 px-7 py-3.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-full font-medium text-lg hover:shadow-2xl hover:shadow-cyan-500/50 transition-all duration-300 hover:scale-105"
+              // className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 px-7 py-3.5 text-lg font-semibold text-white shadow-xl shadow-cyan-500/20 transition hover:translate-y-[-1px]"
             >
               {text.actions.openCatalog}
               <Search className="h-5 w-5" />
@@ -98,7 +98,7 @@ export function Hero() {
             <button
               type="button"
               onClick={() => scrollToId('contact')}
-              className="olan-sweep inline-flex items-center gap-2 rounded-full border border-slate-200 dark:border-cyan-500/20 bg-white px-8 py-4 text-lg font-semibold text-slate-700 hover:shadow-2xl hover:shadow-cyan-500/35 backdrop-blur transition hover:border-cyan-500/50 hover:text-cyan-600 hover:scale-105 dark:bg-white/5 dark:text-white"
+              className="olan-sweep inline-flex items-center gap-2 rounded-full border border-slate-200 dark:border-cyan-500/20 bg-white px-7 py-3.5 text-lg font-semibold text-slate-700 hover:shadow-2xl hover:shadow-cyan-500/35 backdrop-blur transition hover:border-cyan-500/50 hover:text-cyan-600 hover:scale-105 dark:bg-white/5 dark:text-white"
             >
               {text.actions.consultation}
               <ArrowRight className="h-5 w-5" />

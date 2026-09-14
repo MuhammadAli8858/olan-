@@ -218,71 +218,62 @@ export function LiveMonitor() {
           </div>
 
           {/* ------------------------- Справа: радар ------------------------- */}
+          {/* Рисуем через SVG, а не градиентами: здесь угол сектора задаётся
+              числом, а не подбирается на глаз, и картинка одинаково выглядит
+              во всех браузерах. */}
           <div className="flex justify-center">
-            <div className="relative h-72 w-72 md:h-80 md:w-80">
-              {[1, 0.75, 0.5, 0.25].map((scale, index) => (
-                <div key={index}
-                  className="absolute rounded-full border border-slate-200 dark:border-cyan-500/20"
-                  style={{
-                    width: `${scale * 100}%`, height: `${scale * 100}%`,
-                    top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-                  }}
-                />
-              ))}
+            <div className="relative aspect-square w-full max-w-[20rem]">
+              <svg viewBox="0 0 200 200" className="h-full w-full overflow-visible">
+                <defs>
+                  {/* Шлейф: у линии яркий, к хвосту сходит на нет */}
+                  <linearGradient id="olan-radar-trail" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="rgb(34,211,238)" stopOpacity="0" />
+                    <stop offset="100%" stopColor="rgb(34,211,238)" stopOpacity="0.30" />
+                  </linearGradient>
+                  <radialGradient id="olan-radar-fade">
+                    <stop offset="55%" stopColor="#fff" stopOpacity="1" />
+                    <stop offset="100%" stopColor="#fff" stopOpacity="0.25" />
+                  </radialGradient>
+                  <mask id="olan-radar-mask">
+                    <circle cx="100" cy="100" r="92" fill="url(#olan-radar-fade)" />
+                  </mask>
+                </defs>
 
-              <div className="absolute bottom-0 left-1/2 top-0 w-px bg-cyan-500/10" />
-              <div className="absolute left-0 right-0 top-1/2 h-px bg-cyan-500/10" />
+                {/* Кольца дальности */}
+                {[92, 69, 46, 23].map((r) => (
+                  <circle key={r} cx="100" cy="100" r={r} fill="none"
+                    stroke="rgb(34,211,238)" strokeOpacity="0.18" strokeWidth="1" />
+                ))}
+                <line x1="100" y1="8" x2="100" y2="192" stroke="rgb(34,211,238)" strokeOpacity="0.10" strokeWidth="1" />
+                <line x1="8" y1="100" x2="192" y2="100" stroke="rgb(34,211,238)" strokeOpacity="0.10" strokeWidth="1" />
 
-              {/* Луч радара.
-                  Линия смотрит вправо, вращение идёт по часовой стрелке.
-                  Шлейф в conic-gradient отсчитывается от верха элемента,
-                  поэтому сектор 0…90 градусов — это ровно то, что луч
-                  уже прошёл. Так хвост оказывается позади линии, а не
-                  впереди неё, как было раньше. */}
-              <div className="olan-sweep-line absolute inset-0">
-                <div
-                  className="absolute inset-0 rounded-full"
-                  style={{
-                    background: [
-                      'conic-gradient(from 0deg,',
-                      'rgba(34,211,238,0) 0deg,',
-                      'rgba(34,211,238,0.03) 30deg,',
-                      'rgba(34,211,238,0.10) 60deg,',
-                      'rgba(34,211,238,0.22) 80deg,',
-                      'rgba(34,211,238,0.34) 89deg,',
-                      'rgba(34,211,238,0) 90deg)',
-                    ].join(' '),
-                    // К краю свечение слабеет — как на настоящем экране,
-                    // где сигнал у центра плотнее.
-                    maskImage: 'radial-gradient(circle at center, #000 25%, rgba(0,0,0,0.55) 75%, transparent 100%)',
-                    WebkitMaskImage: 'radial-gradient(circle at center, #000 25%, rgba(0,0,0,0.55) 75%, transparent 100%)',
-                  }}
-                />
-                <div
-                  className="absolute left-1/2 top-1/2 h-px w-1/2 origin-left"
-                  style={{
-                    background: 'linear-gradient(90deg, rgba(34,211,238,0.95), rgba(34,211,238,0.15))',
-                    boxShadow: '0 0 10px rgba(34,211,238,0.7)',
-                  }}
-                />
-              </div>
+                {/* Луч со шлейфом. Сектор в 70 градусов идёт ПОЗАДИ линии:
+                    дуга начинается на 70° раньше и приходит точно к ней. */}
+                <g className="olan-radar-rotate" style={{ transformOrigin: '100px 100px' }} mask="url(#olan-radar-mask)">
+                  <path
+                    d="M100,100 L131.5,13.5 A92,92 0 0,1 192,100 Z"
+                    fill="url(#olan-radar-trail)"
+                  />
+                  <line x1="100" y1="100" x2="192" y2="100"
+                    stroke="rgb(34,211,238)" strokeWidth="1.5" strokeOpacity="0.95" />
+                  <circle cx="192" cy="100" r="2.5" fill="rgb(34,211,238)" opacity="0.9" />
+                </g>
 
-              {/* Отметки целей. Луч делает круг за 4 секунды, поэтому каждая
-                  точка вспыхивает в тот момент, когда он до неё доходит,
-                  и затем медленно гаснет — как на настоящем радаре. */}
-              {BLIPS.map((blip, index) => (
-                <span
-                  key={index}
-                  className="absolute"
-                  style={{ top: blip.top, left: blip.left }}
-                >
-                  <span
-                    className="olan-blip relative block h-2 w-2 rounded-full bg-cyan-300"
+                {/* Отметки целей */}
+                {BLIPS.map((blip, index) => (
+                  <circle
+                    key={index}
+                    cx={blip.left * 2}
+                    cy={blip.top * 2}
+                    r="3"
+                    fill="rgb(103,232,249)"
+                    className="olan-radar-blip"
                     style={{ animationDelay: `${blip.delay}s` }}
                   />
-                </span>
-              ))}
+                ))}
 
+                <circle cx="100" cy="100" r="2" fill="rgb(34,211,238)" opacity="0.6" />
+              </svg>
             </div>
           </div>
         </div>

@@ -53,11 +53,10 @@ export function Header({ route, onNavigate, onSection, onHome }) {
             className="flex items-center gap-3"
           >
             <img src="/olan_logo.svg" alt={text.brand} className="h-9 w-9 rounded-xl object-cover shadow-lg shadow-cyan-500/20" />
-            <div className="hidden text-left sm:block">
-              <div className="bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-lg font-bold text-transparent">
-                {text.brand}
-              </div>
-              <div className="bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-lg font-bold text-transparent">PROJECT</div>
+            {/* Название в одну строку. Раньше «PROJECT» шло вторым блоком,
+                и шапка из-за этого была вдвое выше, чем нужно. */}
+            <div className="hidden whitespace-nowrap bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-[0.95rem] font-bold leading-tight text-transparent sm:block lg:text-base">
+              {text.brand} PROJECT
             </div>
           </motion.button>
 
