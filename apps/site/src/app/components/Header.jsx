@@ -42,7 +42,7 @@ export function Header({ route, onNavigate, onSection, onHome }) {
 
   return (
     <header className="fixed left-0 right-0 top-0 z-50 border-b border-slate-200 dark:border-cyan-500/15 bg-white backdrop-blur-xl transition-colors dark:bg-black/75">
-      <nav className="container mx-auto px-4 py-4">
+      <nav className="container mx-auto px-4 py-2.5">
         <div className="flex items-center justify-between gap-4">
           <motion.button
             type="button"
@@ -52,7 +52,7 @@ export function Header({ route, onNavigate, onSection, onHome }) {
             transition={{ duration: 0.4 }}
             className="flex items-center gap-3"
           >
-            <img src="/olan_logo.svg" alt={text.brand} className="h-11 w-11 rounded-xl object-cover shadow-lg shadow-cyan-500/20" />
+            <img src="/olan_logo.svg" alt={text.brand} className="h-9 w-9 rounded-xl object-cover shadow-lg shadow-cyan-500/20" />
             <div className="hidden text-left sm:block">
               <div className="bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-lg font-bold text-transparent">
                 {text.brand}
@@ -127,7 +127,7 @@ export function Header({ route, onNavigate, onSection, onHome }) {
               <button
                 type="button"
                 onClick={() => setLangOpen((prev) => !prev)}
-                className="inline-flex h-10 items-center gap-1.5 rounded-full border border-slate-200 dark:border-cyan-500/20 bg-white px-3 text-sm text-slate-700 transition hover:border-cyan-500/50 hover:text-cyan-600 dark:bg-slate-900 dark:text-slate-200"
+                className="inline-flex h-9 items-center gap-1.5 rounded-full border border-slate-200 dark:border-cyan-500/20 bg-white px-3 text-sm text-slate-700 transition hover:border-cyan-500/50 hover:text-cyan-600 dark:bg-slate-900 dark:text-slate-200"
                 aria-label={text.actions.language}
               >
                 <Globe className="h-4 w-4" />

@@ -15,7 +15,10 @@ export function Hero() {
   const { text } = useSite();
 
   return (
-    <section id="hero" className="relative flex min-h-[calc(100vh-4.5rem)] items-center justify-center overflow-hidden bg-slate-50 pt-20 transition-colors dark:bg-black">
+    <section
+      id="hero"
+      className="olan-hero relative flex flex-col overflow-hidden bg-slate-50 transition-colors dark:bg-black"
+    >
       <div className="absolute inset-0 z-0">
         <img
           src="/products/w-space.png"
@@ -34,7 +37,8 @@ export function Hero() {
       {/* <div className="absolute left-10 top-28 h-72 w-72 rounded-full bg-cyan-500/15 blur-3xl" />
       <div className="absolute bottom-16 right-10 h-80 w-80 rounded-full bg-blue-500/15 blur-3xl" /> */}
 
-      <div className="container relative z-20 mx-auto px-4 py-8 md:py-10">
+      <div className="container relative z-20 mx-auto flex flex-1 items-center px-4">
+        <div className="w-full py-[clamp(1rem,3vh,2.5rem)]">
         <div className="mx-auto max-w-5xl text-center">
           <motion.span
             initial={{ opacity: 0, y: 20 }}
@@ -80,7 +84,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
+            className="mt-[clamp(1.25rem,3.5vh,2.5rem)] flex flex-col items-center justify-center gap-4 sm:flex-row"
           >
             <button
               type="button"
@@ -105,7 +109,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="mx-auto mt-10 grid max-w-3xl grid-cols-1 gap-4 md:grid-cols-3 md:mt-12"
+            className="mx-auto mt-[clamp(1.25rem,3.5vh,3rem)] grid max-w-3xl grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4"
           >
             {text.hero.stats.map((stat) => (
               <div key={stat.label} className="olan-card rounded-3xl border border-slate-200 dark:border-cyan-500/15 bg-white p-5 backdrop-blur dark:bg-slate-950/50">
@@ -120,18 +124,19 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Индикатор прокрутки. На телефоне он стоит в общем потоке — сразу
-          под цифрами, иначе накладывался на «12 мес». На широком экране
-          возвращается к нижнему краю первого экрана, места там хватает. */}
+        </div>
+      {/* Индикатор прокрутки — последним элементом в потоке.
+          Раньше он был абсолютным и на невысоких экранах ноутбука
+          наезжал на строку с цифрами. */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 1.2 }}
-        className="relative z-20 mt-10 flex justify-center pb-4 md:absolute md:bottom-0 md:left-1/2 md:mt-0 md:-translate-x-1/2 md:pb-0"
+        className="relative z-20 flex shrink-0 justify-center pb-[clamp(0.75rem,2.5vh,2rem)]"
       >
         <div className="flex animate-bounce flex-col items-center gap-1.5">
           <span className="text-sm text-cyan-600 dark:text-cyan-400">Прокрутите вниз</span>
-          <div className="flex h-10 w-6 justify-center rounded-full border-2 border-cyan-500/50 pt-2">
+          <div className="flex h-9 w-6 justify-center rounded-full border-2 border-cyan-500/50 pt-2">
             <div className="h-2 w-1 rounded-full bg-cyan-500 dark:bg-cyan-400" />
           </div>
         </div>

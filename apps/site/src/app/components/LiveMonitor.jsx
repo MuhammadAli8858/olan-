@@ -81,12 +81,30 @@ function formatClock(date) {
 // Положение отметок и момент вспышки. Задержка подобрана так, чтобы
 // точка загоралась ровно тогда, когда луч проходит через её сектор:
 // полный оборот — 4 секунды, значит каждая четверть круга это 1 секунда.
-const BLIPS = [
-  { top: '25%', left: '62%', delay: 0.6 },
-  { top: '64%', left: '68%', delay: 1.7 },
-  { top: '70%', left: '34%', delay: 2.6 },
-  { top: '38%', left: '26%', delay: 3.4 },
+// Полный оборот луча.
+const SWEEP_SECONDS = 4;
+
+// Отметки целей заданы в процентах от размера радара (центр — 50/50).
+const BLIP_POSITIONS = [
+  { top: 25, left: 62 },
+  { top: 64, left: 68 },
+  { top: 70, left: 34 },
+  { top: 38, left: 26 },
 ];
+
+// Момент вспышки считается из положения точки, а не подбирается на глаз.
+// Луч стартует направленным вправо и идёт по часовой стрелке, значит
+// точка загорается, когда он доходит до её угла.
+const BLIPS = BLIP_POSITIONS.map((blip) => {
+  const dx = blip.left - 50;
+  const dy = blip.top - 50;
+  // Угол по часовой стрелке от направления «вверх», 0…360.
+  const angle = (Math.atan2(dx, -dy) * 180) / Math.PI;
+  const clockwise = (angle + 360) % 360;
+  // Луч в начале смотрит вправо — это 90 градусов от «вверх».
+  const fromStart = (clockwise - 90 + 360) % 360;
+  return { ...blip, delay: (fromStart / 360) * SWEEP_SECONDS };
+});
 
 export function LiveMonitor() {
   const { language } = useSite();

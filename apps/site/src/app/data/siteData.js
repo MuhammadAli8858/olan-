@@ -637,7 +637,7 @@ export const BENEFITS = [
   {
     id: 'integration',
     icon: 'Cpu',
-    title: { ru: 'Интеграция', uz: 'Integratsiya', en: 'Integration', zh: '集成' },
+    title: { ru: 'Интеграция', uz: 'Integratsiya', en: 'Integration', zh: '集成', ar: 'التكامل' },
     description: { ru: 'Подключение к центрам обработки данных, серверным и существующей инфраструктуре.', uz: 'Maʼlumotlarni qayta ishlash markazlari, serverlar va mavjud infratuzilmaga ulanish.', en: 'Connection to data centers, server rooms and existing infrastructure.', zh: '可接入数据中心、服务器机房和现有基础设施。' },
   },
   {
@@ -1231,10 +1231,10 @@ export const PROJECTS = [
 export const COMPANY = {
   tagline: { ru: 'Технологический партнёр полного цикла для умного города, автоматической фиксации нарушений и интеллектуальной транспортной инфраструктуры', en: 'Full-cycle technology partner for smart cities, automated traffic enforcement and intelligent transport infrastructure' },
   badges: [
-    { ru: 'Разработка', en: 'Development' },
-    { ru: 'Производство', en: 'Manufacturing' },
-    { ru: 'Интеграция', en: 'Integration' },
-    { ru: 'Эксплуатация', en: 'Operation' },
+    { ru: 'Разработка', en: 'Development', zh: '研发', ar: 'التطوير' },
+    { ru: 'Производство', en: 'Manufacturing', zh: '生产', ar: 'التصنيع' },
+    { ru: 'Интеграция', en: 'Integration', zh: '集成', ar: 'التكامل' },
+    { ru: 'Эксплуатация', en: 'Operation', zh: '运营', ar: 'التشغيل' },
   ],
   intro: { ru: 'Группа OLAN объединяет центр разработки программного обеспечения и электроники, производственную и инженерную базу в Узбекистане, а также международный контур проектов.', en: 'OLAN Group brings together a software and electronics development centre, a manufacturing and engineering base in Uzbekistan, and an international project portfolio.' },
   what: { ru: 'Компания разрабатывает, производит и внедряет программно-аппаратные комплексы, системы видеоаналитики и решения для цифровой инфраструктуры.', en: 'The company develops, manufactures and deploys integrated hardware and software systems, video analytics and digital infrastructure solutions.' },
@@ -1248,7 +1248,7 @@ export const COMPANY = {
     {
       id: 'rnd',
       icon: 'Code2',
-      title: { ru: 'Центр разработки', en: 'Development centre' },
+      title: { ru: 'Центр разработки', en: 'Development centre', zh: '研发中心', ar: 'مركز التطوير' },
       text: { ru: 'Программное обеспечение, компьютерное зрение и электроника', en: 'Software, computer vision and electronics' },
       details: [
         {
@@ -1264,7 +1264,7 @@ export const COMPANY = {
     {
       id: 'production',
       icon: 'Factory',
-      title: { ru: 'Производственная и инженерная база', en: 'Manufacturing and engineering base' },
+      title: { ru: 'Производственная и инженерная база', en: 'Manufacturing and engineering base', zh: '生产与工程基地', ar: 'قاعدة التصنيع والهندسة' },
       text: { ru: 'Узбекистан: сборка, настройка, монтаж и сервис', en: 'Uzbekistan: assembly, configuration, installation and service' },
       details: [
         { ru: 'Производственная база в Узбекистане: сборка программно-аппаратных комплексов, входной контроль комплектующих, настройка и выпускной контроль качества каждого изделия.', en: 'The manufacturing base in Uzbekistan: assembly of hardware and software systems, incoming inspection of components, configuration and final quality control of every unit.' },
@@ -1280,7 +1280,7 @@ export const COMPANY = {
     {
       id: 'international',
       icon: 'Globe',
-      title: { ru: 'Международный контур', en: 'International portfolio' },
+      title: { ru: 'Международный контур', en: 'International portfolio', zh: '国际业务', ar: 'المحفظة الدولية' },
       text: { ru: 'Проекты, партнёрства и локализация в других юрисдикциях', en: 'Projects, partnerships and localization in other jurisdictions' },
       details: [
         { ru: 'Международный контур — это проекты и партнёрства за пределами Узбекистана. Комплексы фиксации работают в Азии и Европе, городская система видеомониторинга внедрена в 16 городах Казахстана.', en: 'The international portfolio covers projects and partnerships beyond Uzbekistan. Enforcement systems operate across Asia and Europe; the city video monitoring platform is deployed in 16 cities of Kazakhstan.' },
@@ -1345,7 +1345,7 @@ export const DIRECTIONS = [
   {
     id: 'enforcement',
     icon: 'TrafficCone',
-    title: { ru: 'Автоматическая фиксация нарушений ПДД', en: 'Automated traffic enforcement' },
+    title: { ru: 'Автоматическая фиксация нарушений ПДД', en: 'Automated traffic enforcement', zh: '交通违法自动抓拍', ar: 'الرصد الآلي لمخالفات المرور' },
     text: { ru: 'Фиксация нарушений, распознавание ГРЗ, формирование дорожных событий и передача данных в государственные системы.', en: 'Violation detection, plate recognition, traffic event records and data transfer to government systems.' },
     image: '/products/w-space.png',
     imageCaption: { ru: 'Стационарный комплекс контроля скорости на магистрали', en: 'Fixed speed enforcement system on a highway' },
@@ -1377,7 +1377,7 @@ export const DIRECTIONS = [
   {
     id: 'vision',
     icon: 'Eye',
-    title: { ru: 'Видеоаналитика и компьютерное зрение', en: 'Video analytics and computer vision' },
+    title: { ru: 'Видеоаналитика и компьютерное зрение', en: 'Video analytics and computer vision', zh: '视频分析与计算机视觉', ar: 'تحليل الفيديو والرؤية الحاسوبية' },
     text: { ru: 'Собственные алгоритмы распознавания, обученные на реальных дорожных данных.', en: 'In-house recognition algorithms trained on real road data.' },
     image: '/products/TRC.png',
     imageCaption: { ru: 'Камера комплекса на перекрёстке: распознавание номеров в потоке', en: 'Intersection camera: plate recognition in live traffic' },
@@ -1390,7 +1390,7 @@ export const DIRECTIONS = [
   {
     id: 'its',
     icon: 'Route',
-    title: { ru: 'Интеллектуальная транспортная инфраструктура', en: 'Intelligent transport infrastructure' },
+    title: { ru: 'Интеллектуальная транспортная инфраструктура', en: 'Intelligent transport infrastructure', zh: '智能交通基础设施', ar: 'بنية تحتية ذكية للنقل' },
     text: { ru: 'Проектирование, развёртывание и эксплуатация распределённых дорожных систем.', en: 'Design, deployment and operation of distributed road systems.' },
     image: '/products/cordon.png',
     imageCaption: { ru: 'Опора с комплексом на участке дороги: типовая точка контроля', en: 'Roadside pole with an enforcement system: a typical control point' },
@@ -1403,7 +1403,7 @@ export const DIRECTIONS = [
   {
     id: 'smartcity',
     icon: 'Building2',
-    title: { ru: 'Решения для умного города', en: 'Smart city solutions' },
+    title: { ru: 'Решения для умного города', en: 'Smart city solutions', zh: '智慧城市解决方案', ar: 'حلول المدينة الذكية' },
     text: { ru: 'Камеры, платформы управления, каналы связи, ЦОД и мониторинг — от одного партнёра.', en: 'Cameras, management platforms, connectivity, data centres and monitoring — from one partner.' },
     image: '/products/sova.png',
     imageCaption: { ru: 'Городская камера видеонаблюдения в составе единой системы', en: 'Municipal surveillance camera within the unified system' },
@@ -1429,7 +1429,7 @@ export const DIRECTIONS = [
   {
     id: 'residential',
     icon: 'ShieldCheck',
-    title: { ru: 'Цифровая безопасность жилых территорий', en: 'Security systems for residential areas' },
+    title: { ru: 'Цифровая безопасность жилых территорий', en: 'Security systems for residential areas', zh: '住宅区数字安防', ar: 'الأمن الرقمي للمناطق السكنية' },
     text: { ru: 'Видеонаблюдение, домофоны с FaceID и изолированные сети для жилых кварталов.', en: 'Surveillance, FaceID intercoms and isolated networks for residential districts.' },
     image: '/products/astra.png',
     imageCaption: { ru: 'Оборудование видеонаблюдения для жилой территории', en: 'Surveillance equipment for a residential area' },
@@ -1442,7 +1442,7 @@ export const DIRECTIONS = [
   {
     id: 'gov',
     icon: 'Landmark',
-    title: { ru: 'Интеграция с государственными системами', en: 'Integration with government systems' },
+    title: { ru: 'Интеграция с государственными системами', en: 'Integration with government systems', zh: '与政府系统对接', ar: 'التكامل مع الأنظمة الحكومية' },
     text: { ru: 'Передача данных в реестры правонарушений и ведомственные информационные системы.', en: 'Data transfer to offence registers and government information systems.' },
     image: '/products/olan-complex-1.png',
     imageCaption: { ru: 'Комплекс в составе государственной системы фиксации', en: 'A system operating within the national enforcement network' },
@@ -1455,7 +1455,7 @@ export const DIRECTIONS = [
   {
     id: 'localization',
     icon: 'Cog',
-    title: { ru: 'Локализация производства и сервисная эксплуатация', en: 'Local manufacturing and ongoing service' },
+    title: { ru: 'Локализация производства и сервисная эксплуатация', en: 'Local manufacturing and ongoing service', zh: '本地化生产与服务运营', ar: 'التصنيع المحلي والتشغيل والصيانة' },
     text: { ru: 'Местная сборка, обучение персонала, монтаж и сервис по SLA.', en: 'Local assembly, staff training, installation and SLA-based service.' },
     image: '/products/uralan.png',
     imageCaption: { ru: 'Сборка и настройка комплекса на производственной базе', en: 'System assembly and configuration at the manufacturing base' },
@@ -1472,8 +1472,8 @@ export const PORTFOLIO = [
     id: 'autosdk',
     number: '01',
     icon: 'ScanLine',
-    title: { ru: 'AutoSDK', en: 'AutoSDK' },
-    subtitle: { ru: 'Библиотека распознавания ГРЗ', en: 'Number plate recognition library' },
+    title: { ru: 'AutoSDK', en: 'AutoSDK', zh: 'AutoSDK', ar: 'اسم للاختبار' },
+    subtitle: { ru: 'Библиотека распознавания ГРЗ', en: 'Number plate recognition library', zh: '车牌识别程序库', ar: 'مكتبة التعرّف على لوحات المركبات' },
     description: { ru: 'Библиотека для встраивания распознавания государственных регистрационных знаков в собственные продукты и программно-аппаратные комплексы — без разработки алгоритмов компьютерного зрения.', en: 'A library for embedding number plate recognition into your own products and hardware platforms — with no computer vision development of your own.' },
     features: [
       { ru: 'Обработка видеопотока в реальном времени', en: 'Real-time video stream processing' },
@@ -1496,14 +1496,14 @@ export const PORTFOLIO = [
     meta: { ru: 'Windows · Linux · macOS · UNIX-подобные ОС', en: 'Windows · Linux · macOS · UNIX-like systems' },
     note: { ru: 'AutoSDK внедрён более чем в 50 странах мира.', en: 'AutoSDK is deployed in more than 50 countries worldwide.' },
     image: '/products/TRC.png',
-    imageCaption: { ru: 'Библиотека распознавания ГРЗ', en: 'Number plate recognition library' },
+    imageCaption: { ru: 'Библиотека распознавания ГРЗ', en: 'Number plate recognition library', zh: '车牌识别程序库', ar: 'مكتبة التعرّف على لوحات المركبات' },
   },
   {
     id: 'complexes',
     number: '02',
     icon: 'Camera',
-    title: { ru: 'W-SPACE и URALAN', en: 'W-SPACE and URALAN' },
-    subtitle: { ru: 'Комплексы фиксации нарушений ПДД', en: 'Traffic enforcement systems' },
+    title: { ru: 'W-SPACE и URALAN', en: 'W-SPACE and URALAN', zh: 'W-SPACE 与 URALAN', ar: 'W-SPACE و URALAN' },
+    subtitle: { ru: 'Комплексы фиксации нарушений ПДД', en: 'Traffic enforcement systems', zh: '交通违法抓拍系统', ar: 'أنظمة رصد مخالفات المرور' },
     description: { ru: 'Выявление транспортных средств в зоне контроля, распознавание ГРЗ, измерение скорости, формирование доказательной базы и передача событий во внешние системы.', en: 'Vehicle detection in the enforcement zone, plate recognition, speed measurement, evidence package generation and event transfer to external systems.' },
     features: [
       { ru: 'Проезд транспортного средства', en: 'Vehicle passage' },
@@ -1529,19 +1529,19 @@ export const PORTFOLIO = [
     ],
     meta: { ru: 'до 26 типов фиксируемых событий', en: 'up to 26 types of violations captured' },
     note: { ru: 'Внедрено более 1000 комплексов в Азии и Европе. Комплекс на БЛА: фиксация с высоты до 200 метров, время полёта от 1 часа.', en: 'More than 1,000 systems deployed in Asia and Europe. UAV unit: enforcement from up to 200 metres, flight time from 1 hour.' },
-    image: '/products/w-space.png',
-    imageCaption: { ru: 'Комплексы фиксации нарушений ПДД', en: 'Traffic enforcement systems' },
+    image: '/products/produkt-mu0s70wm.png',
+    imageCaption: { ru: 'Комплексы фиксации нарушений ПДД', en: 'Traffic enforcement systems', zh: '交通违法抓拍系统', ar: 'أنظمة رصد مخالفات المرور' },
   },
   {
     id: 'egsv',
     number: '03',
     icon: 'MonitorPlay',
-    title: { ru: 'ЕГСВ', en: 'City video monitoring platform' },
-    subtitle: { ru: 'Единая городская система видеомониторинга', en: 'Centralized surveillance for a site, city or region' },
+    title: { ru: 'ЕГСВ', en: 'City video monitoring platform', zh: '城市视频监控平台', ar: 'منصة المراقبة بالفيديو للمدينة' },
+    subtitle: { ru: 'Единая городская система видеомониторинга', en: 'Centralized surveillance for a site, city or region', zh: '面向场所、城市或区域的集中监控', ar: 'مراقبة مركزية لموقع أو مدينة أو منطقة' },
     description: { ru: 'Централизованный видеомониторинг в масштабе объекта, города или региона с подключением любых источников видеоданных.', en: 'Centralized video monitoring across a site, city or region, with any video source connected.' },
     features: [
       { ru: 'Модуль «Карта» — интерактивная карта города с удалённым доступом к каждому устройству', en: '“Map” module — interactive city map with remote access to every device' },
-      { ru: 'Модуль RTMS — фиксация нарушителей и передача данных в единый реестр правонарушений', en: 'RTMS module — violation capture and data transfer to the national register of offences' },
+      { ru: 'Мод��л�� RTMS — фиксация нарушителей и передача данных в единый реестр правонарушений', en: 'RTMS module — violation capture and data transfer to the national register of offences' },
       { ru: 'Модуль «Камеры» — управление списком камер и правами доступа операторов', en: '“Cameras” module — camera list management and operator access rights' },
       { ru: 'Развёртывание на базе существующего ситуационного центра', en: 'Deploys on top of an existing control room' },
       { ru: 'Интеграция с любым видеооборудованием, модульная структура и открытый API', en: 'Integration with any video equipment, modular architecture and open API' },
@@ -1558,14 +1558,14 @@ export const PORTFOLIO = [
     meta: { ru: '', en: '' },
     note: { ru: 'ЕГСВ внедрена в 16 городах Республики Казахстан.', en: 'The platform is deployed in 16 cities of the Republic of Kazakhstan.' },
     image: '/products/sova.png',
-    imageCaption: { ru: 'Единая городская система видеомониторинга', en: 'Centralized surveillance for a site, city or region' },
+    imageCaption: { ru: 'Единая городская система видеомониторинга', en: 'Centralized surveillance for a site, city or region', zh: '面向场所、城市或区域的集中监控', ar: 'مراقبة مركزية لموقع أو مدينة أو منطقة' },
   },
   {
     id: 'platform',
     number: '04',
     icon: 'LayoutGrid',
-    title: { ru: 'Единая интеграционная платформа', en: 'Unified integration platform' },
-    subtitle: { ru: 'Городская платформа данных — в разработке', en: 'Urban data platform — in development' },
+    title: { ru: 'Единая интеграционная платформа', en: 'Unified integration platform', zh: '统一集成平台', ar: 'منصة التكامل الموحّدة' },
+    subtitle: { ru: 'Городская платформа данных — в разработке', en: 'Urban data platform — in development', zh: '城市数据平台——开发中', ar: 'منصة بيانات المدينة — قيد التطوير' },
     description: { ru: 'Сбор, обработка, анализ и визуализация данных от любых источников: камер, комплексов фиксации, систем весогабаритного контроля, домофонов.', en: 'Collection, processing, analysis and visualization of data from any source: cameras, enforcement systems, weigh-in-motion systems, intercoms.' },
     features: [
       { ru: 'Видеоплатформа — все функции ЕГСВ плюс распознавание лиц и контроль доступа', en: 'Video platform — all monitoring functions plus face recognition and access control' },
@@ -1580,14 +1580,14 @@ export const PORTFOLIO = [
     meta: { ru: '', en: '' },
     note: { ru: 'Ядро платформы: ролевая модель доступа, реестр объектов и реестр оборудования. Модульная структура расширяется любыми подсистемами по запросу заказчика.', en: 'Platform core: role-based access, an asset register and an equipment register. The modular architecture extends with any subsystem at the customer\'s request.' },
     image: '/products/astra.png',
-    imageCaption: { ru: 'Городская платформа данных — в разработке', en: 'Urban data platform — in development' },
+    imageCaption: { ru: 'Городская платформа данных — в разработке', en: 'Urban data platform — in development', zh: '城市数据平台——开发中', ar: 'منصة بيانات المدينة — قيد التطوير' },
   },
   {
     id: 'network',
     number: '05',
     icon: 'Wifi',
-    title: { ru: 'Сетевые технологии', en: 'Network technologies' },
-    subtitle: { ru: 'Проводные и беспроводные сети связи', en: 'Wired and wireless connectivity' },
+    title: { ru: 'Сетевые технологии', en: 'Network technologies', zh: '网络技术', ar: 'تقنيات الشبكات' },
+    subtitle: { ru: 'Проводные и беспроводные сети связи', en: 'Wired and wireless connectivity', zh: '有线与无线通信网络', ar: 'شبكات اتصال سلكية ولاسلكية' },
     description: { ru: 'Проектирование и внедрение проводных и беспроводных технологий связи в городах.', en: 'Design and deployment of wired and wireless communication technologies in cities.' },
     features: [
       { ru: 'Абонентский доступ — GPON и FTTB: от 100 Мбит/с до 1 Гбит/с', en: 'Subscriber access — GPON and FTTB: from 100 Mbps to 1 Gbps' },
@@ -1600,14 +1600,14 @@ export const PORTFOLIO = [
     meta: { ru: '', en: '' },
     note: { ru: 'Устройства закрытой сети работают с платформой, рассчитанной на большие массивы данных.', en: 'Closed-network devices run on a platform built for large data volumes.' },
     image: '/products/cordon.png',
-    imageCaption: { ru: 'Проводные и беспроводные сети связи', en: 'Wired and wireless connectivity' },
+    imageCaption: { ru: 'Проводные и беспроводные сети связи', en: 'Wired and wireless connectivity', zh: '有线与无线通信网络', ar: 'شبكات اتصال سلكية ولاسلكية' },
   },
   {
     id: 'toll',
     number: '06',
     icon: 'Coins',
-    title: { ru: 'Взимание платы за проезд', en: 'Toll collection' },
-    subtitle: { ru: 'Однопортальный рубеж MLFF и бэк-офис', en: 'Single-gantry free-flow system and back office' },
+    title: { ru: 'Взимание платы за проезд', en: 'Toll collection', zh: '道路收费系统', ar: 'أنظمة تحصيل رسوم المرور' },
+    subtitle: { ru: 'Однопортальный рубеж MLFF и бэк-офис', en: 'Single-gantry free-flow system and back office', zh: '单门架自由流收费与后台系统', ar: 'بوابة واحدة للتدفق الحر ونظام خلفي' },
     description: { ru: 'Однопортальный рубеж взимания в режиме «свободный поток» — для всех транспортных средств на скорости до 250 км/ч, днём и ночью, в любых погодных условиях.', en: 'A single-gantry toll point in multi-lane free-flow mode — every vehicle charged at speeds up to 250 km/h, day and night, in any weather.' },
     features: [
       { ru: 'Обнаружение и трекинг ТС с точностью 99,9% в многополосном потоке', en: 'Vehicle detection and tracking with 99.9% accuracy across all lanes' },
@@ -1622,14 +1622,14 @@ export const PORTFOLIO = [
     meta: { ru: '', en: '' },
     note: { ru: 'Базовая технология — видеотоллинг на основе распознавания ГРЗ; опционально RFID-метки или DSRC-транспондеры для максимального охвата.', en: 'Video tolling based on plate recognition is the base technology; low-cost RFID tags or DSRC transponders can be added for maximum coverage.' },
     image: '/products/uralan.png',
-    imageCaption: { ru: 'Однопортальный рубеж MLFF и бэк-офис', en: 'Single-gantry free-flow system and back office' },
+    imageCaption: { ru: 'Однопортальный рубеж MLFF и бэк-офис', en: 'Single-gantry free-flow system and back office', zh: '单门架自由流收费与后台系统', ar: 'بوابة واحدة للتدفق الحر ونظام خلفي' },
   },
   {
     id: 'uav',
     number: '07',
     icon: 'Plane',
-    title: { ru: 'Аэрофотосъёмка и мониторинг', en: 'Aerial survey and monitoring' },
-    subtitle: { ru: 'Инспекция инфраструктуры с БПЛА', en: 'Infrastructure inspection by UAV' },
+    title: { ru: 'Аэрофотосъёмка и мониторинг', en: 'Aerial survey and monitoring', zh: '航空摄影与监测', ar: 'التصوير الجوي والمراقبة' },
+    subtitle: { ru: 'Инспекция инфраструктуры с БПЛА', en: 'Infrastructure inspection by UAV', zh: '无人机基础设施巡检', ar: 'فحص البنية التحتية بالطائرات المسيّرة' },
     description: { ru: 'Платформа мониторинга гео-привязанных инцидентов, состояния территорий и инфраструктуры — от постановки задачи на съёмку до отчёта.', en: 'A platform for monitoring geolocated incidents and the condition of sites and infrastructure — from tasking a survey to the final report.' },
     features: [
       { ru: 'Планирование и задачи: проекты, зоны интереса, назначение исполнителей и техники', en: 'Planning and tasking: projects, areas of interest, crew and equipment assignment' },
@@ -1650,14 +1650,14 @@ export const PORTFOLIO = [
     meta: { ru: '', en: '' },
     note: { ru: '', en: '' },
     image: '/products/olan-complex-1.png',
-    imageCaption: { ru: 'Инспекция инфраструктуры с БПЛА', en: 'Infrastructure inspection by UAV' },
+    imageCaption: { ru: 'Инспекция инфраструктуры с БПЛА', en: 'Infrastructure inspection by UAV', zh: '无人机基础设施巡检', ar: 'فحص البنية التحتية بالطائرات المسيّرة' },
   },
   {
     id: 'stablecoin',
     number: '08',
     icon: 'Link2',
-    title: { ru: 'Блокчейн-инфраструктура стейблкоинов', en: 'Stablecoin blockchain infrastructure' },
-    subtitle: { ru: 'Эмиссия, Proof-of-Reserve и кастоди', en: 'Issuance, Proof-of-Reserve and custody' },
+    title: { ru: 'Блокчейн-инфраструктура стейблкоинов', en: 'Stablecoin blockchain infrastructure', zh: '稳定币区块链基础设施', ar: 'بنية بلوكتشين للعملات المستقرة' },
+    subtitle: { ru: 'Эмиссия, Proof-of-Reserve и кастоди', en: 'Issuance, Proof-of-Reserve and custody', zh: '发行、储备证明与托管', ar: 'الإصدار وإثبات الاحتياطي والحفظ' },
     description: { ru: 'Выпуск, обеспечение и обращение цифровых валют и токенов на базе Universa Blockchain — для государств, банков и корпораций: от цифрового золота и CBDC до расчётных стейблкоинов.', en: 'Issuance, backing and circulation of digital currencies and tokens on Universa Blockchain — for governments, banks and corporations: from digital gold and CBDC to settlement stablecoins.' },
     features: [
       { ru: 'Смарт-контракты: контроллер эмиссии mint / burn / redemption, ролевая модель, freeze / lock по требованию регулятора', en: 'Smart contracts: mint / burn / redemption controller, role-based access, freeze / lock at the regulator’s request' },
@@ -1672,14 +1672,14 @@ export const PORTFOLIO = [
     meta: { ru: '', en: '' },
     note: { ru: 'Референсы: цифровой золотой резерв (Бутан), GoldenToken, стейблкоины для банков Восточной Африки.', en: 'References: digital gold reserve (Bhutan), GoldenToken, stablecoins for East African banks.' },
     image: '/products/comoto.png',
-    imageCaption: { ru: 'Эмиссия, Proof-of-Reserve и кастоди', en: 'Issuance, Proof-of-Reserve and custody' },
+    imageCaption: { ru: 'Эмиссия, Proof-of-Reserve и кастоди', en: 'Issuance, Proof-of-Reserve and custody', zh: '发行、储备证明与托管', ar: 'الإصدار وإثبات الاحتياطي والحفظ' },
   },
   {
     id: 'rwa',
     number: '09',
     icon: 'Boxes',
-    title: { ru: 'Цифровая биржа RWA', en: 'RWA digital exchange' },
-    subtitle: { ru: 'Токенизация реальных активов', en: 'Tokenization of real-world assets' },
+    title: { ru: 'Цифровая биржа RWA', en: 'RWA digital exchange', zh: 'RWA 数字交易所', ar: 'منصة تداول الأصول الحقيقية الرقمية' },
+    subtitle: { ru: 'Токенизация реальных активов', en: 'Tokenization of real-world assets', zh: '实物资产通证化', ar: 'ترميز الأصول الواقعية' },
     description: { ru: 'Биржа токенизированных реальных активов: торговый движок, клиринг и Proof-of-Reserve в едином регулируемом контуре.', en: 'An exchange for tokenized real-world assets: trading engine, clearing and Proof-of-Reserve in one regulated perimeter.' },
     features: [
       { ru: 'Торговый движок: matching, OMS и риск-движок, клиринг T+0 / T+1, KYC / KYB, API для участников', en: 'Trading engine: matching, OMS and risk engine, T+0 / T+1 clearing, KYC / KYB, API for participants' },
@@ -1700,14 +1700,14 @@ export const PORTFOLIO = [
     meta: { ru: '', en: '' },
     note: { ru: 'Референс: биржа цифровых активов в МФЦА (Казахстан), лицензия AFSA — первый инструмент $WGRAIN (токенизированное зерно).', en: 'Reference: digital asset exchange at the AIFC (Kazakhstan), AFSA licence — first instrument $WGRAIN (tokenized grain).' },
     image: '/products/olan-complex-1.png',
-    imageCaption: { ru: 'Токенизация реальных активов', en: 'Tokenization of real-world assets' },
+    imageCaption: { ru: 'Токенизация реальных активов', en: 'Tokenization of real-world assets', zh: '实物资产通证化', ar: 'ترميز الأصول الواقعية' },
   },
   {
     id: 'catalog',
     number: '10',
     icon: 'LayoutList',
-    title: { ru: 'Каталог комплексов по типам нарушений', en: 'Enforcement systems catalogue by violation type' },
-    subtitle: { ru: 'Подбор оборудования под конкретную задачу', en: 'Choosing equipment for a specific task' },
+    title: { ru: 'Каталог комплексов по типам нарушений', en: 'Enforcement systems catalogue by violation type', zh: '按违法类型划分的设备目录', ar: 'دليل الأنظمة حسب نوع المخالفة' },
+    subtitle: { ru: 'Подбор оборудования под конкретную задачу', en: 'Choosing equipment for a specific task', zh: '针对具体任务选择设备', ar: 'اختيار المعدات حسب المهمة' },
     description: {
       ru: 'Полный каталог серийных комплексов с разбивкой по типам фиксируемых нарушений: скорость, красный свет, парковка, полоса общественного транспорта, железнодорожные переезды. По каждой позиции — характеристики, техпаспорт и фотографии.',
       en: 'The full catalogue of production systems broken down by violation type: speed, red light, parking, public transport lane, level crossings. Each item comes with specifications, a datasheet and photos.',
@@ -2026,7 +2026,7 @@ export const SERVICE_CASES = [
       ru: 'ЕГСВ собирает любые источники видео в один контур: интерактивная карта города, удалённый доступ к каждому устройству, встроенная видеоаналитика и передача нарушений в реестр. Разворачивается поверх существующего ситуационного центра.',
       en: 'The city video monitoring platform brings any video source into one loop: an interactive city map, remote access to every device, built-in analytics and violation transfer to the register. It deploys on top of an existing control room.',
     },
-    linkLabel: { ru: 'ЕГСВ', en: 'City video monitoring' },
+    linkLabel: { ru: 'ЕГСВ', en: 'City video monitoring', zh: '城市视频监控平台', ar: 'منصة المراقبة بالفيديو للمدينة' },
   },
   {
     id: 'data',
@@ -2062,7 +2062,7 @@ export const SERVICE_CASES = [
       ru: 'Однопортальный рубеж в режиме «свободный поток»: обнаружение и трекинг с точностью 99,9% на скорости до 250 км/ч, классификация по LIDAR, распознавание иностранных номеров, бэк-офис с биллингом и антифрод-платформа.',
       en: 'A single-gantry free-flow toll point: detection and tracking with 99.9% accuracy at up to 250 km/h, LIDAR classification, foreign plate recognition, a billing back office and an anti-fraud platform.',
     },
-    linkLabel: { ru: 'Взимание платы за проезд', en: 'Toll collection' },
+    linkLabel: { ru: 'Взимание платы за проезд', en: 'Toll collection', zh: '道路收费系统', ar: 'أنظمة تحصيل رسوم المرور' },
   },
   {
     id: 'sdk',
@@ -2071,7 +2071,7 @@ export const SERVICE_CASES = [
     title: { ru: 'Нужно распознавание номеров в своём продукте', en: 'You need plate recognition in your own product' },
     problem: { ru: 'Разработка компьютерного зрения с нуля — это годы и команда исследователей. Готовые зарубежные решения плохо читают местные номера.', en: 'Building computer vision from scratch takes years and a research team. Off-the-shelf foreign solutions read local plates poorly.' },
     solution: { ru: 'Библиотека AutoSDK встраивается в ваш продукт: обработка видеопотока в реальном времени, ГРЗ более 30 стран, несколько ТС в кадре, определение направления движения. Внедрена более чем в 50 странах.', en: 'The AutoSDK library embeds into your product: real-time video processing, plates from 30+ countries, several vehicles per frame, direction detection. Deployed in more than 50 countries.' },
-    linkLabel: { ru: 'AutoSDK', en: 'AutoSDK' },
+    linkLabel: { ru: 'AutoSDK', en: 'AutoSDK', zh: 'AutoSDK', ar: 'AutoSDK' },
   },
   {
     id: 'network',
@@ -2083,7 +2083,7 @@ export const SERVICE_CASES = [
       ru: 'Проектируем и строим связь: GPON и FTTB от 100 Мбит/с до 1 Гбит/с, беспроводной доступ, радиомост 60 ГГц и закрытая сеть безопасной среды, где камеры и домофоны с FaceID вынесены в изолированный сегмент.',
       en: 'We design and build the connectivity: GPON and FTTB from 100 Mbps to 1 Gbps, wireless access, a 60 GHz radio bridge and a secure closed network where cameras and FaceID intercoms sit in an isolated segment.',
     },
-    linkLabel: { ru: 'Сетевые технологии', en: 'Network technologies' },
+    linkLabel: { ru: 'Сетевые технологии', en: 'Network technologies', zh: '网络技术', ar: 'تقنيات الشبكات' },
   },
   {
     id: 'reserves',
@@ -2107,7 +2107,7 @@ export const SERVICE_CASES = [
       ru: 'Цифровая биржа RWA: торговый движок с клирингом T+0 / T+1, протокол токенизации под подтверждённый резерв, коннекторы к госреестрам и элеваторам. Работает в регулируемом периметре МФЦА и ADGM.',
       en: 'The RWA digital exchange: a trading engine with T+0 / T+1 clearing, a tokenization protocol backed by a confirmed reserve, connectors to state registries and elevators. Operates within the AIFC and ADGM regulated perimeter.',
     },
-    linkLabel: { ru: 'Цифровая биржа RWA', en: 'RWA exchange' },
+    linkLabel: { ru: 'Цифровая биржа RWA', en: 'RWA exchange', zh: 'RWA 数字交易所', ar: 'منصة تداول الأصول الحقيقية الرقمية' },
   },
   {
     id: 'localization',

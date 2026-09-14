@@ -8,7 +8,8 @@
 
 import { motion } from 'motion/react';
 import * as Icons from 'lucide-react';
-import { ArrowRight, ArrowLeft, CheckCircle2, Info } from 'lucide-react';
+import { ArrowRight, ArrowLeft, CheckCircle2, Info, ImageOff, Expand } from 'lucide-react';
+import { useState } from 'react';
 import { useSite } from '../context/SiteContext.jsx';
 import { localize, PORTFOLIO, SOFTWARE_FEATURES, FORM_FACTORS } from '../data/siteData.js';
 
@@ -77,8 +78,35 @@ export function Portfolio({ onOpen, bare }) {
 
 // ───────────────────────── страница продукта ─────────────────────────
 
+// Снимок продукта. Если файла нет — показываем заглушку, а не пустоту,
+// чтобы сразу было видно, куда поставить фотографию.
+function ProductPhoto({ src, alt, onOpen }) {
+  const [broken, setBroken] = useState(false);
+  if (!src || broken) {
+    return (
+      <div className="flex aspect-[4/3] w-full items-center justify-center rounded-3xl border border-dashed border-slate-300 bg-slate-100 text-slate-400 dark:border-slate-700 dark:bg-slate-900">
+        <div className="text-center">
+          <ImageOff className="mx-auto h-9 w-9" />
+          <div className="mt-2 text-sm">Фотография не задана</div>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <button type="button" onClick={onOpen}
+      className="group relative block w-full overflow-hidden rounded-3xl border border-slate-200 dark:border-cyan-500/20">
+      <img src={src} alt={alt || ''} onError={() => setBroken(true)}
+        className="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-105" />
+      <span className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-black/60 px-3 py-1.5 text-xs text-white opacity-0 transition group-hover:opacity-100">
+        <Expand className="h-3.5 w-3.5" /> Открыть
+      </span>
+    </button>
+  );
+}
+
 export function ProductPage({ productId, onBack, onContact }) {
   const { language } = useSite();
+  const [zoom, setZoom] = useState(false);
   const product = (PORTFOLIO || []).find((item) => item.id === productId);
 
   if (!product) {
@@ -144,6 +172,19 @@ export function ProductPage({ productId, onBack, onContact }) {
           </div>
 
           <div className="space-y-5">
+            {/* Снимок продукта. Загружается в админ-панели,
+                раздел «Продукты группы», поле «Картинка». */}
+            <ProductPhoto
+              src={product.image}
+              alt={localize(product.title, language)}
+              onOpen={() => setZoom(true)}
+            />
+            {product.imageCaption && (
+              <div className="-mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                {localize(product.imageCaption, language)}
+              </div>
+            )}
+
             {tags.length > 0 && (
               <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 dark:border-cyan-500/15 dark:bg-slate-950/70">
                 {tagsTitle && (
@@ -218,6 +259,16 @@ export function ProductPage({ productId, onBack, onContact }) {
               </div>
             </div>
           </>
+        )}
+
+        {zoom && product.image && (
+          <div
+            className="fixed inset-0 z-[70] flex items-center justify-center bg-black/95 p-4"
+            onClick={() => setZoom(false)}
+          >
+            <img src={product.image} alt={localize(product.title, language)}
+              className="max-h-[88vh] w-auto max-w-full rounded-2xl object-contain" />
+          </div>
         )}
 
         {note && (
