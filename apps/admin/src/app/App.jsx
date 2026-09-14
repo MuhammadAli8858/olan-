@@ -392,6 +392,8 @@ export default function App() {
   // Настроена ли выгрузка контента обратно в репозиторий.
   const [gitInfo, setGitInfo] = useState(null);
   const [publishing, setPublishing] = useState(false);
+  // Таймер опроса фоновой задачи перевода.
+  const watchRef = useRef(null);
 
   const langs = useMemo(() => (content?.LANGUAGE_OPTIONS?.length ? content.LANGUAGE_OPTIONS : DEFAULT_LANGS), [content]);
 
@@ -472,6 +474,7 @@ export default function App() {
   };
 
   useEffect(() => { if (key) { loadContent(); refreshTranslationStatus(); refreshGitStatus(); } /* eslint-disable-next-line */ }, [key]);
+  useEffect(() => () => { if (watchRef.current) clearInterval(watchRef.current); }, []);
 
   // ---- Синхронизация «код → админка» ----
   // Каждые 2.5 секунды спрашиваем сервер, не менялся ли siteData.js.
@@ -542,14 +545,10 @@ export default function App() {
       setDirty(false);
       setCodeChanged(false);
       setHistory([]);
-      const added = res && res.autoTranslated ? ` Переведено строк: ${res.autoTranslated} (EN, UZ).` : '';
-      // Сервер мог сразу закоммитить файл в репозиторий — сообщаем об этом.
-      let git = '';
-      const p = res && res.published;
-      if (p && p.ok && !p.skipped) git = ` Выгружено в код: коммит ${p.sha}.`;
-      else if (p && p.ok === false) git = ` В GitHub не ушло: ${p.message}`;
-      setStatus(`Сохранено в siteData.js.${added}${git}`);
-      refreshTranslationStatus();
+      setStatus('Сохранено в siteData.js. Перевод на EN и UZ идёт фоном.');
+      // Следим за фоновой задачей: она допереводит изменённое и
+      // отправит файл в репозиторий, когда закончит.
+      watchTranslationJob();
     } catch (e) {
       setStatus(/ключ|401/i.test(e.message) ? 'Неверный ключ администратора.' : `Ошибка сохранения: ${e.message}`);
     } finally { setSaving(false); }
@@ -592,38 +591,67 @@ export default function App() {
     try {
       const res = await getJson(`/api/admin/translate/status?key=${encodeURIComponent(key)}`);
       setTransLeft(res);
+      // Перевод мог быть запущен раньше и идти прямо сейчас — подхватываем.
+      if (res.job && res.job.running) watchTranslationJob();
     } catch { /* не критично: просто не покажем счётчик */ }
   };
 
-  // Перевод всего сайта. Идём порциями: сервер переводит по 60 строк
-  // за запрос и сообщает, сколько осталось. Так видно прогресс и ничто
-  // не обрывается по таймауту на длинном контенте.
+  // Следим за фоновым переводом: спрашиваем статус раз в две секунды,
+  // показываем прогресс и в конце подтягиваем обновлённый контент.
+  const watchTranslationJob = () => {
+    if (watchRef.current) return;
+    watchRef.current = setInterval(async () => {
+      try {
+        const res = await getJson(`/api/admin/translate/status?key=${encodeURIComponent(key)}`);
+        setTransLeft(res);
+        const job = res.job || {};
+        if (job.running) {
+          const percent = job.total ? Math.round((job.done / job.total) * 100) : 0;
+          setTransRun(job.total ? `Перевод: ${job.done} из ${job.total} (${percent}%)` : 'Перевод…');
+          return;
+        }
+        // Задача закончилась — прибираемся и показываем итог.
+        clearInterval(watchRef.current);
+        watchRef.current = null;
+        setTransRun('');
+        if (job.error) {
+          // Сразу выясняем причину: сеть, блокировка или ключ.
+          let hint = '';
+          try {
+            const check = await getJson(`/api/admin/translate/check?key=${encodeURIComponent(key)}`);
+            hint = check.ok
+              ? ` Связь есть (${check.mode}) — попробуйте запустить ещё раз.`
+              : ` Способ: ${check.mode}. Ответ: ${check.message}`;
+          } catch { /* диагностика не обязательна */ }
+          setStatus(`Перевод остановлен: ${job.error}${hint}`);
+        } else if (job.done) {
+          await loadContent({ silent: true });
+          setStatus(`Перевод завершён: ${job.done} строк. Проверьте текст и при необходимости поправьте вручную.`);
+        }
+      } catch {
+        clearInterval(watchRef.current);
+        watchRef.current = null;
+        setTransRun('');
+      }
+    }, 2000);
+  };
+
+  // Перевод всего сайта. Сервер берёт работу в фон и сразу отвечает,
+  // поэтому кнопка не блокирует админку даже на тысяче строк.
   const translateWholeSite = async () => {
     if (dirty) { setStatus('Сначала сохраните правки — перевод работает с тем, что записано в файл.'); return; }
     const targets = withManual ? [...AUTO_LANGS, ...MANUAL_LANGS] : AUTO_LANGS;
     const list = langs.map((l) => l.code).filter((c) => targets.includes(c) && c !== 'ru');
-    if (!confirm(`Перевести весь сайт на: ${list.join(', ').toUpperCase()}?\n\nЗаполнятся только пустые поля, уже написанные тексты останутся как есть.`)) return;
+    if (!confirm(`Перевести весь сайт на: ${list.join(', ').toUpperCase()}?\n\nЗаполнятся только пустые поля, уже написанные тексты останутся как есть.\nПеревод идёт фоном — админкой можно пользоваться дальше.`)) return;
 
-    setTransRun('Считаю объём…');
-    let total = 0;
-    let done = 0;
+    setTransRun('Запускаю…');
     try {
-      for (;;) {
-        // eslint-disable-next-line no-await-in-loop
-        const res = await postJson('/api/admin/translate-all', { key, targets: list, from: 'ru', limit: 60 });
-        done += res.translated || 0;
-        if (!total) total = done + (res.remaining || 0);
-        const percent = total ? Math.round((done / total) * 100) : 100;
-        setTransRun(`Перевод: ${done} из ${total} (${percent}%)`);
-        if (res.done || !res.translated) break;
-      }
-      await loadContent();
-      await refreshTranslationStatus();
-      setTransRun('');
-      setStatus(`Перевод завершён: ${done} строк. Проверьте текст и при необходимости поправьте вручную.`);
+      await postJson('/api/admin/translate-all', { key, targets: list, from: 'ru' });
+      setStatus('Перевод запущен. Идёт фоном, прогресс виден на кнопке.');
+      watchTranslationJob();
     } catch (e) {
       setTransRun('');
-      setStatus(`Не удалось перевести: ${e.message}. Проверьте, есть ли у сервера интернет.`);
+      setStatus(`Не удалось запустить перевод: ${e.message}`);
     }
   };
 

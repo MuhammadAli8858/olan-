@@ -55,14 +55,131 @@ function splitLongText(text) {
 
 const sleep = (ms) => new Promise((resolve) => { setTimeout(resolve, ms); });
 
+// ---------------------------------------------------------------------------
+// Два способа переводить
+//
+// 1. Бесплатный публичный эндпоинт Google. Ключ не нужен, но Google часто
+//    отвечает 403 серверам в дата-центрах (в том числе Render). С домашнего
+//    или офисного интернета работает нормально.
+// 2. Официальный Cloud Translation API по ключу TRANSLATE_API_KEY. Работает
+//    откуда угодно, переводит пачками по 100 строк за запрос — то есть
+//    в разы быстрее. Платный, но весь сайт стоит примерно два доллара.
+//
+// Если ключ задан, используется он. Если нет — бесплатный путь.
+// ---------------------------------------------------------------------------
+export function apiKey() {
+  return process.env.TRANSLATE_API_KEY || process.env.GOOGLE_TRANSLATE_API_KEY || '';
+}
+
+// Официальный API: одна пачка строк за запрос.
+async function requestOfficial(texts, from, to) {
+  const url = `https://translation.googleapis.com/language/translate/v2?key=${encodeURIComponent(apiKey())}`;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 20_000);
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
+      body: JSON.stringify({
+        q: texts,
+        source: GT_LANG[from] || from,
+        target: GT_LANG[to] || to,
+        format: 'text',
+      }),
+    });
+    if (!res.ok) {
+      const body = await res.text();
+      throw new Error(`Cloud Translation ответил ${res.status}: ${body.slice(0, 200)}`);
+    }
+    const data = await res.json();
+    return (data?.data?.translations || []).map((t) => t.translatedText || '');
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// Сколько ждём ответа переводчика. Без этого зависший запрос держит
+// сохранение бесконечно — именно так админка и «зависала».
+const REQUEST_TIMEOUT = 10_000;
+
+// Подряд идущие неудачи. Если переводчик недоступен, нет смысла долбиться
+// в него тысячу раз — останавливаемся и честно сообщаем об этом.
+const FAILURE_LIMIT = 12;
+let consecutiveFailures = 0;
+
+export class TranslatorUnavailable extends Error {
+  constructor() {
+    super('Переводчик недоступен: сервер не может достучаться до translate.googleapis.com. Проверьте интернет на сервере.');
+    this.name = 'TranslatorUnavailable';
+  }
+}
+
+export class OfficialTranslatorError extends Error {
+  constructor(detail) {
+    super(`Переводчик по ключу не отвечает. ${detail}`);
+    this.name = 'OfficialTranslatorError';
+  }
+}
+
+export function resetTranslatorHealth() { consecutiveFailures = 0; }
+
+// Пробный перевод: показывает, каким способом сервер умеет переводить.
+export async function checkTranslator() {
+  const mode = apiKey() ? 'ключ TRANSLATE_API_KEY' : 'бесплатный эндпоинт Google';
+  try {
+    resetTranslatorHealth();
+    const out = apiKey()
+      ? (await requestOfficial(['проверка связи'], 'ru', 'en'))[0]
+      : await requestTranslation('проверка связи', 'ru', 'en');
+    if (!out) throw new Error('пустой ответ');
+    return { ok: true, mode, sample: out };
+  } catch (error) {
+    return { ok: false, mode, message: error.message };
+  }
+}
+
+async function fetchWithTimeout(url) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+  try {
+    return await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' }, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// Два бесплатных адреса Google. Если первый недоступен, пробуем второй —
+// иногда провайдер режет только один из них.
 async function requestTranslation(text, from, to) {
   const sl = GT_LANG[from] || from;
   const tl = GT_LANG[to] || to;
-  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${tl}&dt=t&q=${encodeURIComponent(text)}`;
-  const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const data = await res.json();
-  return (data[0] || []).map((seg) => (seg && seg[0]) || '').join('');
+  const q = encodeURIComponent(text);
+
+  const endpoints = [
+    {
+      url: `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${tl}&dt=t&q=${q}`,
+      parse: (data) => (data[0] || []).map((seg) => (seg && seg[0]) || '').join(''),
+    },
+    {
+      url: `https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=${sl}&tl=${tl}&q=${q}`,
+      parse: (data) => (Array.isArray(data) ? (Array.isArray(data[0]) ? data[0][0] : data[0]) : ''),
+    },
+  ];
+
+  let lastError = null;
+  for (const endpoint of endpoints) {
+    try {
+      const res = await fetchWithTimeout(endpoint.url);
+      if (!res.ok) { lastError = new Error(`HTTP ${res.status}`); continue; }
+      const out = endpoint.parse(await res.json());
+      if (out) return out;
+      lastError = new Error('Пустой ответ переводчика');
+    } catch (error) {
+      lastError = error;
+    }
+  }
+  throw lastError || new Error('Переводчик не ответил');
 }
 
 // Перевод одной строки.
@@ -70,9 +187,22 @@ async function requestTranslation(text, from, to) {
 // При полном сбое возвращает null, а НЕ исходный текст. Это принципиально:
 // иначе при потере интернета в английское поле лёг бы русский текст, поле
 // перестало бы считаться пустым и настоящий перевод туда уже не попал бы.
-export async function translateOne(text, from, to, { retries = 3 } = {}) {
+export async function translateOne(text, from, to, { retries = 2 } = {}) {
   const value = text == null ? '' : String(text);
   if (!value.trim() || from === to) return value;
+
+  if (consecutiveFailures >= FAILURE_LIMIT) throw new TranslatorUnavailable();
+
+  if (apiKey()) {
+    try {
+      const out = (await requestOfficial([value], from, to))[0];
+      if (out) { consecutiveFailures = 0; return out; }
+    } catch (error) {
+      consecutiveFailures += 1;
+      if (consecutiveFailures >= FAILURE_LIMIT) throw new OfficialTranslatorError(error.message);
+    }
+    return null;
+  }
 
   const chunks = splitLongText(value);
   const out = [];
@@ -85,20 +215,63 @@ export async function translateOne(text, from, to, { retries = 3 } = {}) {
         done = await requestTranslation(chunk, from, to);
         if (done) break;
       } catch {
-        // Google иногда отвечает 429 — ждём и пробуем ещё раз.
+        // Google иногда отвечает 429 — короткая пауза и ещё попытка.
         // eslint-disable-next-line no-await-in-loop
-        if (attempt < retries) await sleep(400 * (attempt + 1));
+        if (attempt < retries) await sleep(300 * (attempt + 1));
       }
     }
-    if (!done) return null;
+    if (!done) {
+      consecutiveFailures += 1;
+      if (consecutiveFailures >= FAILURE_LIMIT) throw new TranslatorUnavailable();
+      return null;
+    }
+    consecutiveFailures = 0;
     out.push(done);
   }
 
   return out.join('');
 }
 
-// Перевод пачки строк с ограничением одновременных запросов.
+// Перевод пачки строк.
 export async function translateList(texts, from, to, { onTick } = {}) {
+  if (from === to) return texts.slice();
+
+  // С ключом переводим группами: меньше запросов, быстрее и без 403.
+  if (apiKey()) {
+    const result = new Array(texts.length);
+    let group = [];
+    let groupIndexes = [];
+    let groupChars = 0;
+
+    const flush = async () => {
+      if (!group.length) return;
+      try {
+        const translated = await requestOfficial(group, from, to);
+        groupIndexes.forEach((idx, i) => { result[idx] = translated[i] ?? null; });
+        consecutiveFailures = 0;
+      } catch (error) {
+        consecutiveFailures += group.length;
+        groupIndexes.forEach((idx) => { result[idx] = null; });
+        if (consecutiveFailures >= FAILURE_LIMIT) throw new OfficialTranslatorError(error.message);
+      }
+      if (onTick) group.forEach(() => onTick());
+      group = [];
+      groupIndexes = [];
+      groupChars = 0;
+    };
+
+    for (let i = 0; i < texts.length; i += 1) {
+      const value = String(texts[i] ?? '');
+      if (!value.trim()) { result[i] = value; if (onTick) onTick(); continue; }
+      if (group.length >= 100 || groupChars + value.length > 8000) await flush();
+      group.push(value);
+      groupIndexes.push(i);
+      groupChars += value.length;
+    }
+    await flush();
+    return result;
+  }
+
   const result = new Array(texts.length);
   let cursor = 0;
 
@@ -289,6 +462,7 @@ export async function fillMissing(content, {
   force = false,
   limit = Infinity,
   onProgress,
+  onApplied,
 } = {}) {
   const codes = languageCodes(content);
   const all = planMissing(content, { codes, targets, source, force });
@@ -313,6 +487,9 @@ export async function fillMissing(content, {
       onTick: () => { seen += 1; if (onProgress) onProgress(seen, planned); },
     });
     applied += applyJob(job, translated);
+    // Даём вызывающему сохранить промежуточный результат: длинный прогон
+    // не должен пропасть целиком, если сервер перезапустят.
+    if (onApplied) await onApplied(applied);
   }
 
   return {
@@ -358,7 +535,7 @@ function findOldNode(oldContent, path) {
 // (первый запуск), за один раз берём столько, сколько успеем без риска
 // подвесить запрос. Остальное доберёт следующее сохранение или кнопка
 // «Перевести сайт» в админке.
-export async function syncOnSave(oldContent, newContent, { targets = AUTO_LANGS, limit = 250 } = {}) {
+export async function syncOnSave(oldContent, newContent, { targets = AUTO_LANGS, limit = 250, onProgress } = {}) {
   const codes = languageCodes(newContent);
   const auto = targets.filter((code) => codes.includes(code));
   const jobs = [];
@@ -424,8 +601,11 @@ export async function syncOnSave(oldContent, newContent, { targets = AUTO_LANGS,
     sent += job.texts.length;
     used += 1;
     // eslint-disable-next-line no-await-in-loop
-    const translated = await translateList(job.texts, job.from, job.target);
+    const translated = await translateList(job.texts, job.from, job.target, {
+      onTick: () => { if (onProgress) onProgress(sent - job.texts.length + 1); },
+    });
     done += applyJob(job, translated);
+    if (onProgress) onProgress(sent);
   }
 
   return { translated: done, fields: used, skipped: jobs.length - used };

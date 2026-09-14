@@ -19,7 +19,7 @@ import { SiteDataFile } from './siteDataFile.js';
 import { createStaticHandler } from './static.js';
 import { Staff } from './users.js';
 import { localName, needsExternalTranslation, transliterate } from './translit.js';
-import { translateOne, syncOnSave, fillMissing, countMissing, AUTO_LANGS, MANUAL_LANGS } from './translate.js';
+import { translateOne, syncOnSave, fillMissing, countMissing, resetTranslatorHealth, checkTranslator, apiKey, AUTO_LANGS, MANUAL_LANGS } from './translate.js';
 import { pushFile, checkAccess, gitConfig } from './github.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -319,47 +319,123 @@ async function handleAdminSave(body, response) {
     return;
   }
 
-  // Перед записью до��олняем русский, английский и узбекский.
-  // Смотрим, что изменилось с прошлого сохранения: правили русский —
-  // обновятся английский и узбекский, добавили новую карточку — переведётся
-  // целиком. Китайский и арабский остаются такими, какими их сделал человек.
-  let auto = { translated: 0, fields: 0 };
-  if (body.autoTranslate !== false) {
-    try {
-      const previous = await siteData.read().catch(() => ({}));
-      auto = await syncOnSave(previous, content, { targets: AUTO_LANGS });
-      if (auto.translated) {
-        console.log(`[translate] Автоперевод при сохранении: ${auto.translated} строк в ${auto.fields} полях.`);
-      }
-      if (auto.skipped) {
-        console.log(`[translate] Осталось ${auto.skipped} полей — доберём при следующем сохранении или кнопкой «Перевести сайт».`);
-      }
-    } catch (error) {
-      // Нет интернета — не повод терять правки. Сохраняем как есть.
-      console.warn('[translate] Автоперевод пропущен:', error.message);
-    }
-  }
+  // Запоминаем, что было до правки: фоновая задача сравнит и поймёт,
+  // какие поля переводить заново.
+  const previous = await siteData.read().catch(() => ({}));
 
   try {
     siteData.write(content);
     console.log('[admin] siteData.js перезаписан из админ-панели.');
 
-    // Возвращаем правку в репозиторий, чтобы она оказалась и в исходном коде.
-    // Настроено это или нет — сохранение в любом случае уже состоялось.
-    const published = await publishToGit('после сохранения');
+    // ВАЖНО: перевод НЕ делается внутри этого запроса.
+    //
+    // Раньше сохранение ждало, пока переведутся сотни строк, и админка
+    // стояла с надписью «Сохраняю…» по несколько минут. Теперь ответ
+    // уходит сразу, а перевод и выгрузка в GitHub идут фоном —
+    // за прогрессом админка следит через /api/admin/translate/status.
+    if (body.autoTranslate !== false) startTranslationJob({ mode: 'sync', previous });
+    else publishToGit('после сохранения');
 
     json(response, 200, {
       ok: true,
       version: siteData.version,
       file: siteDataPath,
       content,
-      autoTranslated: auto.translated,
-      published,
+      background: body.autoTranslate !== false,
     });
   } catch (error) {
     console.error('[admin] Ошибка записи siteData.js:', error.message);
     json(response, 500, { message: `Не удалось записать siteData.js: ${error.message}` });
   }
+}
+
+// ---------- Фоновый перевод ----------
+//
+// Всё, что долго, происходит здесь, а не внутри HTTP-запроса. Админка
+// спрашивает статус и показывает прогресс, сохранение при этом мгновенное.
+const translationJob = {
+  running: false,
+  done: 0,
+  total: 0,
+  error: '',
+  targets: [],
+  finishedAt: 0,
+};
+
+function jobState() {
+  return {
+    running: translationJob.running,
+    done: translationJob.done,
+    total: translationJob.total,
+    error: translationJob.error,
+    targets: translationJob.targets,
+    finishedAt: translationJob.finishedAt,
+  };
+}
+
+// mode: 'sync' — догнать правки после сохранения (только ru/en/uz);
+//       'all'  — пройтись по всему сайту с заданными языками.
+function startTranslationJob({ mode = 'sync', previous = null, targets = AUTO_LANGS, force = false, source = 'ru' } = {}) {
+  if (translationJob.running) return jobState();
+
+  translationJob.running = true;
+  translationJob.done = 0;
+  translationJob.total = 0;
+  translationJob.error = '';
+  translationJob.targets = targets;
+  resetTranslatorHealth();
+
+  (async () => {
+    let changed = false;
+    try {
+      const content = await siteData.read();
+
+      if (mode === 'sync') {
+        // Дописываем только то, что затронула последняя правка.
+        translationJob.total = countMissing(content, { targets: AUTO_LANGS });
+        const result = await syncOnSave(previous || {}, content, {
+          targets: AUTO_LANGS,
+          limit: Infinity,
+          onProgress: (done) => { translationJob.done = done; },
+        });
+        translationJob.done = result.translated;
+        changed = result.translated > 0;
+        if (changed) siteData.write(content);
+      } else {
+        translationJob.total = countMissing(content, { targets, source, force });
+        let lastWrite = Date.now();
+        const result = await fillMissing(content, {
+          targets,
+          source,
+          force,
+          onProgress: (done) => { translationJob.done = done; },
+          // Сохраняемся по ходу дела, примерно раз в полминуты: если сервис
+          // перезапустят посреди долгого прогона, работа не пропадёт.
+          onApplied: () => {
+            if (Date.now() - lastWrite < 30_000) return;
+            lastWrite = Date.now();
+            siteData.write(content);
+            changed = true;
+          },
+        });
+        translationJob.done = result.translated;
+        if (result.translated) { siteData.write(content); changed = true; }
+      }
+
+      if (changed) console.log(`[translate] Фоновый перевод завершён: ${translationJob.done} строк.`);
+    } catch (error) {
+      translationJob.error = error.message;
+      console.warn('[translate] Фоновый перевод остановлен:', error.message);
+    } finally {
+      translationJob.running = false;
+      translationJob.finishedAt = Date.now();
+      // Итог отправляем в репозиторий одним коммитом, а не после каждой строки.
+      if (changed) await publishToGit('после перевода');
+      else await publishToGit('после сохранения');
+    }
+  })();
+
+  return jobState();
 }
 
 // ---------- Выгрузка контента обратно в репозиторий ----------
@@ -440,26 +516,30 @@ async function handleAdminTranslateAll(body, response) {
   const targets = Array.isArray(body.targets) && body.targets.length ? body.targets : AUTO_LANGS;
   const source = body.from || 'ru';
   const force = body.force === true;
-  const limit = Number(body.limit) > 0 ? Number(body.limit) : 60;
 
-  try {
-    const content = await siteData.read();
-    const result = await fillMissing(content, { targets, source, force, limit });
-    if (result.translated) siteData.write(content);
-    const remaining = countMissing(content, { targets, source, force });
-    console.log(`[translate] Перевод сайта: +${result.translated} строк, осталось ${remaining}.`);
-    json(response, 200, {
-      ok: true,
-      translated: result.translated,
-      fields: result.fields,
-      remaining,
-      done: remaining === 0,
-      version: siteData.version,
-    });
-  } catch (error) {
-    console.error('[translate] Ошибка перевода сайта:', error.message);
-    json(response, 500, { message: `Не удалось перевести: ${error.message}` });
+  if (translationJob.running) {
+    json(response, 200, { ok: true, alreadyRunning: true, ...jobState() });
+    return;
   }
+
+  // Запускаем и сразу отвечаем. Прогресс — в /api/admin/translate/status.
+  const state = startTranslationJob({ mode: 'all', targets, source, force });
+  console.log(`[translate] Запущен перевод сайта на: ${targets.join(', ')}.`);
+  json(response, 200, { ok: true, started: true, ...state });
+}
+
+// Диагностика: доходит ли сервер до переводчика вообще.
+// Без неё непонятно, почему «ничего не переводится» — сеть, ключ или блокировка.
+async function handleTranslateCheck(response, query) {
+  if ((query.get('key') || '') !== ADMIN_KEY) {
+    json(response, 401, { message: 'Неверный ключ администратора.' });
+    return;
+  }
+  const result = await checkTranslator();
+  console.log(result.ok
+    ? `[translate] Проверка связи: работает (${result.mode}).`
+    : `[translate] Проверка связи: НЕ работает (${result.mode}) — ${result.message}`);
+  json(response, 200, { ...result, hasKey: Boolean(apiKey()) });
 }
 
 // Сколько строк ещё не переведено — админка показывает это числом.
@@ -472,7 +552,14 @@ async function handleTranslateStatus(response, query) {
     const content = await siteData.read();
     const auto = countMissing(content, { targets: AUTO_LANGS });
     const manual = countMissing(content, { targets: MANUAL_LANGS });
-    json(response, 200, { auto, manual, autoLangs: AUTO_LANGS, manualLangs: MANUAL_LANGS });
+    json(response, 200, {
+      auto,
+      manual,
+      autoLangs: AUTO_LANGS,
+      manualLangs: MANUAL_LANGS,
+      job: jobState(),
+      version: siteData.version,
+    });
   } catch (error) {
     json(response, 500, { message: error.message });
   }
@@ -964,6 +1051,7 @@ const server = createServer(async (request, response) => {
     if (request.method === 'POST' && pathname === '/api/admin/save') { await handleAdminSave(await parseBody(request), response); return; }
     if (request.method === 'POST' && pathname === '/api/admin/translate-all') { await handleAdminTranslateAll(await parseBody(request), response); return; }
     if (request.method === 'GET' && pathname === '/api/admin/translate/status') { await handleTranslateStatus(response, query); return; }
+    if (request.method === 'GET' && pathname === '/api/admin/translate/check') { await handleTranslateCheck(response, query); return; }
     if (request.method === 'POST' && pathname === '/api/admin/publish') { await handleAdminPublish(await parseBody(request), response); return; }
     if (request.method === 'GET' && pathname === '/api/admin/publish/status') { await handlePublishStatus(response, query); return; }
     if (request.method === 'GET' && pathname === '/api/admin/content/file') { handleDownloadContentFile(response, query); return; }
