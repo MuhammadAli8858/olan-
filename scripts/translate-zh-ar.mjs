@@ -86,7 +86,7 @@ const AR = {
   'Эксплуатация': 'التشغيل',
 };
 
-const LANGS = new Set(['ru', 'en', 'uz', 'zh', 'ar']);
+const LANGS = new Set(['ru', 'en', 'uz', 'zh', 'ar', 'uk']);
 function isLocalized(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   const keys = Object.keys(value);

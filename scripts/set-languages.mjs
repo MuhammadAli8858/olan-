@@ -11,7 +11,7 @@ const file = new SiteDataFile(
   path.join(rootDir, 'server', 'data', 'backups'),
 );
 
-const KEEP = ['ru', 'en', 'uz', 'zh', 'ar'];
+const KEEP = ['ru', 'en', 'uz', 'zh', 'ar', 'uk'];
 const DROP = ['uk', 'kk', 'be'];
 const ALL = new Set([...KEEP, ...DROP]);
 
@@ -21,6 +21,7 @@ const OPTIONS = [
   { code: 'uz', label: "O'zbekcha", short: 'UZ' },
   { code: 'zh', label: '中文', short: 'ZH' },
   { code: 'ar', label: 'العربية', short: 'AR' },
+  { code: 'uk', label: 'Українська', short: 'UK' },
 ];
 
 // Многоязычное значение: объект, все ключи которого — коды языков.

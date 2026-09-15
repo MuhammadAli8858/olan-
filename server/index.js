@@ -15,6 +15,7 @@ import { randomUUID } from 'node:crypto';
 import { mkdirSync, readFileSync, writeFileSync, existsSync, watch } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
 import { SiteDataFile } from './siteDataFile.js';
 import { createStaticHandler } from './static.js';
 import { Staff } from './users.js';
@@ -59,15 +60,78 @@ const siteDataPath = process.env.SITE_DATA_FILE
 
 mkdirSync(dataDir, { recursive: true });
 
-// Первый запуск на постоянном диске: файла контента там ещё нет,
-// поэтому копируем его из репозитория, чтобы сайт не остался пустым.
-if (siteDataPath !== repoSiteDataPath && !existsSync(siteDataPath)) {
+// ---------------------------------------------------------------------------
+// Контент на постоянном диске и контент в репозитории
+//
+// На хостинге правки админки живут на диске, а деплой обновляет только папку
+// проекта. Из-за этого новый текст из репозитория (например, добавленный язык)
+// сам по себе на сайт не попадёт: файл на диске уже существует.
+//
+// Решаем так. Рядом с контентом храним отпечаток той версии из репозитория,
+// с которой диск был засеян. Дальше при каждом запуске:
+//   • диска ещё нет            → копируем и запоминаем отпечаток;
+//   • на диске лежит ровно то,
+//     что мы туда положили,
+//     а в коде текст новее     → обновляем сами: терять нечего;
+//   • контент правили в админке → НЕ трогаем и пишем подсказку в лог.
+// Кнопка «Обновить из кода» в админ-панели делает то же самое принудительно.
+// ---------------------------------------------------------------------------
+const seedMarkerPath = path.join(dataDir, 'content-seed.json');
+const fileHash = (file) => createHash('sha256').update(readFileSync(file, 'utf8'), 'utf8').digest('hex');
+
+function readSeedMarker() {
+  try { return JSON.parse(readFileSync(seedMarkerPath, 'utf8')); } catch { return null; }
+}
+
+function writeSeedMarker(hash) {
   try {
-    mkdirSync(path.dirname(siteDataPath), { recursive: true });
-    writeFileSync(siteDataPath, readFileSync(repoSiteDataPath, 'utf8'), 'utf8');
-    console.log(`[content] Контент скопирован на постоянный диск: ${siteDataPath}`);
+    writeFileSync(seedMarkerPath, JSON.stringify({ repoHash: hash, seededAt: new Date().toISOString() }, null, 2), 'utf8');
   } catch (error) {
-    console.error('[content] Не удалось создать файл контента:', error.message);
+    console.warn('[content] Не удалось сохранить отметку о версии контента:', error.message);
+  }
+}
+
+// Копирует контент из репозитория на диск. reason нужен только для лога.
+function seedContentFromRepo(reason) {
+  mkdirSync(path.dirname(siteDataPath), { recursive: true });
+  // Прежняя версия уходит в резервные копии — откатиться всегда можно.
+  if (existsSync(siteDataPath)) {
+    try {
+      mkdirSync(backupsDir, { recursive: true });
+      const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+      writeFileSync(path.join(backupsDir, `siteData.before-reseed.${stamp}.js`), readFileSync(siteDataPath, 'utf8'), 'utf8');
+    } catch (error) {
+      console.warn('[content] Резервная копия не создана:', error.message);
+    }
+  }
+  writeFileSync(siteDataPath, readFileSync(repoSiteDataPath, 'utf8'), 'utf8');
+  writeSeedMarker(fileHash(repoSiteDataPath));
+  console.log(`[content] Контент взят из репозитория (${reason}): ${siteDataPath}`);
+}
+
+if (siteDataPath !== repoSiteDataPath) {
+  try {
+    if (!existsSync(siteDataPath)) {
+      seedContentFromRepo('первый запуск');
+    } else {
+      const marker = readSeedMarker();
+      const repoHash = fileHash(repoSiteDataPath);
+      const diskHash = fileHash(siteDataPath);
+      if (!marker) {
+        // Диск засеян старой версией сервера, отметки нет. Ставим её задним
+        // числом по текущему содержимому — дальше логика заработает штатно.
+        writeSeedMarker(diskHash);
+        if (repoHash !== diskHash) {
+          console.log('[content] В коде другой контент. Нажмите «Обновить из кода» в админ-панели, если нужен он.');
+        }
+      } else if (diskHash === marker.repoHash && repoHash !== marker.repoHash) {
+        seedContentFromRepo('в коде свежая версия, на диске правок не было');
+      } else if (repoHash !== diskHash) {
+        console.log('[content] Контент на диске отличается от репозитория (есть правки из админки). Обновить вручную: кнопка «Обновить из кода».');
+      }
+    }
+  } catch (error) {
+    console.error('[content] Не удалось подготовить файл контента:', error.message);
   }
 }
 mkdirSync(backupsDir, { recursive: true });
@@ -346,6 +410,26 @@ async function handleAdminSave(body, response) {
   } catch (error) {
     console.error('[admin] Ошибка записи siteData.js:', error.message);
     json(response, 500, { message: `Не удалось записать siteData.js: ${error.message}` });
+  }
+}
+
+// Принудительно взять контент из репозитория (кнопка «Обновить из кода»).
+async function handleAdminReseed(body, response) {
+  if (!body || body.key !== ADMIN_KEY) {
+    json(response, 401, { message: 'Неверный ключ администратора.' });
+    return;
+  }
+  if (siteDataPath === repoSiteDataPath) {
+    json(response, 400, { message: 'Сейчас админка и так правит файл проекта — обновлять нечего.' });
+    return;
+  }
+  try {
+    seedContentFromRepo('вручную из админ-панели');
+    await siteData.read();
+    json(response, 200, { ok: true, version: siteData.version });
+  } catch (error) {
+    console.error('[content] Обновление из репозитория не удалось:', error.message);
+    json(response, 500, { message: `Не удалось обновить контент: ${error.message}` });
   }
 }
 
@@ -1052,6 +1136,7 @@ const server = createServer(async (request, response) => {
     if (request.method === 'POST' && pathname === '/api/admin/translate-all') { await handleAdminTranslateAll(await parseBody(request), response); return; }
     if (request.method === 'GET' && pathname === '/api/admin/translate/status') { await handleTranslateStatus(response, query); return; }
     if (request.method === 'GET' && pathname === '/api/admin/translate/check') { await handleTranslateCheck(response, query); return; }
+    if (request.method === 'POST' && pathname === '/api/admin/reseed') { await handleAdminReseed(await parseBody(request), response); return; }
     if (request.method === 'POST' && pathname === '/api/admin/publish') { await handleAdminPublish(await parseBody(request), response); return; }
     if (request.method === 'GET' && pathname === '/api/admin/publish/status') { await handlePublishStatus(response, query); return; }
     if (request.method === 'GET' && pathname === '/api/admin/content/file') { handleDownloadContentFile(response, query); return; }

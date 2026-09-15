@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Save, LogOut, Plus, Trash2, RotateCcw, Box, Lightbulb, Type, Languages, Image as ImageIcon, Award, ListChecks, HelpCircle, Building2, Phone, RefreshCw, FileCode, Users } from 'lucide-react';
 import StaffSection from './components/StaffSection.jsx';
-import { Menu, X, Undo2, ArrowLeft, Globe, GitBranch, Download } from 'lucide-react';
+import { Menu, X, Undo2, ArrowLeft, Globe, GitBranch, Download, FileDown } from 'lucide-react';
 import { describeChange } from './lib/changes.js';
 import { ImageField, ImageListEditor } from './components/ImageUpload.jsx';
 import GenericEditor from './components/GenericEditor.jsx';
@@ -11,7 +11,7 @@ import { getJson, postJson, API_BASE_URL } from './lib/api.js';
 const KEY_STORE = 'olan-admin-key';
 
 // Русский, английский и узбекский сервер заполняет сам при каждом сохранении.
-const AUTO_LANGS = ['ru', 'en', 'uz'];
+const AUTO_LANGS = ['ru', 'en', 'uz', 'uk'];
 // Китайский и арабский — только вручную или по отдельной команде.
 const MANUAL_LANGS = ['zh', 'ar'];
 const DEFAULT_LANGS = [
@@ -581,6 +581,20 @@ export default function App() {
     } finally { setPublishing(false); }
   };
 
+  // Взять контент из репозитория. Нужно после деплоя, когда в коде появился
+  // новый текст (например, ещё один язык), а на диске лежит старая версия.
+  const reseedFromRepo = async () => {
+    if (!confirm('Заменить контент на версию из репозитория?\n\nТекущая версия уйдёт в резервные копии, откатиться можно. Правки, сделанные в админке и не выгруженные в код, будут потеряны.')) return;
+    try {
+      await postJson('/api/admin/reseed', { key });
+      await loadContent();
+      await refreshTranslationStatus();
+      setStatus('Контент обновлён из репозитория.');
+    } catch (e) {
+      setStatus(`Не удалось обновить: ${e.message}`);
+    }
+  };
+
   // Запасной путь: скачать файл и положить его в проект руками.
   const downloadContentFile = () => {
     window.open(`${API_BASE_URL}/api/admin/content/file?key=${encodeURIComponent(key)}`, '_blank');
@@ -835,6 +849,12 @@ export default function App() {
                     <GitBranch className="h-4 w-4" />
                     <span className="hidden sm:inline">{publishing ? 'Отправляю…' : 'В код'}</span>
                   </button>
+                )}
+
+                {gitInfo && !gitInfo.local && (
+                  <button type="button" onClick={reseedFromRepo}
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-cyan-500/20 text-slate-300 transition hover:text-white"
+                    title="Обновить контент из репозитория — нужно после деплоя с новыми текстами"><FileDown className="h-4 w-4" /></button>
                 )}
 
                 {gitInfo && !gitInfo.local && !gitInfo.configured && (
