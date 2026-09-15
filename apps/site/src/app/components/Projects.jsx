@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { X, ArrowLeft, ArrowRight, MapPin } from 'lucide-react';
 import { PROJECTS, localize } from '../data/siteData.js';
 import { useSite } from '../context/SiteContext.jsx';
+import { tr } from '../lib/i18n.js';
 
 export function Projects() {
   const { language, text } = useSite();
@@ -76,7 +77,7 @@ export function Projects() {
                 </div>
               </div>
               <div className="absolute right-4 top-4 rounded-full bg-white/15 px-3 py-1 text-xs font-medium text-white opacity-0 backdrop-blur transition group-hover:opacity-100">
-                Открыть фото
+                {tr("Открыть фото")}
               </div>
             </motion.button>
           ))}

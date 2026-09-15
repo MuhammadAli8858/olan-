@@ -12,6 +12,7 @@ import { Quote, ArrowRight } from 'lucide-react';
 import { useSite } from '../context/SiteContext.jsx';
 import { localize, COMPANY, COMPANY_STATS } from '../data/siteData.js';
 import { AnimatedNumber } from './AnimatedNumber.jsx';
+import { tr } from '../lib/i18n.js';
 
 function PillarIcon({ name, className }) {
   const Component = Icons[name] || Icons.Circle;
@@ -28,10 +29,10 @@ export function Company({ onAbout }) {
       <div className="container mx-auto px-4">
         <div className="mb-14 text-center">
           <div className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-700 dark:text-cyan-400">
-            О компании
+            {tr("О компании")}
           </div>
           <h2 className="mt-4 text-4xl font-black text-slate-900 dark:text-white md:text-5xl">
-            Кто мы
+            {tr("Кто мы")}
           </h2>
           <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-slate-700 dark:text-slate-300">
             {localize(company.tagline, language)}
@@ -63,7 +64,7 @@ export function Company({ onAbout }) {
             <div className="olan-card relative overflow-hidden rounded-3xl border border-cyan-600/25 bg-gradient-to-br from-cyan-50 to-blue-50 p-6 dark:border-cyan-500/25 dark:from-slate-950 dark:to-slate-900">
               <Quote className="absolute right-5 top-5 h-8 w-8 text-cyan-600/20 dark:text-cyan-400/20" />
               <div className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-800 dark:text-cyan-300">
-                К чему стремимся
+                {tr("К чему стремимся")}
               </div>
               <p className="mt-3 text-lg font-medium leading-8 text-slate-900 dark:text-white">
                 {localize(company.mission, language)}
@@ -77,7 +78,7 @@ export function Company({ onAbout }) {
             {onAbout && (
               <button type="button" onClick={onAbout}
                 className="inline-flex items-center gap-2 text-sm font-semibold text-cyan-700 transition-all hover:gap-3 dark:text-cyan-400">
-                Подробнее о компании <ArrowRight className="h-4 w-4" />
+                {tr("Подробнее о компании")} <ArrowRight className="h-4 w-4" />
               </button>
             )}
           </motion.div>

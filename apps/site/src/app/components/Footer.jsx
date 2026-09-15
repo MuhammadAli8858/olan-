@@ -1,6 +1,7 @@
 import { ArrowUp } from 'lucide-react';
 import { useSite } from '../context/SiteContext.jsx';
 import { CONTACT_INFO } from '../data/siteData.js';
+import { tr } from '../lib/i18n.js';
 
 export function Footer({ onNavigate, onSection }) {
   const { text } = useSite();
@@ -23,7 +24,7 @@ export function Footer({ onNavigate, onSection }) {
               <img src="/olan_logo.svg" alt={text.brand} className="h-12 w-12 rounded-xl object-cover" />
               <div>
                 <div className="bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-xl font-bold text-transparent">{text.brand}</div>
-                <div className="text-sm text-slate-600 dark:text-slate-400">Фиксация нарушений ПДД</div>
+                <div className="text-sm text-slate-600 dark:text-slate-400">{tr("Фиксация нарушений ПДД")}</div>
               </div>
             </div>
             <p className="mt-5 max-w-md text-sm leading-7 text-slate-600 dark:text-slate-300">{text.footer.description}</p>

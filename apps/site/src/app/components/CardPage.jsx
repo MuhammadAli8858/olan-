@@ -16,6 +16,7 @@ import { ArrowLeft, ArrowRight, ImageOff } from 'lucide-react';
 import { useState } from 'react';
 import { useSite } from '../context/SiteContext.jsx';
 import { localize, DIRECTIONS, TEAM, COMPANY } from '../data/siteData.js';
+import { tr } from '../lib/i18n.js';
 
 function CardIcon({ name, className }) {
   const Component = Icons[name] || Icons.Circle;
@@ -25,22 +26,22 @@ function CardIcon({ name, className }) {
 // Откуда брать карточку. Ключ приходит из адреса: #card-directions-enforcement
 const SOURCES = {
   directions: {
-    label: 'Направление деятельности',
+    label: tr("Направление деятельности"),
     back: 'directions',
     list: () => DIRECTIONS || [],
   },
   capabilities: {
-    label: 'Профессиональная компетенция',
+    label: tr("Профессиональная компетенция"),
     back: 'team',
     list: () => (TEAM && TEAM.capabilities) || [],
   },
   strengths: {
-    label: 'Как работает команда',
+    label: tr("Как работает команда"),
     back: 'team',
     list: () => (TEAM && TEAM.strengths) || [],
   },
   proof: {
-    label: 'Локальный контур',
+    label: tr("Локальный контур"),
     back: 'home',
     list: () => (COMPANY && COMPANY.proof && COMPANY.proof.items) || [],
   },
@@ -87,10 +88,10 @@ export function CardPage({ collection, cardKey, onBack, onContact, onSection }) 
   if (!card) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-32 text-center">
-        <p className="text-lg text-slate-700 dark:text-slate-400">Раздел не найден.</p>
+        <p className="text-lg text-slate-700 dark:text-slate-400">{tr("Раздел не найден.")}</p>
         <button type="button" onClick={onBack}
           className="mt-6 inline-flex items-center gap-2 rounded-full border border-cyan-600/40 px-5 py-2.5 text-sm text-cyan-700 transition hover:bg-cyan-50 dark:text-cyan-300 dark:hover:bg-cyan-500/10">
-          <ArrowLeft className="h-4 w-4" /> На главную
+          <ArrowLeft className="h-4 w-4" /> {tr("На главную")}
         </button>
       </div>
     );
@@ -106,7 +107,7 @@ export function CardPage({ collection, cardKey, onBack, onContact, onSection }) 
       <div className="container mx-auto px-4 pb-20">
         <button type="button" onClick={onBack}
           className="mb-8 inline-flex items-center gap-2 text-sm text-slate-600 transition hover:text-cyan-700 dark:text-slate-400 dark:hover:text-cyan-300">
-          <ArrowLeft className="h-4 w-4" /> Назад
+          <ArrowLeft className="h-4 w-4" /> {tr("Назад")}
         </button>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
@@ -139,20 +140,19 @@ export function CardPage({ collection, cardKey, onBack, onContact, onSection }) 
               ))
             ) : (
               <p className="leading-8 text-slate-700 dark:text-slate-400">
-                Подробное описание этого раздела ещё готовится. Напишите нам — расскажем в деталях
-                применительно к вашему объекту.
+                {tr("Подробное описание этого раздела ещё готовится. Напишите нам — расскажем в деталях применительно к вашему объекту.")}
               </p>
             )}
 
             <div className="flex flex-wrap gap-3 pt-2">
               <button type="button" onClick={onContact}
                 className="olan-sweep inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-600 to-blue-700 px-6 py-3 font-semibold text-white transition hover:scale-[1.02]">
-                Обсудить проект <ArrowRight className="h-4 w-4" />
+                {tr("Обсудить проект")} <ArrowRight className="h-4 w-4" />
               </button>
               {onSection && (
                 <button type="button" onClick={() => onSection(source.back)}
                   className="inline-flex items-center gap-2 rounded-2xl border border-slate-300 px-6 py-3 font-semibold text-slate-700 transition hover:border-cyan-600/50 hover:text-cyan-700 dark:border-cyan-500/20 dark:text-slate-300">
-                  Ко всем разделам
+                  {tr("Ко всем разделам")}
                 </button>
               )}
             </div>
@@ -163,7 +163,7 @@ export function CardPage({ collection, cardKey, onBack, onContact, onSection }) 
 
         {siblings.length > 0 && (
           <div className="mt-14">
-            <div className="text-sm font-semibold text-slate-600 dark:text-slate-400">Смотрите также</div>
+            <div className="text-sm font-semibold text-slate-600 dark:text-slate-400">{tr("Смотрите также")}</div>
             <div className="mt-3 flex flex-wrap gap-2">
               {siblings.map((item, index) => (
                 <button key={item.id || index} type="button"

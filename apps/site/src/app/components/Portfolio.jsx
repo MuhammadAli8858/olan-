@@ -12,6 +12,7 @@ import { ArrowRight, ArrowLeft, CheckCircle2, Info, ImageOff, Expand } from 'luc
 import { useState } from 'react';
 import { useSite } from '../context/SiteContext.jsx';
 import { localize, PORTFOLIO, SOFTWARE_FEATURES, FORM_FACTORS } from '../data/siteData.js';
+import { tr } from '../lib/i18n.js';
 
 function ProductIcon({ name, className }) {
   const Component = Icons[name] || Icons.Package;
@@ -30,9 +31,9 @@ export function Portfolio({ onOpen, bare }) {
         {!bare && (
           <div className="mb-12 text-center">
             <div className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-700 dark:text-cyan-400">
-              Продуктовая линейка
+              {tr("Продуктовая линейка")}
             </div>
-            <h2 className="mt-4 font-black text-slate-900 dark:text-white">Продукты компании</h2>
+            <h2 className="mt-4 font-black text-slate-900 dark:text-white">{tr("Продукты компании")}</h2>
           </div>
         )}
 
@@ -66,7 +67,7 @@ export function Portfolio({ onOpen, bare }) {
               </p>
 
               <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-cyan-700 transition-all group-hover:gap-3 dark:text-cyan-400">
-                Подробнее <ArrowRight className="h-4 w-4" />
+                {tr("Подробнее")} <ArrowRight className="h-4 w-4" />
               </span>
             </motion.button>
           ))}
@@ -87,7 +88,7 @@ function ProductPhoto({ src, alt, onOpen }) {
       <div className="flex aspect-[4/3] w-full items-center justify-center rounded-3xl border border-dashed border-slate-300 bg-slate-100 text-slate-400 dark:border-slate-700 dark:bg-slate-900">
         <div className="text-center">
           <ImageOff className="mx-auto h-9 w-9" />
-          <div className="mt-2 text-sm">Фотография не задана</div>
+          <div className="mt-2 text-sm">{tr("Фотография не задана")}</div>
         </div>
       </div>
     );
@@ -98,7 +99,7 @@ function ProductPhoto({ src, alt, onOpen }) {
       <img src={src} alt={alt || ''} onError={() => setBroken(true)}
         className="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-105" />
       <span className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-black/60 px-3 py-1.5 text-xs text-white opacity-0 transition group-hover:opacity-100">
-        <Expand className="h-3.5 w-3.5" /> Открыть
+        <Expand className="h-3.5 w-3.5" /> {tr("Открыть")}
       </span>
     </button>
   );
@@ -112,10 +113,10 @@ export function ProductPage({ productId, onBack, onContact }) {
   if (!product) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-32 text-center">
-        <p className="text-lg text-slate-700 dark:text-slate-400">Продукт не найден.</p>
+        <p className="text-lg text-slate-700 dark:text-slate-400">{tr("Продукт не найден.")}</p>
         <button type="button" onClick={onBack}
           className="mt-6 inline-flex items-center gap-2 rounded-full border border-cyan-600/40 px-5 py-2.5 text-sm text-cyan-700 transition hover:bg-cyan-50 dark:text-cyan-300 dark:hover:bg-cyan-500/10">
-          <ArrowLeft className="h-4 w-4" /> На главную
+          <ArrowLeft className="h-4 w-4" /> {tr("На главную")}
         </button>
       </div>
     );
@@ -131,7 +132,7 @@ export function ProductPage({ productId, onBack, onContact }) {
       <div className="container mx-auto px-4 pb-20">
         <button type="button" onClick={onBack}
           className="mb-8 inline-flex items-center gap-2 text-sm text-slate-600 transition hover:text-cyan-700 dark:text-slate-400 dark:hover:text-cyan-300">
-          <ArrowLeft className="h-4 w-4" /> Назад
+          <ArrowLeft className="h-4 w-4" /> {tr("Назад")}
         </button>
 
         <div className="flex flex-wrap items-center gap-4">
@@ -159,7 +160,7 @@ export function ProductPage({ productId, onBack, onContact }) {
         <div className="mt-10 grid gap-8 lg:grid-cols-[1.4fr_1fr]">
           <div>
             <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-600 dark:text-slate-400">
-              Что входит
+              {tr("Что входит")}
             </h2>
             <ul className="mt-5 space-y-3">
               {(product.features || []).map((feature, index) => (
@@ -211,7 +212,7 @@ export function ProductPage({ productId, onBack, onContact }) {
 
             <button type="button" onClick={onContact}
               className="olan-sweep inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-600 to-blue-700 px-6 py-3.5 font-semibold text-white transition hover:scale-[1.02]">
-              Обсудить проект <ArrowRight className="h-4 w-4" />
+              {tr("Обсудить проект")} <ArrowRight className="h-4 w-4" />
             </button>
           </div>
         </div>
@@ -279,7 +280,7 @@ export function ProductPage({ productId, onBack, onContact }) {
         )}
 
         <div className="mt-12">
-          <div className="text-sm font-semibold text-slate-600 dark:text-slate-400">Другие продукты</div>
+          <div className="text-sm font-semibold text-slate-600 dark:text-slate-400">{tr("Другие продукты")}</div>
           <div className="mt-3 flex flex-wrap gap-2">
             {(PORTFOLIO || []).filter((item) => item.id !== product.id).map((item) => (
               <button key={item.id} type="button"

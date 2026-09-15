@@ -16,6 +16,7 @@ import { localize, PRODUCTS, VIOLATION_SOLUTIONS, UI_TEXT } from '../data/siteDa
 
 // Иконки решений хранятся строкой, поэтому берём их по имени.
 import * as Icons from 'lucide-react';
+import { tr } from '../lib/i18n.js';
 
 function SolutionIcon({ name, className }) {
   const Component = Icons[name] || Gauge;
@@ -31,10 +32,10 @@ export function SolutionPage({ solutionId, onBack, onOpenProduct, onContact }) {
   if (!solution) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-32 text-center">
-        <p className="text-lg text-slate-600 dark:text-slate-400">Решение не найдено.</p>
+        <p className="text-lg text-slate-600 dark:text-slate-400">{tr("Решение не найдено.")}</p>
         <button type="button" onClick={onBack}
           className="mt-6 inline-flex items-center gap-2 rounded-full border border-cyan-500/30 px-5 py-2.5 text-sm text-cyan-600 transition hover:bg-cyan-500/10 dark:text-cyan-300">
-          <ArrowLeft className="h-4 w-4" /> На главную
+          <ArrowLeft className="h-4 w-4" /> {tr("На главную")}
         </button>
       </div>
     );
@@ -54,7 +55,7 @@ export function SolutionPage({ solutionId, onBack, onOpenProduct, onContact }) {
       <div className="container mx-auto px-4 pb-20">
         <button type="button" onClick={onBack}
           className="mb-8 inline-flex items-center gap-2 text-sm text-slate-600 transition hover:text-cyan-600 dark:text-slate-600 dark:hover:text-cyan-300">
-          <ArrowLeft className="h-4 w-4" /> Назад
+          <ArrowLeft className="h-4 w-4" /> {tr("Назад")}
         </button>
 
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-14">
@@ -66,7 +67,7 @@ export function SolutionPage({ solutionId, onBack, onOpenProduct, onContact }) {
           >
             <div className="flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.2em] text-cyan-600 dark:text-cyan-400">
               <span className="h-px w-8 bg-cyan-500" />
-              Наше решение
+              {tr("Наше решение")}
             </div>
 
             <h1 className="mt-5 text-4xl font-black leading-tight text-slate-900 dark:text-white md:text-5xl">
@@ -76,7 +77,7 @@ export function SolutionPage({ solutionId, onBack, onOpenProduct, onContact }) {
             <div className="mt-8 space-y-5">
               <div className="rounded-3xl border border-cyan-500/20 bg-slate-100 dark:bg-slate-900/60 p-5">
                 <div className="flex items-center gap-2 text-sm font-semibold text-cyan-700 dark:text-cyan-300">
-                  <ShieldAlert className="h-4 w-4" /> Проблема
+                  <ShieldAlert className="h-4 w-4" /> {tr("Проблема")}
                 </div>
                 <p className="mt-2.5 leading-7 text-slate-700 dark:text-slate-300">
                   {localize(solution.problem, language)}
@@ -85,7 +86,7 @@ export function SolutionPage({ solutionId, onBack, onOpenProduct, onContact }) {
 
               <div className="rounded-3xl border border-slate-200 dark:border-cyan-500/20 bg-cyan-500/5 p-5">
                 <div className="flex items-center gap-2 text-sm font-semibold text-cyan-700 dark:text-cyan-300">
-                  <CheckCircle2 className="h-4 w-4" /> Решение
+                  <CheckCircle2 className="h-4 w-4" /> {tr("Решение")}
                 </div>
                 <p className="mt-2.5 leading-7 text-slate-700 dark:text-slate-300">
                   {localize(solution.solution, language)}
@@ -98,12 +99,12 @@ export function SolutionPage({ solutionId, onBack, onOpenProduct, onContact }) {
                 <SolutionIcon name={solution.icon} className="h-6 w-6" />
               </div>
               <div>
-                <div className="text-sm text-slate-600 dark:text-slate-400">Подходящих комплексов</div>
+                <div className="text-sm text-slate-600 dark:text-slate-400">{tr("Подходящих комплексов")}</div>
                 <div className="text-2xl font-bold text-slate-900 dark:text-white">{products.length}</div>
               </div>
               <button type="button" onClick={onContact}
                 className="ml-auto inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:scale-105">
-                {actions.consultation || 'Получить консультацию'}
+                {actions.consultation || tr("Получить консультацию")}
                 <ArrowRight className="h-4 w-4" />
               </button>
             </div>
@@ -117,16 +118,16 @@ export function SolutionPage({ solutionId, onBack, onOpenProduct, onContact }) {
           >
             <div className="flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.2em] text-cyan-600 dark:text-cyan-400">
               <span className="h-px w-8 bg-cyan-500" />
-              Наши комплексы для этого решения
+              {tr("Наши комплексы для этого решения")}
             </div>
 
             <p className="mt-4 leading-7 text-slate-600 dark:text-slate-400">
-              Нажмите на карточку — откроется полная характеристика, техпаспорт и фотографии.
+              {tr("Нажмите на карточку — откроется полная характеристика, техпаспорт и фотографии.")}
             </p>
 
             {products.length === 0 ? (
               <div className="mt-8 rounded-3xl border border-slate-200 p-8 text-center text-slate-600 dark:border-slate-800 dark:text-slate-400">
-                Для этой задачи комплексы пока не добавлены.
+                {tr("Для этой задачи комплексы пока не добавлены.")}
               </div>
             ) : (
               <div className="mt-6 grid gap-5 sm:grid-cols-2">
@@ -179,10 +180,10 @@ export function SolutionPage({ solutionId, onBack, onOpenProduct, onContact }) {
                         <div className="mt-5 flex items-center justify-between border-t border-slate-200 pt-4 dark:border-slate-800">
                           <span className="inline-flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400">
                             <Tag className="h-3.5 w-3.5" />
-                            {localize(product.price, language) || 'цена по запросу'}
+                            {localize(product.price, language) || tr("цена по запросу")}
                           </span>
                           <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-cyan-600 transition group-hover:gap-2.5 dark:text-cyan-400">
-                            Открыть карточку <ArrowRight className="h-4 w-4" />
+                            {tr("Открыть карточку")} <ArrowRight className="h-4 w-4" />
                           </span>
                         </div>
                       </div>
@@ -194,7 +195,7 @@ export function SolutionPage({ solutionId, onBack, onOpenProduct, onContact }) {
 
             {/* Другие задачи — чтобы можно было перейти, не возвращаясь назад */}
             <div className="mt-10">
-              <div className="text-sm font-semibold text-slate-600 dark:text-slate-400">Другие задачи</div>
+              <div className="text-sm font-semibold text-slate-600 dark:text-slate-400">{tr("Другие задачи")}</div>
               <div className="mt-3 flex flex-wrap gap-2">
                 {VIOLATION_SOLUTIONS.filter((item) => item.id !== solution.id).map((item) => (
                   <a key={item.id} href={`#solution-${item.id}`}

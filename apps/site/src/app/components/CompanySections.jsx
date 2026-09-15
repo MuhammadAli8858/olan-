@@ -13,6 +13,7 @@ import { CheckCircle2, ShieldCheck, ArrowRight } from 'lucide-react';
 import { useSite } from '../context/SiteContext.jsx';
 import { PillarDetail } from './PillarDetail.jsx';
 import { localize, ENGAGEMENT_MODELS, WORKFLOW, TEAM, COMPANY } from '../data/siteData.js';
+import { tr } from '../lib/i18n.js';
 
 function Icon({ name, className }) {
   const Component = Icons[name] || Icons.Circle;
@@ -31,10 +32,10 @@ export function Engagement({ bare }) {
         {!bare && (
           <div className="mb-12 text-center">
             <div className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-700 dark:text-cyan-400">
-              Модели сотрудничества
+              {tr("Модели сотрудничества")}
             </div>
             <h2 className="mt-4 font-black text-slate-900 dark:text-white">
-              Роль OLAN в проектах партнёров
+              {tr("Роль OLAN в проектах партнёров")}
             </h2>
           </div>
         )}
@@ -44,9 +45,9 @@ export function Engagement({ bare }) {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-slate-900 text-white dark:bg-slate-900">
-                <th className="px-6 py-4 text-sm font-semibold">Тип проекта</th>
-                <th className="px-6 py-4 text-sm font-semibold">Роль OLAN</th>
-                <th className="px-6 py-4 text-sm font-semibold">Что получает партнёр</th>
+                <th className="px-6 py-4 text-sm font-semibold">{tr("Тип проекта")}</th>
+                <th className="px-6 py-4 text-sm font-semibold">{tr("Роль OLAN")}</th>
+                <th className="px-6 py-4 text-sm font-semibold">{tr("Что получает партнёр")}</th>
               </tr>
             </thead>
             <tbody>
@@ -73,9 +74,9 @@ export function Engagement({ bare }) {
             <div key={row.id}
               className="olan-card rounded-3xl border border-slate-200 bg-white p-5 dark:border-cyan-500/15 dark:bg-black">
               <div className="font-semibold leading-6 text-slate-900 dark:text-white">{localize(row.type, language)}</div>
-              <div className="mt-3 text-xs font-semibold uppercase tracking-wider text-slate-600">Роль OLAN</div>
+              <div className="mt-3 text-xs font-semibold uppercase tracking-wider text-slate-600">{tr("Роль OLAN")}</div>
               <div className="mt-1 text-sm leading-6 text-cyan-800 dark:text-cyan-300">{localize(row.role, language)}</div>
-              <div className="mt-3 text-xs font-semibold uppercase tracking-wider text-slate-600">Что получает партнёр</div>
+              <div className="mt-3 text-xs font-semibold uppercase tracking-wider text-slate-600">{tr("Что получает партнёр")}</div>
               <div className="mt-1 text-sm leading-6 text-slate-700 dark:text-slate-400">{localize(row.result, language)}</div>
             </div>
           ))}
@@ -98,10 +99,10 @@ export function Workflow() {
       <div className="container mx-auto px-4">
         <div className="mb-12 text-center">
           <div className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-700 dark:text-cyan-400">
-            Как мы работаем
+            {tr("Как мы работаем")}
           </div>
           <h2 className="mt-4 text-4xl font-black text-slate-900 dark:text-white md:text-5xl">
-            Инфраструктурные проекты полного цикла
+            {tr("Инфраструктурные проекты полного цикла")}
           </h2>
         </div>
 
@@ -172,10 +173,10 @@ export function Team({ onOpenCard }) {
       <div className="container mx-auto px-4">
         <div className="mb-12 text-center">
           <div className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-700 dark:text-cyan-400">
-            Команда
+            {tr("Команда")}
           </div>
           <h2 className="mt-4 text-4xl font-black text-slate-900 dark:text-white md:text-5xl">
-            Компетенции команды
+            {tr("Компетенции команды")}
           </h2>
         </div>
 
@@ -195,7 +196,7 @@ export function Team({ onOpenCard }) {
           {localize(team.note, language)}
         </div>
 
-        <h3 className="mt-16 text-2xl font-bold text-slate-900 dark:text-white">Профессиональные компетенции</h3>
+        <h3 className="mt-16 text-2xl font-bold text-slate-900 dark:text-white">{tr("Профессиональные компетенции")}</h3>
         <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {(team.capabilities || []).map((item, index) => (
             <button key={index} type="button"
@@ -207,13 +208,13 @@ export function Team({ onOpenCard }) {
               <div className="text-lg font-bold text-slate-900 dark:text-white">{localize(item.title, language)}</div>
               <p className="mt-2 text-sm leading-6 text-slate-700 dark:text-slate-400">{localize(item.text, language)}</p>
               <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-cyan-700 dark:text-cyan-400">
-                Подробнее <ArrowRight className="h-4 w-4" />
+                {tr("Подробнее")} <ArrowRight className="h-4 w-4" />
               </span>
             </button>
           ))}
         </div>
 
-        <h3 className="mt-16 text-2xl font-bold text-slate-900 dark:text-white">Как работает команда</h3>
+        <h3 className="mt-16 text-2xl font-bold text-slate-900 dark:text-white">{tr("Как работает команда")}</h3>
         <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {(team.strengths || []).map((item, index) => (
             <button key={index} type="button"
@@ -225,7 +226,7 @@ export function Team({ onOpenCard }) {
               <div className="text-lg font-bold text-slate-900 dark:text-white">{localize(item.title, language)}</div>
               <p className="mt-2 text-sm leading-6 text-slate-700 dark:text-slate-400">{localize(item.text, language)}</p>
               <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-cyan-700 dark:text-cyan-400">
-                Подробнее <ArrowRight className="h-4 w-4" />
+                {tr("Подробнее")} <ArrowRight className="h-4 w-4" />
               </span>
             </button>
           ))}
@@ -255,7 +256,7 @@ export function PartnerValue() {
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-14">
           <div>
             <div className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-400">
-              Практическое подтверждение
+              {tr("Практическое подтверждение")}
             </div>
             <h2 className="mt-4 text-3xl font-black md:text-4xl">{localize(proof.title, language)}</h2>
             <p className="mt-5 leading-8 text-slate-300">{localize(proof.text, language)}</p>
@@ -276,7 +277,7 @@ export function PartnerValue() {
                   <div className="font-bold">{localize(item.title, language)}</div>
                   <div className="mt-1 text-sm leading-6 text-slate-300">{localize(item.text, language)}</div>
                   <span className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-300">
-                    Подробнее <ArrowRight className="h-3.5 w-3.5" />
+                    {tr("Подробнее")} <ArrowRight className="h-3.5 w-3.5" />
                   </span>
                 </div>
               </button>
@@ -288,7 +289,7 @@ export function PartnerValue() {
         <div className="mt-20 grid gap-10 lg:grid-cols-2 lg:gap-14">
           <div>
             <div className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-400">
-              Что это значит для партнёра
+              {tr("Что это значит для партнёра")}
             </div>
             <h2 className="mt-4 text-3xl font-black leading-tight md:text-5xl">
               {localize(partner.title, language)}

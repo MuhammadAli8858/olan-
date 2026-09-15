@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { UI_TEXT, LANGUAGE_OPTIONS } from '../data/siteData.js';
+import { setUiLanguage, tr } from '../lib/i18n.js';
 
 const SiteContext = createContext(null);
 
@@ -105,6 +106,11 @@ export function SiteProvider({ children }) {
     if (SUPPORTED.includes(lang)) setLanguageState(lang);
   };
 
+  // Подписи в компонентах переводятся функцией tr из lib/i18n.js.
+  // Она не хук, поэтому текущий язык ей нужно сообщить отдельно —
+  // делаем это синхронно, до отрисовки детей.
+  setUiLanguage(language);
+
   const value = useMemo(
     () => ({
       language,
@@ -127,6 +133,9 @@ export function SiteProvider({ children }) {
       },
       themePinned,
       text: UI_TEXT[language] || UI_TEXT.ru,
+      // Та же функция, что и в lib/i18n.js — для компонентов,
+      // которым удобнее брать её из контекста.
+      tr,
     }),
     [theme, themePinned, language],
   );

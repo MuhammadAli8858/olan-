@@ -13,6 +13,7 @@ import * as Icons from 'lucide-react';
 import { ArrowRight, ShieldAlert, CheckCircle2 } from 'lucide-react';
 import { useSite } from '../context/SiteContext.jsx';
 import { localize, SERVICE_CASES } from '../data/siteData.js';
+import { tr } from '../lib/i18n.js';
 
 function CaseIcon({ name, className }) {
   const Component = Icons[name] || Icons.Circle;
@@ -29,14 +30,13 @@ export function ServiceCases({ onOpen, compact }) {
         {!compact && (
           <div className="mb-12 text-center">
             <div className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-700 dark:text-cyan-400">
-              Задачи заказчика
+              {tr("Задачи заказчика")}
             </div>
             <h2 className="mt-4 text-4xl font-black text-slate-900 dark:text-white md:text-5xl">
-              С чем к нам приходят
+              {tr("С чем к нам приходят")}
             </h2>
             <p className="mx-auto mt-4 max-w-3xl leading-8 text-slate-700 dark:text-slate-400">
-              Найдите свою ситуацию — рядом стоит услуга, которая её закрывает.
-              Фиксация нарушений это только одно из направлений.
+              {tr("Найдите свою ситуацию — рядом стоит услуга, которая её закрывает. Фиксация нарушений это только одно из направлений.")}
             </p>
           </div>
         )}
@@ -62,7 +62,7 @@ export function ServiceCases({ onOpen, compact }) {
 
               <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-4 dark:border-cyan-500/15 dark:bg-black">
                 <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-slate-600 dark:text-slate-400">
-                  <ShieldAlert className="h-3.5 w-3.5" /> Проблема
+                  <ShieldAlert className="h-3.5 w-3.5" /> {tr("Проблема")}
                 </div>
                 <p className="mt-2 text-sm leading-7 text-slate-700 dark:text-slate-300">
                   {localize(item.problem, language)}
@@ -71,7 +71,7 @@ export function ServiceCases({ onOpen, compact }) {
 
               <div className="mt-3 flex-1 rounded-2xl border border-cyan-600/20 bg-cyan-50 p-4 dark:border-cyan-500/20 dark:bg-cyan-500/5">
                 <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-cyan-800 dark:text-cyan-300">
-                  <CheckCircle2 className="h-3.5 w-3.5" /> Решение
+                  <CheckCircle2 className="h-3.5 w-3.5" /> {tr("Решение")}
                 </div>
                 <p className="mt-2 text-sm leading-7 text-slate-800 dark:text-slate-200">
                   {localize(item.solution, language)}

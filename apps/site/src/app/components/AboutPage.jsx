@@ -3,13 +3,16 @@ import { ShieldCheck, Award, Factory, BadgeCheck, ArrowLeft, ArrowRight, MapPin,
 import { ABOUT_FEATURES, CONTACT_INFO, localize } from '../data/siteData.js';
 import { useSite } from '../context/SiteContext.jsx';
 import { AnimatedNumber } from './AnimatedNumber.jsx';
+import { tr } from '../lib/i18n.js';
 
 const iconMap = { ShieldCheck, Award, Factory, BadgeCheck };
 
-const COMPANY_PARAGRAPHS = [
-  'OLAN HIGH TECH PROJECT — производитель и поставщик интеллектуальных комплексов автоматической фиксации нарушений правил дорожного движения. Мы выпускаем сертифицированное оборудование для контроля скорости, проезда на красный свет, нарушений правил парковки, проезда железнодорожных переездов и выезда на полосу общественного транспорта.',
-  'За более чем 15 лет работы наши комплексы были поставлены на городские дороги, магистрали и объекты транспортной инфраструктуры. Мы делаем ставку на надёжность, точность измерений и долгий срок службы оборудования в любых климатических условиях — от −50 °C до +70 °C.',
-  'Оборудование выпускается на собственном производстве, поэтому вы покупаете напрямую, без посредников и лишних наценок. Каждый комплекс проходит контроль качества и поставляется с гарантией, полным комплектом документов и сертификатами соответствия.',
+// Функция, а не константа: переводы должны пересчитываться при смене
+// языка, а константа вычислилась бы один раз при загрузке модуля.
+const companyParagraphs = () => [
+  tr("OLAN HIGH TECH PROJECT — производитель и поставщик интеллектуальных комплексов автоматической фиксации нарушений правил дорожного движения. Мы выпускаем сертифицированное оборудование для контроля скорости, проезда на красный свет, нарушений правил парковки, проезда железнодорожных переездов и выезда на полосу общественного транспорта."),
+  tr("За более чем 15 лет работы наши комплексы были поставлены на городские дороги, магистрали и объекты транспортной инфраструктуры. Мы делаем ставку на надёжность, точность измерений и долгий срок службы оборудования в любых климатических условиях — от −50 °C до +70 °C."),
+  tr("Оборудование выпускается на собственном производстве, поэтому вы покупаете напрямую, без посредников и лишних наценок. Каждый комплекс проходит контроль качества и поставляется с гарантией, полным комплектом документов и сертификатами соответствия."),
 ];
 
 export function AboutPage({ onBack, onSection }) {
@@ -30,7 +33,7 @@ export function AboutPage({ onBack, onSection }) {
             className="inline-flex items-center gap-2 rounded-full border border-slate-200 dark:border-cyan-500/20 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-cyan-500/40 hover:text-cyan-600 dark:bg-slate-950 dark:text-slate-200"
           >
             <ArrowLeft className="h-4 w-4" />
-            На главную
+            {tr("На главную")}
           </button>
 
           <div className="mx-auto mt-10 max-w-3xl text-center">
@@ -47,7 +50,7 @@ export function AboutPage({ onBack, onSection }) {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-4xl space-y-6">
-            {COMPANY_PARAGRAPHS.map((paragraph) => (
+            {companyParagraphs().map((paragraph) => (
               <motion.p
                 key={paragraph.slice(0, 24)}
                 initial={{ opacity: 0, y: 16 }}
@@ -127,8 +130,8 @@ export function AboutPage({ onBack, onSection }) {
 
           {/* Призыв к действию */}
           <div className="mx-auto mt-16 max-w-4xl rounded-3xl border border-slate-200 dark:border-cyan-500/20 bg-gradient-to-br from-cyan-500/10 to-blue-600/10 p-10 text-center">
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white md:text-3xl">Готовы подобрать комплекс?</h3>
-            <p className="mx-auto mt-4 max-w-2xl text-slate-600 dark:text-slate-300">Откройте каталог комплексов по типам нарушений или свяжитесь с нами — поможем с выбором и подготовим предложение.</p>
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white md:text-3xl">{tr("Готовы подобрать комплекс?")}</h3>
+            <p className="mx-auto mt-4 max-w-2xl text-slate-600 dark:text-slate-300">{tr("Откройте каталог комплексов по типам нарушений или свяжитесь с нами — поможем с выбором и подготовим предложение.")}</p>
             <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <button
                 type="button"

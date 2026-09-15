@@ -18,6 +18,7 @@ import { useSite } from '../context/SiteContext.jsx';
 import { localize, COMPANY, COMPANY_STATS } from '../data/siteData.js';
 import { AnimatedNumber } from './AnimatedNumber.jsx';
 import { PillarDetail } from './PillarDetail.jsx';
+import { tr } from '../lib/i18n.js';
 
 function Icon({ name, className }) {
   const Component = Icons[name] || Icons.Circle;
@@ -28,33 +29,33 @@ function Icon({ name, className }) {
 const SECTIONS = [
   {
     id: 'directions', icon: 'Layers', target: 'directions',
-    title: 'Направления деятельности',
-    text: 'Семь направлений: от фиксации нарушений и видеоаналитики до городских платформ, связи и локализации производства.',
+    title: tr("Направления деятельности"),
+    text: tr("Семь направлений: от фиксации нарушений и видеоаналитики до городских платформ, связи и локализации производства."),
   },
   {
     id: 'engagement', icon: 'Route', target: 'engagement',
-    title: 'Модели сотрудничества',
-    text: 'В какой роли компания входит в проект: разработчик, производитель, интегратор, оператор или технологический партнёр.',
+    title: tr("Модели сотрудничества"),
+    text: tr("В какой роли компания входит в проект: разработчик, производитель, интегратор, оператор или технологический партнёр."),
   },
   {
     id: 'workflow', icon: 'Workflow', target: 'workflow',
-    title: 'Как мы работаем',
-    text: 'Десять этапов инфраструктурного проекта — от обследования площадки до интеграции с государственными системами и сервиса по SLA.',
+    title: tr("Как мы работаем"),
+    text: tr("Десять этапов инфраструктурного проекта — от обследования площадки до интеграции с государственными системами и сервиса по SLA."),
   },
   {
     id: 'team', icon: 'UsersRound', target: 'team',
-    title: 'Команда и компетенции',
-    text: 'Разработка, электроника, метрология, полевая инфраструктура, проектный офис и коммерциализация в одном контуре ответственности.',
+    title: tr("Команда и компетенции"),
+    text: tr("Разработка, электроника, метрология, полевая инфраструктура, проектный офис и коммерциализация в одном контуре ответственности."),
   },
   {
     id: 'projects', icon: 'Building2', target: 'projects',
-    title: 'Реализованные проекты',
-    text: 'Объекты, где комплексы уже работают: магистрали, перекрёстки, выделенные полосы и железнодорожные переезды.',
+    title: tr("Реализованные проекты"),
+    text: tr("Объекты, где комплексы уже работают: магистрали, перекрёстки, выделенные полосы и железнодорожные переезды."),
   },
   {
     id: 'cases', icon: 'Lightbulb', target: 'cases',
-    title: 'Задачи заказчика',
-    text: 'Десять типичных ситуаций и услуга, которая закрывает каждую. Найдите свою — рядом будет решение.',
+    title: tr("Задачи заказчика"),
+    text: tr("Десять типичных ситуаций и услуга, которая закрывает каждую. Найдите свою — рядом будет решение."),
   },
 ];
 
@@ -72,10 +73,10 @@ export function AboutCompany({ onNavigate }) {
       <section className="border-b border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-950">
         <div className="container mx-auto px-4 py-14">
           <div className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-700 dark:text-cyan-400">
-            О компании
+            {tr("О компании")}
           </div>
           <h1 className="mt-3 font-black text-slate-900 dark:text-white">
-            Производитель комплексов и технологический партнёр полного цикла
+            {tr("Производитель комплексов и технологический партнёр полного цикла")}
           </h1>
           <p className="mt-5 max-w-4xl text-lg leading-8 text-slate-700 dark:text-slate-300">
             {localize(company.tagline, language)}
@@ -104,9 +105,7 @@ export function AboutCompany({ onNavigate }) {
               {localize(company.intro, language)}
             </p>
             <p className="leading-8 text-slate-700 dark:text-slate-300">
-              Мы производим программно-аппаратные комплексы фиксации нарушений ПДД — от схемотехники
-              и встроенного программного обеспечения до серийной сборки и выпускного контроля качества.
-              Это собственная разработка, а не перепродажа чужого оборудования под своей маркой.
+              {tr("Мы производим программно-аппаратные комплексы фиксации нарушений ПДД — от схемотехники и встроенного программного обеспечения до серийной сборки и выпускного контроля качества. Это собственная разработка, а не перепродажа чужого оборудования под своей маркой.")}
             </p>
             <p className="leading-8 text-slate-700 dark:text-slate-300">
               {localize(company.what, language)}
@@ -118,7 +117,7 @@ export function AboutCompany({ onNavigate }) {
             <div className="olan-card relative overflow-hidden rounded-3xl border border-cyan-600/25 bg-gradient-to-br from-cyan-50 to-blue-50 p-6 dark:border-cyan-500/25 dark:from-slate-950 dark:to-slate-900">
               <Quote className="absolute right-5 top-5 h-8 w-8 text-cyan-600/20 dark:text-cyan-400/20" />
               <div className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-800 dark:text-cyan-300">
-                К чему стремимся
+                {tr("К чему стремимся")}
               </div>
               <p className="mt-3 text-lg font-medium leading-8 text-slate-900 dark:text-white">
                 {localize(company.mission, language)}
@@ -146,7 +145,7 @@ export function AboutCompany({ onNavigate }) {
                   <div className="text-lg font-bold text-slate-900 dark:text-white">{localize(pillar.title, language)}</div>
                   <div className="mt-1.5 leading-7 text-slate-700 dark:text-slate-400">{localize(pillar.text, language)}</div>
                   <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-cyan-700 dark:text-cyan-400">
-                    Подробнее <ArrowRight className="h-4 w-4" />
+                    {tr("Подробнее")} <ArrowRight className="h-4 w-4" />
                   </span>
                 </div>
               </button>
@@ -174,9 +173,9 @@ export function AboutCompany({ onNavigate }) {
       {/* ────────────────── Разделы о компании карточками ────────────────── */}
       <section className="bg-slate-100 py-16 transition-colors dark:bg-slate-950">
         <div className="container mx-auto px-4">
-          <h2 className="font-black text-slate-900 dark:text-white">Подробнее о компании</h2>
+          <h2 className="font-black text-slate-900 dark:text-white">{tr("Подробнее о компании")}</h2>
           <p className="mt-3 max-w-3xl leading-8 text-slate-700 dark:text-slate-400">
-            Шесть разделов с деталями. Нажмите на карточку — откроется отдельная страница.
+            {tr("Шесть разделов с деталями. Нажмите на карточку — откроется отдельная страница.")}
           </p>
 
           <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -197,7 +196,7 @@ export function AboutCompany({ onNavigate }) {
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white">{section.title}</h3>
                 <p className="mt-3 flex-1 leading-7 text-slate-700 dark:text-slate-400">{section.text}</p>
                 <span className="mt-5 inline-flex items-center gap-1.5 font-semibold text-cyan-700 dark:text-cyan-400">
-                  Открыть <ArrowRight className="h-4 w-4" />
+                  {tr("Открыть")} <ArrowRight className="h-4 w-4" />
                 </span>
               </motion.button>
             ))}

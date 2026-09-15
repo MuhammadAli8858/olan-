@@ -3,6 +3,7 @@ import { Menu, X, Sun, Moon, Phone, Globe, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useSite } from '../context/SiteContext.jsx';
 import { localize, PORTFOLIO } from '../data/siteData.js';
+import { tr } from '../lib/i18n.js';
 
 export function Header({ route, onNavigate, onSection, onHome }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -26,10 +27,10 @@ export function Header({ route, onNavigate, onSection, onHome }) {
   // на самой странице. Каталог переехал внутрь «Продуктов».
   // Контакты живут на главной, отдельного пункта им не нужно.
   const navItems = [
-    { name: 'О компании', target: 'about', isPage: true },
-    { name: 'Услуги', target: 'directions', isPage: true },
-    { name: 'Продукты', target: 'portfolio', isPage: true, children: productItems },
-    { name: 'Задачи', target: 'cases', isPage: true },
+    { name: tr("О компании"), target: 'about', isPage: true },
+    { name: tr("Услуги"), target: 'directions', isPage: true },
+    { name: tr("Продукты"), target: 'portfolio', isPage: true, children: productItems },
+    { name: tr("Задачи"), target: 'cases', isPage: true },
     { name: text.nav.faq, target: 'faq', isPage: true },
     // Контакты — секция на главной, поэтому не страница, а переход с прокруткой.
     { name: text.nav.contact, target: 'contact', isPage: false, href: 'contact' },
@@ -183,7 +184,7 @@ export function Header({ route, onNavigate, onSection, onHome }) {
             type="button"
             className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 dark:border-cyan-500/20 bg-white text-slate-700 lg:hidden dark:bg-slate-900 dark:text-slate-200"
             onClick={() => setMobileMenuOpen((prev) => !prev)}
-            aria-label="Открыть меню"
+            aria-label={tr("Открыть меню")}
           >
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>

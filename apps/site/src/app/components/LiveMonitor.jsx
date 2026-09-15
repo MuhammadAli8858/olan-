@@ -15,52 +15,32 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Activity, Radio } from 'lucide-react';
 import { useSite } from '../context/SiteContext.jsx';
 import { localize, PROJECTS, VIOLATION_SOLUTIONS } from '../data/siteData.js';
+import { tr } from '../lib/i18n.js';
 
-// Подписи блока на языках сайта. В контенте их нет, поэтому держим рядом.
-const LABELS = {
-  ru: {
-    tag: 'Мониторинг',
-    title: 'Комплексы на связи',
-    lead: 'Так выглядит работа системы: комплексы фиксируют нарушения и передают материал в центр обработки.',
-    feed: 'Лента фиксаций',
-    demo: 'демонстрация работы',
-    active: 'В РАБОТЕ',
-    live: 'ЭФИР',
-    speed: 'Скорость обработки',
-    speedNote: 'от момента фиксации',
-    uptime: 'Доступность',
-    uptimeNote: 'работа без простоев',
-    resolution: 'Разрешение',
-    resolutionNote: 'съёмка в любую погоду',
-    channel: 'Канал передачи',
-    channelNote: 'защищённое соединение',
-  },
-  uz: {
-    tag: 'Monitoring', title: 'Majmualar aloqada',
-    lead: 'Tizim shunday ishlaydi: majmualar qoidabuzarliklarni qayd etadi va materialni markazga uzatadi.',
-    feed: 'Qayd etish lentasi', demo: 'namoyish', active: 'ISHLAMOQDA', live: 'EFIR',
-    speed: 'Qayta ishlash tezligi', speedNote: 'qayd etilgan paytdan',
-    uptime: 'Ishonchlilik', uptimeNote: 'uzluksiz ishlash',
-    resolution: 'Aniqlik', resolutionNote: 'har qanday ob-havoda',
-    channel: 'Uzatish kanali', channelNote: 'himoyalangan ulanish',
-  },
-  en: {
-    tag: 'Monitoring', title: 'Systems online',
-    lead: 'This is how the system works: units record violations and send the evidence to the processing centre.',
-    feed: 'Detection feed', demo: 'demo data', active: 'ACTIVE', live: 'LIVE',
-    speed: 'Processing speed', speedNote: 'from the moment of capture',
-    uptime: 'Uptime', uptimeNote: 'continuous operation',
-    resolution: 'Resolution', resolutionNote: 'capture in any weather',
-    channel: 'Data channel', channelNote: 'encrypted connection',
-  },
-};
-
-function labelsFor(language) {
-  return LABELS[language] || LABELS.ru;
+// Подписи блока. Переводы лежат в общем словаре UI_TEXT.s, поэтому здесь
+// только русские ключи — нужный язык подставит tr() при каждой отрисовке.
+function labelsFor() {
+  return {
+    tag: tr("Мониторинг"),
+    title: tr("Комплексы на связи"),
+    lead: tr("Так выглядит работа системы: комплексы фиксируют нарушения и передают материал в центр обработки."),
+    feed: tr("Лента фиксаций"),
+    demo: tr("демонстрация работы"),
+    active: tr("В РАБОТЕ"),
+    live: tr("ЭФИР"),
+    speed: tr("Скорость обработки"),
+    speedNote: tr("от момента фиксации"),
+    uptime: tr("Доступность"),
+    uptimeNote: tr("работа без простоев"),
+    resolution: tr("Разрешение"),
+    resolutionNote: tr("съёмка в любую погоду"),
+    channel: tr("Канал передачи"),
+    channelNote: tr("защищённое соединение"),
+  };
 }
 
 const TECH = (t) => ([
-  { key: t.speed, value: '< 80 мс', note: t.speedNote },
+  { key: t.speed, value: tr("< 80 мс"), note: t.speedNote },
   { key: t.uptime, value: '99,97%', note: t.uptimeNote },
   { key: t.resolution, value: '4K HDR', note: t.resolutionNote },
   { key: t.channel, value: 'AES-256', note: t.channelNote },
@@ -108,7 +88,7 @@ const BLIPS = BLIP_POSITIONS.map((blip) => {
 
 export function LiveMonitor() {
   const { language } = useSite();
-  const t = labelsFor(language);
+  const t = labelsFor();
 
   // Виды нарушений и участки берём из контента сайта — тогда лента
   // автоматически переводится вместе с ним.

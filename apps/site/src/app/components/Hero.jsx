@@ -3,6 +3,7 @@ import { ArrowRight, Search } from 'lucide-react';
 import { RadarAnimation } from './RadarAnimation.jsx';
 import { useSite } from '../context/SiteContext.jsx';
 import { AnimatedNumber } from './AnimatedNumber.jsx';
+import { tr } from '../lib/i18n.js';
 
 function scrollToId(id) {
   const target = document.getElementById(id);
@@ -140,7 +141,7 @@ export function Hero({ onCatalog, onContact }) {
         className="relative z-20 flex shrink-0 justify-center pb-[clamp(0.75rem,2.5vh,2rem)]"
       >
         <div className="flex animate-bounce flex-col items-center gap-1.5">
-          <span className="text-sm text-cyan-600 dark:text-cyan-400">Прокрутите вниз</span>
+          <span className="text-sm text-cyan-600 dark:text-cyan-400">{tr("Прокрутите вниз")}</span>
           <div className="flex h-9 w-6 justify-center rounded-full border-2 border-cyan-500/50 pt-2">
             <div className="h-2 w-1 rounded-full bg-cyan-500 dark:bg-cyan-400" />
           </div>

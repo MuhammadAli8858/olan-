@@ -9,6 +9,7 @@ import * as Icons from 'lucide-react';
 import { ArrowRight } from 'lucide-react';
 import { useSite } from '../context/SiteContext.jsx';
 import { localize, DIRECTIONS } from '../data/siteData.js';
+import { tr } from '../lib/i18n.js';
 
 function DirectionIcon({ name, className }) {
   const Component = Icons[name] || Icons.Circle;
@@ -24,10 +25,10 @@ export function Directions({ onOpenCard }) {
       <div className="container mx-auto px-4">
         <div className="mb-12 text-center">
           <div className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-700 dark:text-cyan-400">
-            Что мы делаем
+            {tr("Что мы делаем")}
           </div>
           <h2 className="mt-4 text-4xl font-black text-slate-900 dark:text-white md:text-5xl">
-            Основные направления деятельности
+            {tr("Основные направления деятельности")}
           </h2>
         </div>
 
@@ -53,7 +54,7 @@ export function Directions({ onOpenCard }) {
                 {localize(item.text, language)}
               </p>
               <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-cyan-700 dark:text-cyan-400">
-                Подробнее <ArrowRight className="h-4 w-4" />
+                {tr("Подробнее")} <ArrowRight className="h-4 w-4" />
               </span>
             </motion.button>
           ))}

@@ -4,6 +4,7 @@ import { MessageCircle, X, Send } from 'lucide-react';
 import { postJson, getJson } from '../lib/api.js';
 import { useSite } from '../context/SiteContext.jsx';
 import { localize } from '../data/siteData.js';
+import { tr } from '../lib/i18n.js';
 
 const SESSION_KEY = 'olan-chat-session';
 const POLL_MS = 5000;
@@ -136,7 +137,7 @@ export function ChatWidget() {
     const email = form.email.trim();
     const phone = form.phone.trim();
     if (!name || !email || !phone) {
-      setStatus('Заполните имя, email и телефон.');
+      setStatus(tr("Заполните имя, email и телефон."));
       return;
     }
     setStarting(true);
@@ -148,7 +149,7 @@ export function ChatWidget() {
       setMessages([]);
       seenCountRef.current = 0;
     } catch (error) {
-      setStatus(error.message || 'Не удалось начать чат. Проверьте, что сервер запущен.');
+      setStatus(error.message || tr("Не удалось начать чат. Проверьте, что сервер запущен."));
     } finally {
       setStarting(false);
     }
@@ -166,7 +167,7 @@ export function ChatWidget() {
     try {
       await postJson('/api/chat/send', { sessionId: session.sessionId, text });
     } catch (error) {
-      setStatus(error.message || 'Сообщение не отправлено. Проверьте соединение.');
+      setStatus(error.message || tr("Сообщение не отправлено. Проверьте соединение."));
       if (/не найдена|not found/i.test(error.message)) resetToForm();
     } finally {
       setSending(false);
@@ -188,13 +189,13 @@ export function ChatWidget() {
             <div className="flex items-center justify-between bg-gradient-to-r from-cyan-500 to-blue-600 px-5 py-4 text-white">
               <div className="min-w-0">
                 <div className="truncate text-base font-bold">
-                  {operatorName ? operatorName : 'Онлайн-чат OLAN'}
+                  {operatorName ? operatorName : tr("Онлайн-чат OLAN")}
                 </div>
                 <div className="truncate text-xs text-cyan-100">
-                  {operatorName ? 'ваш оператор' : 'Ответим на ваш вопрос'}
+                  {operatorName ? tr("ваш оператор") : tr("Ответим на ваш вопрос")}
                 </div>
               </div>
-              <button type="button" onClick={() => { markAutoPopupDone(); setOpen(false); }} aria-label="Закрыть чат" className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/15 transition hover:bg-white/25">
+              <button type="button" onClick={() => { markAutoPopupDone(); setOpen(false); }} aria-label={tr("Закрыть чат")} className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/15 transition hover:bg-white/25">
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -203,12 +204,12 @@ export function ChatWidget() {
               /* Pre-chat form */
               <div className="flex flex-1 flex-col gap-3 overflow-y-auto p-5">
                 <p className="text-sm text-slate-600 dark:text-slate-300">
-                  Представьтесь, пожалуйста — так мы сможем ответить именно вам. Ответ оператора появится здесь, в чате.
+                  {tr("Представьтесь, пожалуйста — так мы сможем ответить именно вам. Ответ оператора появится здесь, в чате.")}
                 </p>
                 <input
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  placeholder="Ваше имя"
+                  placeholder={tr("Ваше имя")}
                   className="rounded-2xl border border-slate-200 dark:border-cyan-500/20 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-cyan-500 dark:bg-slate-900 dark:text-white"
                 />
                 <input
@@ -221,7 +222,7 @@ export function ChatWidget() {
                 <input
                   value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                  placeholder="Телефон"
+                  placeholder={tr("Телефон")}
                   className="rounded-2xl border border-slate-200 dark:border-cyan-500/20 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-cyan-500 dark:bg-slate-900 dark:text-white"
                 />
                 {status && <div className="text-sm text-red-500">{status}</div>}
@@ -231,7 +232,7 @@ export function ChatWidget() {
                   disabled={starting}
                   className="mt-1 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:scale-[1.02] disabled:opacity-60"
                 >
-                  {starting ? 'Запуск…' : 'Начать чат'}
+                  {starting ? tr("Запуск…") : tr("Начать чат")}
                 </button>
               </div>
             ) : (
@@ -263,14 +264,14 @@ export function ChatWidget() {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
-                    placeholder="Введите сообщение…"
+                    placeholder={tr("Введите сообщение…")}
                     className="flex-1 rounded-2xl border border-slate-200 dark:border-cyan-500/20 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-cyan-500 dark:bg-slate-900 dark:text-white"
                   />
                   <button
                     type="button"
                     onClick={sendMessage}
                     disabled={sending || !input.trim()}
-                    aria-label="Отправить"
+                    aria-label={tr("Отправить")}
                     className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white transition hover:scale-105 disabled:opacity-50"
                   >
                     <Send className="h-5 w-5" />
@@ -285,7 +286,7 @@ export function ChatWidget() {
       <button
         type="button"
         onClick={() => { markAutoPopupDone(); setOpen((v) => !v); }}
-        aria-label="Открыть чат"
+        aria-label={tr("Открыть чат")}
         className="relative inline-flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-xl shadow-cyan-500/30 transition hover:scale-105"
       >
         {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}

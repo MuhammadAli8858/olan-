@@ -18,6 +18,7 @@ import * as Icons from 'lucide-react';
 import { X, ChevronLeft, ChevronRight, ImageOff, Expand } from 'lucide-react';
 import { useSite } from '../context/SiteContext.jsx';
 import { localize } from '../data/siteData.js';
+import { tr } from '../lib/i18n.js';
 
 function Icon({ name, className }) {
   const Component = Icons[name] || Icons.Circle;
@@ -65,7 +66,7 @@ function Lightbox({ images, index, onClose, onPrev, onNext, alt }) {
         </span>
         <button type="button" onClick={onClose}
           className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/20 text-white transition hover:bg-white/10"
-          aria-label="Закрыть">
+          aria-label={tr("Закрыть")}>
           <X className="h-5 w-5" />
         </button>
       </div>
@@ -77,7 +78,7 @@ function Lightbox({ images, index, onClose, onPrev, onNext, alt }) {
           <button type="button"
             onClick={(e) => { e.stopPropagation(); onPrev(); }}
             className="absolute left-2 z-10 inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white transition hover:bg-white/10 sm:left-4"
-            aria-label="Предыдущее фото">
+            aria-label={tr("Предыдущее фото")}>
             <ChevronLeft className="h-6 w-6" />
           </button>
         )}
@@ -97,7 +98,7 @@ function Lightbox({ images, index, onClose, onPrev, onNext, alt }) {
           <button type="button"
             onClick={(e) => { e.stopPropagation(); onNext(); }}
             className="absolute right-2 z-10 inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white transition hover:bg-white/10 sm:right-4"
-            aria-label="Следующее фото">
+            aria-label={tr("Следующее фото")}>
             <ChevronRight className="h-6 w-6" />
           </button>
         )}
@@ -150,7 +151,7 @@ function PhotoStack({ images, alt, onOpen }) {
         <span className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition group-hover:opacity-100" />
 
         <span className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-black/60 px-3 py-1.5 text-xs text-white opacity-0 backdrop-blur transition group-hover:opacity-100">
-          <Expand className="h-3.5 w-3.5" /> Открыть
+          <Expand className="h-3.5 w-3.5" /> {tr("Открыть")}
         </span>
 
         {images.length > 1 && (
@@ -226,7 +227,7 @@ export function PillarDetail({ pillar, onClose }) {
                 </div>
                 <button type="button" onClick={onClose}
                   className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-300 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-white"
-                  aria-label="Закрыть">
+                  aria-label={tr("Закрыть")}>
                   <X className="h-5 w-5" />
                 </button>
               </div>
