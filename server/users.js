@@ -40,6 +40,22 @@ function pickRandom(list) {
   return list[Math.floor(Math.random() * list.length)];
 }
 
+// Права сотрудников.
+//
+// Значения по умолчанию подобраны так, чтобы у всех, кто заведён раньше,
+// ничего не изменилось: оператор как и прежде отвечает клиенту и может
+// отправлять файлы, менеджер по-прежнему только читает переписку.
+// Администратор в этой таблице не участвует — ему можно всё.
+export const DEFAULT_RIGHTS = {
+  operator: {
+    canReply: true,      // писать клиенту в чат
+    canSendFiles: true,  // отправлять клиенту фото и файлы
+  },
+  manager: {
+    canChat: false,      // писать в чат и удалять сообщения
+  },
+};
+
 export class Staff {
   constructor(usersFile, assignmentsFile, sessionsFile) {
     this.usersFile = usersFile;
@@ -109,11 +125,13 @@ export class Staff {
   tree() {
     return {
       managers: this.data.managers.map((m) => ({
-        ...m,
-        operators: this.operatorsOfManager(m.id),
+        ...this.withRights(m),
+        operators: this.operatorsOfManager(m.id).map((o) => this.withRights(o)),
       })),
       // Операторы без менеджера появляются, только если менеджеров не осталось.
-      orphanOperators: this.data.operators.filter((o) => !this.data.managers.some((m) => m.id === o.managerId)),
+      orphanOperators: this.data.operators
+        .filter((o) => !this.data.managers.some((m) => m.id === o.managerId))
+        .map((o) => this.withRights(o)),
     };
   }
 
@@ -122,6 +140,24 @@ export class Staff {
     if (!user) return [];
     if (this.roleOf(user) === 'operator') return [user.id];
     return this.operatorsOfManager(user.id).map((o) => o.id);
+  }
+
+  // ------------------------------ права ------------------------------
+
+  // Права сотрудника: умолчания роли, поверх них — то, что выставил админ.
+  rightsOf(user) {
+    if (!user) return {};
+    const defaults = DEFAULT_RIGHTS[this.roleOf(user)] || {};
+    return { ...defaults, ...(user.rights || {}) };
+  }
+
+  can(user, right) {
+    return this.rightsOf(user)[right] === true;
+  }
+
+  // Сотрудник вместе с правами — в таком виде его ждёт админ-панель.
+  withRights(user) {
+    return { ...user, rights: this.rightsOf(user) };
   }
 
   // ------------------------------ создание ------------------------------
@@ -195,6 +231,17 @@ export class Staff {
       user.password = value;
       // Смена пароля разлогинивает сотрудника.
       this.dropSessionsFor(id);
+    }
+    if (patch.rights !== undefined && patch.rights && typeof patch.rights === 'object') {
+      // Принимаем только те переключатели, которые есть у этой роли:
+      // случайное «canChat» у оператора ничего не должно менять.
+      const allowed = Object.keys(DEFAULT_RIGHTS[this.roleOf(user)] || {});
+      const next = { ...(user.rights || {}) };
+      for (const [key, value] of Object.entries(patch.rights)) {
+        if (!allowed.includes(key)) throw new Error(`Неизвестное право: ${key}.`);
+        next[key] = value === true;
+      }
+      user.rights = next;
     }
     if (patch.managerId !== undefined && this.roleOf(user) === 'operator') {
       const manager = this.data.managers.find((m) => m.id === patch.managerId);

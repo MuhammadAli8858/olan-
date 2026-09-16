@@ -14,37 +14,38 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Activity, Radio } from 'lucide-react';
 import { useSite } from '../context/SiteContext.jsx';
-import { localize, PROJECTS, VIOLATION_SOLUTIONS } from '../data/siteData.js';
+import { localize, MONITOR, PROJECTS, VIOLATION_SOLUTIONS } from '../data/siteData.js';
 import { tr } from '../lib/i18n.js';
 
-// Подписи блока. Переводы лежат в общем словаре UI_TEXT.s, поэтому здесь
-// только русские ключи — нужный язык подставит tr() при каждой отрисовке.
-function labelsFor() {
+// Подписи блока берутся из контента — раздел «Мониторинг» в админ-панели.
+// Если поля пусты (например, контент старой версии), подставляем прежний
+// текст из общего словаря, чтобы блок не остался с пустыми заголовками.
+function labelsFor(language) {
+  const pick = (field, fallback) => localize(MONITOR[field], language) || tr(fallback);
   return {
-    tag: tr("Мониторинг"),
-    title: tr("Комплексы на связи"),
-    lead: tr("Так выглядит работа системы: комплексы фиксируют нарушения и передают материал в центр обработки."),
-    feed: tr("Лента фиксаций"),
-    demo: tr("демонстрация работы"),
-    active: tr("В РАБОТЕ"),
-    live: tr("ЭФИР"),
-    speed: tr("Скорость обработки"),
-    speedNote: tr("от момента фиксации"),
-    uptime: tr("Доступность"),
-    uptimeNote: tr("работа без простоев"),
-    resolution: tr("Разрешение"),
-    resolutionNote: tr("съёмка в любую погоду"),
-    channel: tr("Канал передачи"),
-    channelNote: tr("защищённое соединение"),
+    tag: pick('tag', "Мониторинг"),
+    title: pick('title', "Комплексы на связи"),
+    lead: pick('lead', "Так выглядит работа системы: комплексы фиксируют нарушения и передают материал в центр обработки."),
+    feed: pick('feedTitle', "Лента фиксаций"),
+    demo: pick('demoLabel', "демонстрация работы"),
+    active: pick('activeLabel', "В РАБОТЕ"),
+    live: pick('liveLabel', "ЭФИР"),
   };
 }
 
-const TECH = (t) => ([
-  { key: t.speed, value: tr("< 80 мс"), note: t.speedNote },
-  { key: t.uptime, value: '99,97%', note: t.uptimeNote },
-  { key: t.resolution, value: '4K HDR', note: t.resolutionNote },
-  { key: t.channel, value: 'AES-256', note: t.channelNote },
-]);
+// Четыре плитки с показателями. Их состав и значения тоже правятся
+// в админ-панели, поэтому здесь только чтение.
+function statsFor(language) {
+  const list = Array.isArray(MONITOR.stats) ? MONITOR.stats : [];
+  return list
+    .map((item) => ({
+      key: localize(item.label, language),
+      value: localize(item.value, language),
+      note: localize(item.note, language),
+    }))
+    .filter((item) => item.key || item.value);
+}
+
 
 // Номер в узбекском формате: 01 A 123 AA
 function makePlate() {
@@ -88,7 +89,8 @@ const BLIPS = BLIP_POSITIONS.map((blip) => {
 
 export function LiveMonitor() {
   const { language } = useSite();
-  const t = labelsFor();
+  const t = labelsFor(language);
+  const stats = statsFor(language);
 
   // Виды нарушений и участки берём из контента сайта — тогда лента
   // автоматически переводится вместе с ним.
@@ -152,7 +154,7 @@ export function LiveMonitor() {
           {/* ------------------------- Слева ------------------------- */}
           <div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {TECH(t).map((item) => (
+              {stats.map((item) => (
                 <div key={item.key}
                   className="olan-card rounded-2xl border border-slate-200 dark:border-cyan-500/20 bg-white p-5 dark:bg-slate-950/70">
                   <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cyan-600/70 dark:text-cyan-400/60">

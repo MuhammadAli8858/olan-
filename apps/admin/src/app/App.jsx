@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Save, LogOut, Plus, Trash2, RotateCcw, Box, Lightbulb, Type, Languages, Image as ImageIcon, Award, ListChecks, HelpCircle, Building2, Phone, RefreshCw, FileCode, Users } from 'lucide-react';
+import { Save, LogOut, Plus, Trash2, RotateCcw, Box, Lightbulb, Type, Languages, Image as ImageIcon, Award, ListChecks, HelpCircle, Building2, Phone, RefreshCw, FileCode, Users, Activity } from 'lucide-react';
 import StaffSection from './components/StaffSection.jsx';
 import { Menu, X, Undo2, ArrowLeft, Globe, GitBranch, Download, FileDown } from 'lucide-react';
 import { describeChange } from './lib/changes.js';
@@ -302,6 +302,100 @@ function ContactEditor({ content, patch, lang, onTranslateContact, busy }) {
         <div><label className={labelCls}>Время работы ({lang})</label><input className={inputCls} value={ci.hours?.[lang] || ''} onChange={(e) => setML('hours', e.target.value)} /></div>
         <div><label className={labelCls}>Адрес ({lang})</label><input className={inputCls} value={ci.address?.[lang] || ''} onChange={(e) => setML('address', e.target.value)} /></div>
         <div className="md:col-span-2"><label className={labelCls}>Карта (ссылка для встраивания, mapEmbed)</label><textarea rows={2} className={inputCls} value={ci.mapEmbed || ''} onChange={(e) => setPlain('mapEmbed', e.target.value)} /></div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Мониторинг («Комплексы на связи») ----------------
+function MonitorEditor({ content, patch, lang }) {
+  const mon = content.MONITOR || {};
+  const setML = (field, value) => patch((c) => {
+    c.MONITOR = c.MONITOR || {};
+    c.MONITOR[field] = { ...(c.MONITOR[field] || {}), [lang]: value };
+  });
+  const setStat = (index, field, value) => patch((c) => {
+    c.MONITOR = c.MONITOR || {};
+    const list = Array.isArray(c.MONITOR.stats) ? [...c.MONITOR.stats] : [];
+    const item = { ...(list[index] || {}) };
+    item[field] = { ...(item[field] || {}), [lang]: value };
+    list[index] = item;
+    c.MONITOR.stats = list;
+  });
+  const addStat = () => patch((c) => {
+    c.MONITOR = c.MONITOR || {};
+    const list = Array.isArray(c.MONITOR.stats) ? [...c.MONITOR.stats] : [];
+    list.push({ label: {}, value: {}, note: {} });
+    c.MONITOR.stats = list;
+  });
+  const removeStat = (index) => patch((c) => {
+    if (!c.MONITOR || !Array.isArray(c.MONITOR.stats)) return;
+    c.MONITOR.stats = c.MONITOR.stats.filter((_, i) => i !== index);
+  });
+
+  const stats = Array.isArray(mon.stats) ? mon.stats : [];
+  const field = (key) => mon[key]?.[lang] || '';
+
+  return (
+    <div className="space-y-4">
+      <div className={cardCls}>
+        <div className="mb-3 text-sm font-semibold text-white">Заголовок блока</div>
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          <div><label className={labelCls}>Надзаголовок ({lang})</label>
+            <input className={inputCls} value={field('tag')} onChange={(e) => setML('tag', e.target.value)} /></div>
+          <div><label className={labelCls}>Заголовок ({lang})</label>
+            <input className={inputCls} value={field('title')} onChange={(e) => setML('title', e.target.value)} /></div>
+          <div className="md:col-span-2"><label className={labelCls}>Описание под заголовком ({lang})</label>
+            <textarea rows={2} className={inputCls} value={field('lead')} onChange={(e) => setML('lead', e.target.value)} /></div>
+        </div>
+      </div>
+
+      <div className={cardCls}>
+        <div className="mb-3 text-sm font-semibold text-white">Лента фиксаций</div>
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          <div><label className={labelCls}>Заголовок ленты ({lang})</label>
+            <input className={inputCls} value={field('feedTitle')} onChange={(e) => setML('feedTitle', e.target.value)} /></div>
+          <div><label className={labelCls}>Пометка «демонстрация» ({lang})</label>
+            <input className={inputCls} value={field('demoLabel')} onChange={(e) => setML('demoLabel', e.target.value)} /></div>
+          <div><label className={labelCls}>Значок «в работе» ({lang})</label>
+            <input className={inputCls} value={field('activeLabel')} onChange={(e) => setML('activeLabel', e.target.value)} /></div>
+          <div><label className={labelCls}>Значок «эфир» ({lang})</label>
+            <input className={inputCls} value={field('liveLabel')} onChange={(e) => setML('liveLabel', e.target.value)} /></div>
+        </div>
+        <p className="mt-3 text-xs text-slate-500">
+          Сами строки ленты формируются автоматически из решений и проектов — это демонстрация работы, а не реальные данные.
+        </p>
+      </div>
+
+      <div className={cardCls}>
+        <div className="mb-3 flex items-center justify-between">
+          <div className="text-sm font-semibold text-white">Плитки с показателями</div>
+          <button type="button" onClick={addStat}
+            className="rounded-xl border border-cyan-500/30 px-3 py-1.5 text-xs text-cyan-300 transition hover:border-cyan-500">
+            + Добавить плитку
+          </button>
+        </div>
+        <div className="space-y-3">
+          {stats.length === 0 && <div className="text-xs text-slate-500">Плиток нет. Добавьте первую.</div>}
+          {stats.map((item, index) => (
+            <div key={index} className="rounded-xl border border-slate-800 bg-black/30 p-3">
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                <div><label className={labelCls}>Подпись ({lang})</label>
+                  <input className={inputCls} value={item.label?.[lang] || ''} onChange={(e) => setStat(index, 'label', e.target.value)} /></div>
+                <div><label className={labelCls}>Значение ({lang})</label>
+                  <input className={inputCls} value={item.value?.[lang] || ''} onChange={(e) => setStat(index, 'value', e.target.value)} /></div>
+                <div><label className={labelCls}>Пояснение ({lang})</label>
+                  <input className={inputCls} value={item.note?.[lang] || ''} onChange={(e) => setStat(index, 'note', e.target.value)} /></div>
+              </div>
+              <div className="mt-2 flex justify-end">
+                <button type="button" onClick={() => removeStat(index)}
+                  className="rounded-lg px-2 py-1 text-xs text-slate-500 transition hover:bg-red-500/10 hover:text-red-400">
+                  Удалить плитку
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -764,6 +858,7 @@ export default function App() {
     { id: 'faq', label: 'Частые вопросы', icon: HelpCircle },
     { id: 'about', label: 'Страница «О нас»', icon: Building2 },
     { id: 'contact', label: 'Контакты', icon: Phone },
+    { id: 'monitor', label: 'Мониторинг', icon: Activity },
     { id: 'texts', label: 'Тексты сайта', icon: Type },
     { id: 'company', label: 'Профиль компании', icon: BuildingIcon },
     { id: 'directions', label: 'Направления', icon: Layers },
@@ -991,6 +1086,7 @@ export default function App() {
             {tab === 'process' && <ProcessEditor content={content} patch={patch} lang={lang} onTranslate={onTranslate} busyId={busyId} />}
             {tab === 'faq' && <FaqEditor content={content} patch={patch} lang={lang} onTranslate={onTranslate} busyId={busyId} />}
             {tab === 'about' && <AboutEditor content={content} patch={patch} lang={lang} onTranslate={onTranslate} busyId={busyId} />}
+            {tab === 'monitor' && <MonitorEditor content={content} patch={patch} lang={lang} />}
             {tab === 'contact' && <ContactEditor content={content} patch={patch} lang={lang} onTranslateContact={onTranslateContact} busy={busyId === 'contact'} />}
             {tab === 'texts' && <TextsEditor content={content} patch={patch} lang={lang} />}
 

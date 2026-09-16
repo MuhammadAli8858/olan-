@@ -31,7 +31,7 @@ const MIME = {
   '.txt': 'text/plain; charset=utf-8',
 };
 
-export function createStaticHandler(rootDir, uploadsDir) {
+export function createStaticHandler(rootDir, uploadsDir, chatFilesDir) {
   const mounts = [
     // Загруженные картинки идут первыми: если включён постоянный диск,
     // свежие файлы лежат там, а не в собранной папке сайта.
@@ -39,6 +39,8 @@ export function createStaticHandler(rootDir, uploadsDir) {
     // она появится после первой загрузки, а искать файл мы будем
     // в момент запроса, а не сейчас.
     ...(uploadsDir ? [{ prefix: '/products', dir: uploadsDir }] : []),
+    // Файлы и фото, отправленные в чате.
+    ...(chatFilesDir ? [{ prefix: '/chat-files', dir: chatFilesDir }] : []),
     { prefix: '/admin', dir: path.join(rootDir, 'apps', 'admin', 'dist') },
     { prefix: '/operator', dir: path.join(rootDir, 'apps', 'operator', 'dist') },
     { prefix: '/', dir: path.join(rootDir, 'apps', 'site', 'dist') },
@@ -46,8 +48,8 @@ export function createStaticHandler(rootDir, uploadsDir) {
 
   // Если собранных приложений нет, раздавать нечего — кроме случая,
   // когда указана отдельная папка загрузок.
-  const hasApps = mounts.some((m) => m.prefix !== '/products');
-  if (!hasApps && !uploadsDir) return null;
+  const hasApps = mounts.some((m) => m.prefix !== '/products' && m.prefix !== '/chat-files');
+  if (!hasApps && !uploadsDir && !chatFilesDir) return null;
 
   function send(response, filePath, status = 200) {
     const ext = path.extname(filePath).toLowerCase();

@@ -7,10 +7,7 @@
 // ---------------------------------------------------------------------------
 
 import { useEffect, useState } from 'react';
-import {
-  UserPlus, Trash2, KeyRound, Users, Headset, ChevronDown, ChevronRight,
-  Eye, EyeOff, AlertTriangle, Check, X, MessageSquare, Inbox as InboxIcon, ArrowLeft,
-} from 'lucide-react';
+import { UserPlus, Trash2, KeyRound, Users, Headset, ChevronDown, ChevronRight, Eye, EyeOff, AlertTriangle, Check, X, MessageSquare, Inbox as InboxIcon, ArrowLeft, MessageSquareOff, Paperclip, PenLine, ShieldCheck } from 'lucide-react';
 import { getJson, postJson } from '../lib/api.js';
 import { ChatList, ChatThread, RequestStats, RequestList } from './Inbox.jsx';
 
@@ -184,6 +181,27 @@ function PasswordCell({ user, onSave, busy }) {
 
 // ------------------------------- основной блок ------------------------------
 
+// Переключатель права. Состояние видно сразу по цвету: включённое право
+// подсвечено, выключенное — серое и перечёркнутое по смыслу подписи.
+function RightToggle({ on, onToggle, busy, icon: Icon, label, titleOn, titleOff }) {
+  return (
+    <button
+      type="button"
+      onClick={() => onToggle(!on)}
+      disabled={busy}
+      title={on ? titleOn : titleOff}
+      className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[11px] transition disabled:opacity-50 ${
+        on
+          ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300 hover:border-emerald-400'
+          : 'border-slate-700 bg-slate-900 text-slate-500 hover:border-slate-500 hover:text-slate-300'
+      }`}
+    >
+      <Icon className="h-3.5 w-3.5" />
+      {label}
+    </button>
+  );
+}
+
 export default function StaffSection({ adminKey }) {
   const [tree, setTree] = useState({ managers: [], orphanOperators: [] });
   const [status, setStatus] = useState('');
@@ -289,6 +307,29 @@ export default function StaffSection({ adminKey }) {
         {tree.managers.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
       </select>
       <div className="ml-auto flex items-center gap-1.5">
+        {/* Два права оператора: писать клиенту и прикладывать файлы.
+            Второе имеет смысл только вместе с первым — без права писать
+            файл всё равно не уйдёт. */}
+        <RightToggle
+          on={operator.rights?.canReply !== false}
+          busy={busy}
+          icon={PenLine}
+          label="Пишет"
+          titleOn={`${operator.name} может писать клиенту. Нажмите, чтобы запретить`}
+          titleOff={`${operator.name} не может писать клиенту. Нажмите, чтобы разрешить`}
+          onToggle={(value) => changeField(operator.id, { rights: { canReply: value } },
+            value ? `Оператор «${operator.name}» снова может писать клиенту.` : `Оператору «${operator.name}» закрыта отправка сообщений.`)}
+        />
+        <RightToggle
+          on={operator.rights?.canSendFiles !== false}
+          busy={busy}
+          icon={Paperclip}
+          label="Файлы"
+          titleOn={`${operator.name} может отправлять фото и файлы. Нажмите, чтобы запретить`}
+          titleOff={`${operator.name} не может отправлять фото и файлы. Нажмите, чтобы разрешить`}
+          onToggle={(value) => changeField(operator.id, { rights: { canSendFiles: value } },
+            value ? `Оператор «${operator.name}» снова может отправлять файлы.` : `Оператору «${operator.name}» закрыта отправка файлов.`)}
+        />
         <button
           type="button"
           onClick={() => setInbox({ operator, mode: 'chats' })}
@@ -415,6 +456,19 @@ export default function StaffSection({ adminKey }) {
                 <span className="rounded-full bg-slate-800 px-2.5 py-0.5 text-xs text-slate-400">
                   операторов: {manager.operators.length}
                 </span>
+                {/* По умолчанию менеджер переписку только читает. Этой кнопкой
+                    админ разрешает ему писать клиентам и удалять сообщения
+                    в чатах своих операторов. */}
+                <RightToggle
+                  on={manager.rights?.canChat === true}
+                  busy={busy}
+                  icon={ShieldCheck}
+                  label="Правит чаты"
+                  titleOn={`${manager.name} может писать в чаты и удалять сообщения. Нажмите, чтобы закрыть доступ`}
+                  titleOff={`${manager.name} только читает переписку. Нажмите, чтобы открыть доступ`}
+                  onToggle={(value) => changeField(manager.id, { rights: { canChat: value } },
+                    value ? `Менеджеру «${manager.name}» открыт доступ к переписке.` : `Менеджер «${manager.name}» снова только читает переписку.`)}
+                />
                 <button
                   type="button"
                   onClick={() => setConfirmTarget({ id: manager.id, name: manager.name, login: manager.login, role: 'manager', operatorCount: manager.operators.length })}

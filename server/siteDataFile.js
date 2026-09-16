@@ -37,6 +37,8 @@ export const CONTENT_KEYS = [
   'SOFTWARE_FEATURES',
   'FORM_FACTORS',
   'SERVICE_CASES',
+  // Блок «Комплексы на связи» на главной
+  'MONITOR',
 ];
 
 const FILE_HEADER = `// ---------------------------------------------------------------------------

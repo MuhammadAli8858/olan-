@@ -161,8 +161,21 @@ function writeJson(filePath, value) {
 // Хранилище чатов в памяти + запись на диск.
 let chats = readJson(chatsFile, {});
 function persistChats() { writeJson(chatsFile, chats); }
+// Для сотрудников: видно, кто именно писал — оператор, менеджер или админ.
+function staffMessages(session) {
+  return session.messages.map((m) => ({
+    id: m.id, from: m.from, text: m.text, at: m.at,
+    by: m.by || '', byRole: m.byRole || '',
+    ...(m.file ? { file: m.file } : {}),
+  }));
+}
+
 function publicMessages(session) {
-  return session.messages.map((m) => ({ id: m.id, from: m.from, text: m.text, at: m.at }));
+  // Имя сотрудника наружу не отдаём — клиент видит просто «оператор».
+  // Вложение отдаём: без него в чате будет пустой пузырь.
+  return session.messages.map((m) => ({
+    id: m.id, from: m.from, text: m.text, at: m.at, ...(m.file ? { file: m.file } : {}),
+  }));
 }
 
 function json(response, statusCode, payload) {
@@ -291,32 +304,93 @@ function handleOperatorHistory(response, query) {
   json(response, 200, {
     sessionId, name: session.name, email: session.email, phone: session.phone,
     operatorName: staff.operatorName(session.operatorId),
-    messages: publicMessages(session),
+    messages: staffMessages(session),
   });
 }
 
-function handleOperatorReply(body, response) {
-  const user = staffFromRequest(null, body);
-  if (!user) { json(response, 401, { message: 'Сессия недействительна.' }); return; }
-  // Отвечать клиенту может только оператор. Менеджер и админ — только читают.
-  if (staff.roleOf(user) !== 'operator') {
-    json(response, 403, { message: 'Менеджер может только читать переписку.' });
-    return;
+// Кто обратился к чату: администратор по ключу или сотрудник по сессии.
+// Возвращает null, если ключ не подошёл ни туда, ни сюда.
+function chatActor(body, query) {
+  const token = (query && query.get && query.get('key')) || (body && body.key) || '';
+  if (token && token === ADMIN_KEY) {
+    return { kind: 'admin', name: 'Администратор', user: null };
   }
+  const user = staff.userByToken(token);
+  if (!user) return null;
+  return { kind: staff.roleOf(user), name: user.name, user };
+}
+
+// Имеет ли право писать в этот чат и удалять из него сообщения.
+// Возвращает текст ошибки или null, если всё в порядке.
+function chatWriteDenial(actor, session, { needFiles = false } = {}) {
+  if (actor.kind === 'admin') return null;
+
+  if (!staff.visibleOperatorIds(actor.user).includes(session.operatorId)) {
+    return 'Этот чат закреплён за другим оператором.';
+  }
+  if (actor.kind === 'manager') {
+    if (!staff.can(actor.user, 'canChat')) return 'Администратор не открыл вам доступ к переписке.';
+    return null;
+  }
+  // оператор
+  if (!staff.can(actor.user, 'canReply')) return 'Администратор закрыл вам отправку сообщений.';
+  if (needFiles && !staff.can(actor.user, 'canSendFiles')) return 'Администратор закрыл вам отправку файлов.';
+  return null;
+}
+
+function handleOperatorReply(body, response) {
+  const actor = chatActor(body);
+  if (!actor) { json(response, 401, { message: 'Сессия недействительна.' }); return; }
+
   const sessionId = String(body.sessionId || '');
   const text = String(body.text || '').trim();
   const session = chats[sessionId];
   if (!session) { json(response, 404, { message: 'Сессия не найдена.' }); return; }
   if (!text) { json(response, 400, { message: 'Пустое сообщение.' }); return; }
-  if (!staff.visibleOperatorIds(user).includes(session.operatorId)) {
-    json(response, 403, { message: 'Этот чат закреплён за другим оператором.' });
-    return;
-  }
-  const message = { id: randomUUID(), from: 'operator', text, at: new Date().toISOString(), by: user.name };
+
+  const denial = chatWriteDenial(actor, session);
+  if (denial) { json(response, 403, { message: denial }); return; }
+
+  const message = {
+    id: randomUUID(),
+    from: 'operator',
+    text,
+    at: new Date().toISOString(),
+    by: actor.name,
+    // Клиент видит только «оператор»; кто именно писал — видно сотрудникам.
+    byRole: actor.kind,
+  };
   session.messages.push(message);
   persistChats();
-  console.log(`[chat] #${sessionId} ОПЕРАТОР: ${text}`);
+  console.log(`[chat] #${sessionId} ${actor.kind.toUpperCase()} (${actor.name}): ${text}`);
   json(response, 200, { ok: true });
+}
+
+// Удаление сообщения из переписки. Доступно администратору и менеджеру,
+// которому администратор открыл доступ. Оператор удалять не может.
+function handleChatMessageDelete(body, response) {
+  const actor = chatActor(body);
+  if (!actor) { json(response, 401, { message: 'Сессия недействительна.' }); return; }
+  if (actor.kind === 'operator') {
+    json(response, 403, { message: 'Оператор не может удалять сообщения.' });
+    return;
+  }
+
+  const sessionId = String(body.sessionId || '');
+  const messageId = String(body.messageId || '');
+  const session = chats[sessionId];
+  if (!session) { json(response, 404, { message: 'Сессия не найдена.' }); return; }
+
+  const denial = chatWriteDenial(actor, session);
+  if (denial) { json(response, 403, { message: denial }); return; }
+
+  const index = session.messages.findIndex((m) => m.id === messageId);
+  if (index === -1) { json(response, 404, { message: 'Сообщение не найдено.' }); return; }
+
+  const [removed] = session.messages.splice(index, 1);
+  persistChats();
+  console.log(`[chat] #${sessionId} удалено сообщение (${actor.name}): ${String(removed.text || '').slice(0, 60)}`);
+  json(response, 200, { ok: true, messages: session.messages.length });
 }
 
 // ---------- Заявки с формы ----------
@@ -747,6 +821,9 @@ function handleOperatorMe(response, query) {
   const role = staff.roleOf(user);
   json(response, 200, {
     id: user.id, name: user.name, login: user.login, role,
+    // Права нужны интерфейсу: закрытую кнопку не показываем вовсе,
+    // чтобы сотрудник не упирался в отказ уже после набора текста.
+    rights: staff.rightsOf(user),
     operators: role === 'manager' ? staff.operatorsOfManager(user.id).map((o) => ({ id: o.id, name: o.name })) : [],
   });
 }
@@ -779,11 +856,25 @@ const REQUEST_STATUSES = ['new', 'in_progress', 'done'];
 
 function viewerFromRequest(query, body) {
   const key = (query && query.get && query.get('key')) || (body && body.key) || '';
-  if (key && key === ADMIN_KEY) return { kind: 'admin', role: 'admin', canWrite: false };
+  // Администратору в переписке можно всё: писать, удалять, слать файлы.
+  if (key && key === ADMIN_KEY) {
+    return { kind: 'admin', role: 'admin', canWrite: true, canDelete: true, canSendFiles: true };
+  }
   const user = staff.userByToken(key);
   if (!user) return null;
   const role = staff.roleOf(user);
-  return { kind: 'staff', role, user, canWrite: role === 'operator' };
+  if (role === 'manager') {
+    // Менеджер вмешивается в переписку, только если админ это разрешил.
+    const allowed = staff.can(user, 'canChat');
+    return { kind: 'staff', role, user, canWrite: allowed, canDelete: allowed, canSendFiles: allowed };
+  }
+  return {
+    kind: 'staff', role, user,
+    canWrite: staff.can(user, 'canReply'),
+    // Удалять переписку оператор не может никогда: это надзорное действие.
+    canDelete: false,
+    canSendFiles: staff.can(user, 'canReply') && staff.can(user, 'canSendFiles'),
+  };
 }
 
 // Каких операторов видит эта роль.
@@ -863,9 +954,12 @@ function handleInboxThread(response, query) {
     sessionId: session.id, name: session.name, email: session.email, phone: session.phone,
     operatorName: staff.operatorName(session.operatorId),
     createdAt: session.createdAt,
-    messages: publicMessages(session),
-    // Отвечать может только сам оператор. Админ и менеджер — только читают.
-    canWrite: viewer.canWrite && viewer.user && viewer.user.id === session.operatorId,
+    messages: staffMessages(session),
+    // Оператор пишет только в свой чат; админ и допущенный менеджер — в любой
+    // из тех, что им видны (проверка видимости выше по коду).
+    canWrite: viewer.canWrite && (viewer.kind === 'admin' || viewer.role === 'manager' || (viewer.user && viewer.user.id === session.operatorId)),
+    canDelete: viewer.canDelete === true,
+    canSendFiles: viewer.canSendFiles && (viewer.kind === 'admin' || viewer.role === 'manager' || (viewer.user && viewer.user.id === session.operatorId)),
   });
 }
 
@@ -921,6 +1015,87 @@ function handleInboxRequestStatus(body, response) {
   json(response, 200, { ok: true, request: item });
 }
 
+// ---------- Файлы и фото в чате ----------
+// Приходят строкой data:тип;base64,... — тем же способом, что и картинки
+// товаров. Складываем рядом с ними, в отдельную папку chat.
+
+const CHAT_FILE_TYPES = {
+  'image/png': '.png',
+  'image/jpeg': '.jpg',
+  'image/webp': '.webp',
+  'image/gif': '.gif',
+  'image/avif': '.avif',
+  'application/pdf': '.pdf',
+  'application/msword': '.doc',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
+  'application/vnd.ms-excel': '.xls',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': '.xlsx',
+  'text/plain': '.txt',
+  'application/zip': '.zip',
+};
+
+function handleChatUpload(body, response) {
+  const actor = chatActor(body);
+  if (!actor) { json(response, 401, { message: 'Сессия недействительна.' }); return; }
+
+  const sessionId = String(body.sessionId || '');
+  const session = chats[sessionId];
+  if (!session) { json(response, 404, { message: 'Сессия не найдена.' }); return; }
+
+  const denial = chatWriteDenial(actor, session, { needFiles: true });
+  if (denial) { json(response, 403, { message: denial }); return; }
+
+  const dataUrl = String(body.dataUrl || '');
+  const match = dataUrl.match(/^data:([^;,]+);base64,(.+)$/);
+  if (!match) { json(response, 400, { message: 'Файл не распознан. Выберите его заново.' }); return; }
+
+  const mime = match[1].toLowerCase();
+  const extension = CHAT_FILE_TYPES[mime];
+  if (!extension) {
+    json(response, 400, { message: 'Такой тип файла отправить нельзя. Можно картинки, PDF, документы Word и Excel, txt и zip.' });
+    return;
+  }
+
+  let buffer;
+  try { buffer = Buffer.from(match[2], 'base64'); }
+  catch { json(response, 400, { message: 'Файл повреждён.' }); return; }
+  if (!buffer.length) { json(response, 400, { message: 'Файл пустой.' }); return; }
+  if (buffer.length > MAX_UPLOAD_BYTES) {
+    json(response, 413, { message: `Файл больше 10 МБ (${(buffer.length / 1048576).toFixed(1)} МБ).` });
+    return;
+  }
+
+  const fileName = safeFileName(String(body.name || 'file'), extension);
+  try {
+    mkdirSync(CHAT_UPLOAD_DIR, { recursive: true });
+    writeFileSync(path.join(CHAT_UPLOAD_DIR, fileName), buffer);
+  } catch (error) {
+    console.error('[chat] Не удалось сохранить файл:', error.message);
+    json(response, 500, { message: `Не удалось сохранить файл: ${error.message}` });
+    return;
+  }
+
+  const message = {
+    id: randomUUID(),
+    from: 'operator',
+    text: String(body.text || '').trim(),
+    at: new Date().toISOString(),
+    by: actor.name,
+    byRole: actor.kind,
+    file: {
+      url: `/chat-files/${fileName}`,
+      name: String(body.name || fileName),
+      mime,
+      size: buffer.length,
+      isImage: mime.startsWith('image/'),
+    },
+  };
+  session.messages.push(message);
+  persistChats();
+  console.log(`[chat] #${sessionId} файл от ${actor.name}: ${fileName} (${(buffer.length / 1024).toFixed(0)} КБ)`);
+  json(response, 200, { ok: true, file: message.file });
+}
+
 // ---------- Загрузка картинок с компьютера администратора ----------
 // Файл приходит строкой data:image/png;base64,... и сохраняется в
 // apps/site/public/products/. В контенте остаётся короткий путь
@@ -942,6 +1117,12 @@ const ALLOWED_IMAGE_TYPES = {
 };
 
 const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // 10 МБ
+
+// Файлы переписки держим отдельно от картинок товаров: их удаляют и
+// чистят по другим правилам, и мешать их в одну папку не стоит.
+const CHAT_UPLOAD_DIR = process.env.CHAT_UPLOAD_DIR
+  ? path.resolve(process.env.CHAT_UPLOAD_DIR)
+  : path.join(path.dirname(UPLOAD_DIR), 'chat-files');
 
 // Приводим имя файла к безопасному виду: только латиница, цифры и дефис.
 // Кириллицу транслитерируем — иначе путь в адресе браузера превращается
@@ -1109,6 +1290,8 @@ const server = createServer(async (request, response) => {
     if (request.method === 'GET' && pathname === '/api/operator/chats') { handleOperatorChats(response, query); return; }
     if (request.method === 'GET' && pathname === '/api/operator/history') { handleOperatorHistory(response, query); return; }
     if (request.method === 'POST' && pathname === '/api/operator/reply') { handleOperatorReply(await parseBody(request), response); return; }
+    if (request.method === 'POST' && pathname === '/api/chat/message/delete') { handleChatMessageDelete(await parseBody(request), response); return; }
+    if (request.method === 'POST' && pathname === '/api/chat/upload') { handleChatUpload(await parseBody(request), response); return; }
     if (request.method === 'GET' && pathname === '/api/operator/me') { handleOperatorMe(response, query); return; }
     if (request.method === 'GET' && pathname === '/api/operator/requests') { handleOperatorRequests(response, query); return; }
     if (request.method === 'POST' && pathname === '/api/operator/logout') { handleOperatorLogout(await parseBody(request), response); return; }
@@ -1174,7 +1357,13 @@ function watchSiteData() {
 }
 
 // Раздача собранных фронтендов включается сама, если есть папки dist.
-const serveStatic = createStaticHandler(rootDir, UPLOAD_DIR);
+// Папку под файлы чата заводим заранее. Раздача статики проверяет
+// существование папки один раз при запуске: созданная позже, при первой
+// отправке файла, она осталась бы неподключённой до перезапуска.
+try { mkdirSync(CHAT_UPLOAD_DIR, { recursive: true }); }
+catch (error) { console.warn('[chat] Папка для файлов не создана:', error.message); }
+
+const serveStatic = createStaticHandler(rootDir, UPLOAD_DIR, CHAT_UPLOAD_DIR);
 
 const port = Number(process.env.PORT || 3001);
 const host = process.env.HOST || '0.0.0.0';

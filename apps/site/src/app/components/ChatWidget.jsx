@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { MessageCircle, X, Send } from 'lucide-react';
+import { MessageCircle, X, Send, FileText } from 'lucide-react';
 import { postJson, getJson } from '../lib/api.js';
 import { useSite } from '../context/SiteContext.jsx';
 import { localize } from '../data/siteData.js';
@@ -21,6 +21,31 @@ function loadSession() {
   } catch {
     return null;
   }
+}
+
+
+// Файл, присланный оператором. Картинку показываем прямо в переписке,
+// остальное — ссылкой с названием и размером.
+function ChatFile({ file }) {
+  if (!file || !file.url) return null;
+  const size = file.size ? `${(file.size / 1024).toFixed(0)} КБ` : '';
+
+  if (file.isImage) {
+    return (
+      <a href={file.url} target="_blank" rel="noreferrer" className="block">
+        <img src={file.url} alt={file.name || ''} className="max-h-56 w-auto rounded-xl object-contain" />
+      </a>
+    );
+  }
+
+  return (
+    <a href={file.url} target="_blank" rel="noreferrer"
+      className="flex items-center gap-2 rounded-xl bg-black/10 px-3 py-2 transition hover:bg-black/20 dark:bg-white/10 dark:hover:bg-white/20">
+      <FileText className="h-4 w-4 shrink-0" />
+      <span className="min-w-0 truncate text-xs underline">{file.name || tr('Файл')}</span>
+      {size && <span className="shrink-0 text-[10px] opacity-70">{size}</span>}
+    </a>
+  );
 }
 
 export function ChatWidget() {
@@ -253,7 +278,8 @@ export function ChatWidget() {
                             : 'rounded-tl-sm bg-white text-slate-700 dark:bg-slate-900 dark:text-slate-200'
                         }`}
                       >
-                        {m.text}
+                        {m.file && <ChatFile file={m.file} />}
+                        {m.text && <div className={m.file ? 'mt-2' : ''}>{m.text}</div>}
                       </div>
                     </div>
                   ))}

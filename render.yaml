@@ -49,6 +49,11 @@ services:
       - key: SITE_URL
         sync: false
 
+      # Файлы и фото, отправленные в чате. Как и контент, держим их на
+      # постоянном диске: иначе вложения пропадут при следующем деплое.
+      - key: CHAT_UPLOAD_DIR
+        value: /var/data/chat-files
+
       # Ключ переводчика. Без него Render часто получает от бесплатного
       # эндпоинта Google ответ 403, и автоперевод не работает.
       # Заводится в Google Cloud Console (Cloud Translation API).

@@ -14,8 +14,7 @@ import {
   TESTIMONIALS,
   CONTACT_INFO,
   LANGUAGE_OPTIONS,
-  // Блоки из корпоративной презентации
-  COMPANY,
+  // Блоки из корпоративной презентации   COMPANY,
   COMPANY_STATS,
   DIRECTIONS,
   PORTFOLIO,
@@ -25,6 +24,7 @@ import {
   SOFTWARE_FEATURES,
   FORM_FACTORS,
   SERVICE_CASES,
+  MONITOR,
 } from './siteData.js';
 
 // Объект заменяем не целиком, а по полям: ссылка на него разошлась
@@ -76,6 +76,7 @@ export function applyServerContent(content) {
   replaceObject(TEAM, content.TEAM);
   replaceObject(SOFTWARE_FEATURES, content.SOFTWARE_FEATURES);
   replaceObject(FORM_FACTORS, content.FORM_FACTORS);
+  replaceObject(MONITOR, content.MONITOR);
 }
 
 export async function loadContent() {

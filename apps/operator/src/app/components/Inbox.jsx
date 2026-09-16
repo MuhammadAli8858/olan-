@@ -11,9 +11,7 @@
 // ---------------------------------------------------------------------------
 
 import { useEffect, useRef, useState } from 'react';
-import {
-  MessageSquare, Inbox, RefreshCw, Send, ArrowLeft, Clock, Lock,
-} from 'lucide-react';
+import { MessageSquare, Inbox, RefreshCw, Send, ArrowLeft, Clock, Lock, Trash2, Paperclip, FileText } from 'lucide-react';
 import { getJson, postJson } from '../lib/api.js';
 
 export const STATUSES = [
@@ -44,11 +42,37 @@ export function formatShort(iso) {
 
 // ------------------------------- переписка ----------------------------------
 
+
+// Вложение в сообщении: картинку показываем сразу, остальное — ссылкой.
+function ChatAttachment({ file }) {
+  if (!file || !file.url) return null;
+  const size = file.size ? `${(file.size / 1024).toFixed(0)} КБ` : '';
+
+  if (file.isImage) {
+    return (
+      <a href={file.url} target="_blank" rel="noreferrer" className="block">
+        <img src={file.url} alt={file.name || ''} className="max-h-56 w-auto rounded-xl object-contain" />
+      </a>
+    );
+  }
+
+  return (
+    <a href={file.url} target="_blank" rel="noreferrer"
+      className="flex items-center gap-2 rounded-xl bg-black/20 px-3 py-2 transition hover:bg-black/30">
+      <FileText className="h-4 w-4 shrink-0" />
+      <span className="min-w-0 truncate text-xs underline">{file.name || 'файл'}</span>
+      {size && <span className="shrink-0 text-[10px] opacity-70">{size}</span>}
+    </a>
+  );
+}
+
 export function ChatThread({ authKey, sessionId, onBack }) {
   const [thread, setThread] = useState(null);
   const [reply, setReply] = useState('');
   const [error, setError] = useState('');
+  const [uploading, setUploading] = useState(false);
   const scrollRef = useRef(null);
+  const fileRef = useRef(null);
 
   const load = async () => {
     if (!sessionId) return;
@@ -77,6 +101,41 @@ export function ChatThread({ authKey, sessionId, onBack }) {
       await postJson('/api/operator/reply', { key: authKey, sessionId, text });
       await load();
     } catch (e) { setError(e.message); }
+  };
+
+  // Удаление сообщения. Спрашиваем подтверждение: действие необратимо,
+  // переписка — это то, на что потом ссылаются.
+  const onDelete = async (message) => {
+    const preview = (message.text || (message.file && message.file.name) || '').slice(0, 60);
+    if (!confirm(`Удалить сообщение?\n\n${preview}`)) return;
+    try {
+      await postJson('/api/chat/message/delete', { key: authKey, sessionId, messageId: message.id });
+      await load();
+    } catch (e) { setError(e.message); }
+  };
+
+  // Файл уходит строкой data:…;base64 — тем же способом, что и картинки
+  // товаров в админке, поэтому отдельная форма загрузки не нужна.
+  const sendFile = async (file) => {
+    if (!file) return;
+    if (fileRef.current) fileRef.current.value = '';
+    if (file.size > 10 * 1024 * 1024) {
+      setError(`Файл больше 10 МБ (${(file.size / 1048576).toFixed(1)} МБ).`);
+      return;
+    }
+    setUploading(true);
+    setError('');
+    try {
+      const dataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error('Не удалось прочитать файл.'));
+        reader.readAsDataURL(file);
+      });
+      await postJson('/api/chat/upload', { key: authKey, sessionId, dataUrl, name: file.name, text: reply.trim() });
+      setReply('');
+      await load();
+    } catch (e) { setError(e.message); } finally { setUploading(false); }
   };
 
   if (!sessionId) {
@@ -115,22 +174,55 @@ export function ChatThread({ authKey, sessionId, onBack }) {
       <div ref={scrollRef} className="min-h-0 flex-1 space-y-3 overflow-y-auto bg-black p-4">
         {thread.messages.length === 0 && <div className="py-8 text-center text-sm text-slate-500">Сообщений пока нет</div>}
         {thread.messages.map((m) => (
-          <div key={m.id} className={`flex ${m.from === 'operator' ? 'justify-end' : 'justify-start'}`}>
+          <div key={m.id} className={`group flex items-end gap-1.5 ${m.from === 'operator' ? 'justify-end' : 'justify-start'}`}>
+            {/* Кнопка удаления стоит снаружи пузыря и появляется по наведению,
+                чтобы случайно не нажать её при чтении переписки. */}
+            {thread.canDelete && m.from === 'operator' && (
+              <button type="button" onClick={() => onDelete(m)} title="Удалить сообщение"
+                className="mb-1 hidden rounded-lg p-1.5 text-slate-500 transition hover:bg-red-500/10 hover:text-red-400 group-hover:block">
+                <Trash2 className="h-3.5 w-3.5" />
+              </button>
+            )}
             <div className={`max-w-[80%] whitespace-pre-wrap break-words rounded-2xl px-4 py-2 text-sm ${m.from === 'operator' ? 'rounded-tr-sm bg-gradient-to-r from-cyan-500 to-blue-600 text-white' : 'rounded-tl-sm bg-slate-900 text-slate-100'}`}>
-              <div>{m.text}</div>
-              <div className={`mt-1 text-[10px] ${m.from === 'operator' ? 'text-cyan-100' : 'text-slate-500'}`}>{formatShort(m.at)}</div>
+              {m.file && <ChatAttachment file={m.file} />}
+              {m.text && <div className={m.file ? 'mt-2' : ''}>{m.text}</div>}
+              <div className={`mt-1 text-[10px] ${m.from === 'operator' ? 'text-cyan-100' : 'text-slate-500'}`}>
+                {formatShort(m.at)}
+                {/* Кто именно ответил: у клиента все ответы «от оператора»,
+                    а сотрудникам важно различать оператора, менеджера и админа. */}
+                {m.from === 'operator' && m.by ? ` · ${m.by}` : ''}
+              </div>
             </div>
+            {thread.canDelete && m.from === 'client' && (
+              <button type="button" onClick={() => onDelete(m)} title="Удалить сообщение"
+                className="mb-1 hidden rounded-lg p-1.5 text-slate-500 transition hover:bg-red-500/10 hover:text-red-400 group-hover:block">
+                <Trash2 className="h-3.5 w-3.5" />
+              </button>
+            )}
           </div>
         ))}
       </div>
 
       {thread.canWrite ? (
         <div className="flex shrink-0 items-center gap-2 border-t border-cyan-500/15 bg-slate-950 p-3">
+          {/* Скрепка появляется, только если сервер разрешил файлы:
+              закрытую возможность не показываем вовсе. */}
+          {thread.canSendFiles && (
+            <>
+              <input ref={fileRef} type="file" className="hidden" onChange={(e) => sendFile(e.target.files && e.target.files[0])}
+                accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip" />
+              <button type="button" onClick={() => fileRef.current && fileRef.current.click()} disabled={uploading}
+                title="Отправить фото или файл"
+                className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-cyan-500/20 text-slate-300 transition hover:border-cyan-500/50 hover:text-white disabled:opacity-50">
+                <Paperclip className="h-5 w-5" />
+              </button>
+            </>
+          )}
           <input
             value={reply}
             onChange={(e) => setReply(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
-            placeholder="Ответ клиенту…"
+            placeholder={uploading ? 'Отправляю файл…' : 'Ответ клиенту…'}
             className="min-w-0 flex-1 rounded-2xl border border-cyan-500/20 bg-slate-900 px-4 py-2.5 text-sm text-white outline-none focus:border-cyan-500"
           />
           <button type="button" onClick={send} disabled={!reply.trim()}
