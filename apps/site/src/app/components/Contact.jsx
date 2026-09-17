@@ -22,13 +22,10 @@ export function Contact() {
 
     try {
       const { name, email, phone, message } = formData;
-      // Заявка с формы уходит на операторский сайт как чат — оператор видит её
-      // в списке чатов вместе с обращениями из онлайн-чата.
-      const started = await postJson('/api/chat/start', { name, email, phone });
-      await postJson('/api/chat/send', {
-        sessionId: started.sessionId,
-        text: `Заявка с формы «Контакты»:\n${message}`,
-      });
+      // Заявка уходит в раздел «Заявки» кабинета, а не в переписку: у неё
+      // свой жизненный цикл — новая, в работе, обработана. Оператор
+      // назначается тот же, что и по онлайн-чату этого клиента.
+      await postJson('/api/contact', { name, email, phone, message });
       setStatus({ type: 'success', message: text.contact.sendSuccess });
       setFormData({ name: '', email: '', phone: '', message: '' });
     } catch (error) {

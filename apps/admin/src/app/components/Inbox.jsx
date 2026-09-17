@@ -11,7 +11,7 @@
 // ---------------------------------------------------------------------------
 
 import { useEffect, useRef, useState } from 'react';
-import { MessageSquare, Inbox, RefreshCw, Send, ArrowLeft, Clock, Lock, Trash2, Paperclip, FileText } from 'lucide-react';
+import { MessageSquare, Inbox, RefreshCw, Send, ArrowLeft, Clock, Lock, Trash2, Paperclip, FileText, PlayCircle, CheckCircle2, Mail, Phone } from 'lucide-react';
 import { getJson, postJson } from '../lib/api.js';
 
 export const STATUSES = [
@@ -412,16 +412,59 @@ export function RequestList({ authKey, operatorId, status, canWrite, showOperato
               {r.message}
             </div>
 
+            {/* Связаться с клиентом прямо отсюда: на втором этапе оператор
+                пишет на почту или звонит, и искать контакты глазами незачем. */}
+            <div className="mt-2.5 flex flex-wrap items-center gap-2">
+              <a href={`mailto:${r.email}`}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 px-2.5 py-1.5 text-[11px] text-slate-300 transition hover:border-cyan-500/50 hover:text-white">
+                <Mail className="h-3.5 w-3.5" /> Написать
+              </a>
+              <a href={`tel:${String(r.phone || '').replace(/[^+\d]/g, '')}`}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 px-2.5 py-1.5 text-[11px] text-slate-300 transition hover:border-cyan-500/50 hover:text-white">
+                <Phone className="h-3.5 w-3.5" /> Позвонить
+              </a>
+            </div>
+
             {canWrite ? (
-              <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                <span className="mr-1 text-[11px] text-slate-500">статус:</span>
-                {STATUSES.map((option) => (
-                  <button key={option.id} type="button" disabled={busyId === r.id || option.id === r.status}
-                    onClick={() => changeStatus(r.id, option.id)}
-                    className={`rounded-full border px-2.5 py-1 text-[11px] transition disabled:opacity-100 ${option.id === r.status ? option.chip : 'border-slate-700 text-slate-400 hover:border-cyan-500/40 hover:text-white'}`}>
-                    {option.label}
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                {/* Заявка идёт по одному маршруту: новая → в разработке →
+                    обработано. Поэтому главная кнопка одна — следующий шаг,
+                    а возврат назад спрятан рядом мелким текстом. */}
+                {r.status === 'new' && (
+                  <button type="button" disabled={busyId === r.id}
+                    onClick={() => changeStatus(r.id, 'in_progress')}
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-3.5 py-2 text-xs font-semibold text-white transition hover:opacity-90 disabled:opacity-50">
+                    <PlayCircle className="h-4 w-4" /> Принять в работу
                   </button>
-                ))}
+                )}
+
+                {r.status === 'in_progress' && (
+                  <>
+                    <button type="button" disabled={busyId === r.id}
+                      onClick={() => changeStatus(r.id, 'done')}
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-emerald-400 disabled:opacity-50">
+                      <CheckCircle2 className="h-4 w-4" /> Заявка обработана
+                    </button>
+                    <button type="button" disabled={busyId === r.id}
+                      onClick={() => changeStatus(r.id, 'new')}
+                      className="text-[11px] text-slate-500 underline transition hover:text-slate-300 disabled:opacity-50">
+                      вернуть в новые
+                    </button>
+                  </>
+                )}
+
+                {r.status === 'done' && (
+                  <>
+                    <span className="inline-flex items-center gap-1.5 text-[11px] text-emerald-400">
+                      <CheckCircle2 className="h-3.5 w-3.5" /> обработана {formatDateTime(r.statusAt)}
+                    </span>
+                    <button type="button" disabled={busyId === r.id}
+                      onClick={() => changeStatus(r.id, 'in_progress')}
+                      className="text-[11px] text-slate-500 underline transition hover:text-slate-300 disabled:opacity-50">
+                      вернуть в работу
+                    </button>
+                  </>
+                )}
               </div>
             ) : (
               <div className="mt-3 inline-flex items-center gap-1.5 text-[11px] text-slate-600">

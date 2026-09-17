@@ -996,7 +996,7 @@ function handleInboxRequestStatus(body, response) {
   const viewer = viewerFromRequest(null, body);
   if (!viewer) { json(response, 401, { message: 'Нет доступа.' }); return; }
   if (!viewer.canWrite) {
-    json(response, 403, { message: 'Статус заявки меняет только оператор.' });
+    json(response, 403, { message: 'Вам закрыта работа с заявками.' });
     return;
   }
   const status = String(body.status || '');
@@ -1004,14 +1004,22 @@ function handleInboxRequestStatus(body, response) {
   const messages = readJson(messagesFile, []);
   const item = messages.find((m) => m.id === body.id);
   if (!item) { json(response, 404, { message: 'Заявка не найдена.' }); return; }
-  if (item.operatorId !== viewer.user.id) {
+
+  // Кому разрешено трогать эту заявку: администратору — любую, менеджеру
+  // с доступом — заявки своих операторов, оператору — только свои.
+  // Раньше здесь всегда читался viewer.user.id, и запрос от админа падал:
+  // у него пользователя нет вовсе.
+  const allowed = viewer.kind === 'admin'
+    ? true
+    : staff.visibleOperatorIds(viewer.user).includes(item.operatorId);
+  if (!allowed) {
     json(response, 403, { message: 'Эта заявка закреплена за другим оператором.' });
     return;
   }
   item.status = status;
   item.statusAt = new Date().toISOString();
   writeJson(messagesFile, messages);
-  console.log(`[request] ${viewer.user.name}: заявка от ${item.name} → ${status}`);
+  console.log(`[request] ${viewer.user ? viewer.user.name : 'Администратор'}: заявка от ${item.name} → ${status}`);
   json(response, 200, { ok: true, request: item });
 }
 
