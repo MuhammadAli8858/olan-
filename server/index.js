@@ -897,6 +897,18 @@ function handleInboxOperators(response, query) {
   const list = viewerOperators(viewer).map((o) => {
     const requests = messages.filter((m) => m.operatorId === o.id);
     const sessions = Object.values(chats).filter((c) => c.operatorId === o.id);
+    // Неотвеченные сообщения: всё, что клиент написал после последнего
+    // ответа оператора. Именно это число горит на кнопке «Чаты» и гаснет
+    // только тогда, когда оператор ответил во всех чатах.
+    const unanswered = sessions.reduce((sum, c) => {
+      const list = c.messages || [];
+      let lastReply = -1;
+      for (let i = list.length - 1; i >= 0; i -= 1) {
+        if (list[i].from === 'operator') { lastReply = i; break; }
+      }
+      return sum + list.slice(lastReply + 1).filter((m) => m.from === 'user').length;
+    }, 0);
+
     return {
       id: o.id,
       name: o.name,
@@ -908,6 +920,7 @@ function handleInboxOperators(response, query) {
         const last = c.messages[c.messages.length - 1];
         return last && last.from === 'user';
       }).length,
+      unanswered,
       requests: requests.length,
       newRequests: requests.filter((m) => (m.status || 'new') === 'new').length,
     };
@@ -915,6 +928,13 @@ function handleInboxOperators(response, query) {
   json(response, 200, {
     role: viewer.role,
     canWrite: viewer.canWrite,
+    // Сумма по всем видимым операторам: оператору это его собственные
+    // числа, менеджеру и админу — общая картина по их людям.
+    totals: {
+      unanswered: list.reduce((n, o) => n + o.unanswered, 0),
+      waiting: list.reduce((n, o) => n + o.waiting, 0),
+      newRequests: list.reduce((n, o) => n + o.newRequests, 0),
+    },
     operators: list,
   });
 }

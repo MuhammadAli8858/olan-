@@ -11,7 +11,7 @@
 // ---------------------------------------------------------------------------
 
 import { useEffect, useRef, useState } from 'react';
-import { MessageSquare, Inbox, RefreshCw, Send, ArrowLeft, Clock, Lock, Trash2, Paperclip, FileText, PlayCircle, CheckCircle2, Mail, Phone } from 'lucide-react';
+import { MessageSquare, Inbox, RefreshCw, Send, ArrowLeft, Clock, Lock, Trash2, Paperclip, FileText, PlayCircle, CheckCircle2, Mail, Phone, ExternalLink } from 'lucide-react';
 import { getJson, postJson } from '../lib/api.js';
 
 export const STATUSES = [
@@ -216,7 +216,7 @@ export function ChatThread({ authKey, sessionId, onBack, onDeleted }) {
                 {m.from === 'operator' && m.by ? ` · ${m.by}` : ''}
               </div>
             </div>
-            {thread.canDelete && m.from === 'client' && (
+            {thread.canDelete && m.from === 'user' && (
               <button type="button" onClick={() => onDelete(m)} title="Удалить сообщение"
                 className="mb-1 hidden rounded-lg p-1.5 text-slate-500 transition hover:bg-red-500/10 hover:text-red-400 group-hover:block">
                 <Trash2 className="h-3.5 w-3.5" />
@@ -373,6 +373,32 @@ export function RequestStats({ authKey, operatorId, activeStatus, onPick, title 
 
 // ----------------------------- список заявок --------------------------------
 
+
+// Тема письма клиенту по заявке.
+const MAIL_SUBJECT = 'Ваша заявка на сайте OLAN HIGH TECH PROJECT';
+
+// Ссылка на окно нового письма в Gmail: адрес клиента уже в поле «Кому»,
+// тема заполнена, в тексте — цитата его обращения, чтобы оператор
+// не переключался между вкладками.
+function gmailCompose(request) {
+  const body = [
+    `Здравствуйте, ${request.name || ''}!`,
+    '',
+    'Вы оставили заявку на нашем сайте:',
+    `«${request.message || ''}»`,
+    '',
+    '',
+  ].join('\n');
+  const params = new URLSearchParams({
+    view: 'cm',
+    fs: '1',
+    to: request.email || '',
+    su: MAIL_SUBJECT,
+    body,
+  });
+  return `https://mail.google.com/mail/?${params.toString()}`;
+}
+
 export function RequestList({ authKey, operatorId, status, canWrite, showOperator, onChanged }) {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -438,9 +464,19 @@ export function RequestList({ authKey, operatorId, status, canWrite, showOperato
             {/* Связаться с клиентом прямо отсюда: на втором этапе оператор
                 пишет на почту или звонит, и искать контакты глазами незачем. */}
             <div className="mt-2.5 flex flex-wrap items-center gap-2">
-              <a href={`mailto:${r.email}`}
+              {/* Открывает Gmail с уже заполненным полем «Кому» и темой.
+                  Через mailto: письмо не откроется, если в системе не назначен
+                  почтовый клиент, — а это как раз обычный случай в браузере.
+                  Для тех, кто работает в почтовой программе, рядом стоит
+                  вторая, маленькая кнопка. */}
+              <a href={gmailCompose(r)} target="_blank" rel="noreferrer"
                 className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 px-2.5 py-1.5 text-[11px] text-slate-300 transition hover:border-cyan-500/50 hover:text-white">
                 <Mail className="h-3.5 w-3.5" /> Написать
+              </a>
+              <a href={`mailto:${r.email}?subject=${encodeURIComponent(MAIL_SUBJECT)}`}
+                title="Открыть в почтовой программе на компьютере"
+                className="inline-flex h-[30px] w-[30px] items-center justify-center rounded-xl border border-slate-700 text-slate-400 transition hover:border-cyan-500/50 hover:text-white">
+                <ExternalLink className="h-3.5 w-3.5" />
               </a>
               <a href={`tel:${String(r.phone || '').replace(/[^+\d]/g, '')}`}
                 className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 px-2.5 py-1.5 text-[11px] text-slate-300 transition hover:border-cyan-500/50 hover:text-white">

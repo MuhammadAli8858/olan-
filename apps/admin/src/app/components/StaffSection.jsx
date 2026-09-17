@@ -207,7 +207,19 @@ function RightToggle({ on, onToggle, busy, icon: Icon, label, titleOn, titleOff 
   );
 }
 
+// Счётчик над кнопкой. Ноль не рисуем вовсе — пустой кружок только мешает.
+function Badge({ value, tone = 'red' }) {
+  if (!value) return null;
+  const colour = tone === 'amber' ? 'bg-amber-500' : 'bg-red-500';
+  return (
+    <span className={`absolute -right-1.5 -top-1.5 inline-flex min-w-[18px] items-center justify-center rounded-full ${colour} px-1 text-[10px] font-bold leading-[18px] text-white shadow`}>
+      {value > 99 ? '99+' : value}
+    </span>
+  );
+}
+
 export default function StaffSection({ adminKey }) {
+  const [counters, setCounters] = useState({});
   const [tree, setTree] = useState({ managers: [], orphanOperators: [] });
   const [status, setStatus] = useState('');
   const [error, setError] = useState('');
@@ -287,6 +299,26 @@ export default function StaffSection({ adminKey }) {
     } catch (e) { setError(e.message); } finally { setBusy(false); }
   };
 
+  // Числа для значков: сколько у каждого оператора сообщений без ответа
+  // и заявок, которые он ещё не взял в работу. Обновляем каждые пять
+  // секунд — админ должен видеть, кто разгребает, а кто нет.
+  useEffect(() => {
+    if (!adminKey) return undefined;
+    let alive = true;
+    const pull = async () => {
+      try {
+        const data = await getJson(`/api/inbox/operators?key=${encodeURIComponent(adminKey)}`);
+        if (!alive) return;
+        const map = {};
+        (data.operators || []).forEach((o) => { map[o.id] = o; });
+        setCounters(map);
+      } catch { /* не критично: значки просто не обновятся */ }
+    };
+    pull();
+    const timer = setInterval(pull, 5000);
+    return () => { alive = false; clearInterval(timer); };
+  }, [adminKey]);
+
   const totalOperators = tree.managers.reduce((n, m) => n + m.operators.length, 0) + tree.orphanOperators.length;
 
   const renderOperator = (operator) => (
@@ -338,18 +370,24 @@ export default function StaffSection({ adminKey }) {
         <button
           type="button"
           onClick={() => setInbox({ operator, mode: 'chats' })}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-500/20 px-2.5 py-1.5 text-[11px] text-slate-300 transition hover:border-cyan-500/50 hover:text-white"
-          title={`Читать переписку оператора ${operator.name}`}
+          className="relative inline-flex items-center gap-1.5 rounded-lg border border-cyan-500/20 px-2.5 py-1.5 text-[11px] text-slate-300 transition hover:border-cyan-500/50 hover:text-white"
+          title={counters[operator.id]?.unanswered
+            ? `Без ответа: ${counters[operator.id].unanswered}`
+            : `Читать переписку оператора ${operator.name}`}
         >
           <MessageSquare className="h-3.5 w-3.5" /> Чаты
+          <Badge value={counters[operator.id]?.unanswered} />
         </button>
         <button
           type="button"
           onClick={() => setInbox({ operator, mode: 'requests' })}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-500/20 px-2.5 py-1.5 text-[11px] text-slate-300 transition hover:border-cyan-500/50 hover:text-white"
-          title={`Заявки оператора ${operator.name}`}
+          className="relative inline-flex items-center gap-1.5 rounded-lg border border-cyan-500/20 px-2.5 py-1.5 text-[11px] text-slate-300 transition hover:border-cyan-500/50 hover:text-white"
+          title={counters[operator.id]?.newRequests
+            ? `Новых заявок: ${counters[operator.id].newRequests}`
+            : `Заявки оператора ${operator.name}`}
         >
           <InboxIcon className="h-3.5 w-3.5" /> Заявки
+          <Badge value={counters[operator.id]?.newRequests} tone="amber" />
         </button>
         <button
           type="button"

@@ -25,6 +25,19 @@ const KEY_STORE = 'olan-manager-token';
 const CABINET_ROLE = 'manager';
 const OTHER_CABINET = { title: 'кабинет оператора', url: '/operator/' };
 
+
+// Счётчик непрочитанного над кнопкой. Гаснет сам, когда считать нечего:
+// сервер отдаёт ноль, и значок просто не рисуется.
+function Badge({ value, tone = 'red' }) {
+  if (!value) return null;
+  const colour = tone === 'amber' ? 'bg-amber-500' : 'bg-red-500';
+  return (
+    <span className={`absolute -right-1.5 -top-1.5 inline-flex min-w-[18px] items-center justify-center rounded-full ${colour} px-1 text-[10px] font-bold leading-[18px] text-white shadow`}>
+      {value > 99 ? '99+' : value}
+    </span>
+  );
+}
+
 export default function App() {
   const [key, setKey] = useState(() => {
     if (typeof window === 'undefined') return '';
@@ -36,6 +49,7 @@ export default function App() {
 
   const [me, setMe] = useState(null);
   const [operators, setOperators] = useState([]);
+  const [totals, setTotals] = useState(null);
   const [online, setOnline] = useState(true);
 
   const [view, setView] = useState('chats');
@@ -82,6 +96,7 @@ export default function App() {
     try {
       const data = await getJson(`/api/inbox/operators?key=${encodeURIComponent(key)}`);
       setOperators(data.operators || []);
+      setTotals(data.totals || null);
       setOnline(true);
     } catch (e) {
       if (/сесси|доступ|401/i.test(e.message)) {
@@ -163,6 +178,10 @@ export default function App() {
 
   // ------------------------------ панель операторов ------------------------------
 
+  // Числа для значков. Сервер присылает их вместе со списком операторов,
+  // который и так обновляется каждые пять секунд, — отдельный запрос не нужен.
+  const badges = totals || { unanswered: 0, newRequests: 0 };
+
   const selectedOperator = operators.find((o) => o.id === operatorId) || null;
 
   const operatorPanel = (
@@ -184,16 +203,32 @@ export default function App() {
             <div className="flex items-center gap-2">
               <Headset className="h-4 w-4 shrink-0 text-cyan-400" />
               <span className="truncate font-semibold text-white">{o.name}</span>
-              {o.waiting > 0 && (
-                <span className="ml-auto shrink-0 rounded-full bg-cyan-500/20 px-2 py-0.5 text-[10px] text-cyan-300">
-                  ждут: {o.waiting}
-                </span>
-              )}
+
+              {/* Два числа на виду: сколько сообщений без ответа и сколько
+                  заявок оператор ещё не взял в работу. По ним сразу видно,
+                  кто разгребает, а кто нет. */}
+              <span className="ml-auto flex shrink-0 items-center gap-1.5">
+                {o.unanswered > 0 && (
+                  <span title={`Сообщений без ответа: ${o.unanswered}`}
+                    className="inline-flex items-center gap-1 rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white">
+                    <MessageSquare className="h-3 w-3" /> {o.unanswered}
+                  </span>
+                )}
+                {o.newRequests > 0 && (
+                  <span title={`Новых заявок: ${o.newRequests}`}
+                    className="inline-flex items-center gap-1 rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-bold text-white">
+                    <InboxIcon className="h-3 w-3" /> {o.newRequests}
+                  </span>
+                )}
+                {o.unanswered === 0 && o.newRequests === 0 && (
+                  <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] text-emerald-300">всё отвечено</span>
+                )}
+              </span>
             </div>
             <div className="mt-1.5 flex flex-wrap gap-x-3 text-[11px] text-slate-500">
               <span>чатов: {o.chats}</span>
               <span>заявок: {o.requests}</span>
-              {o.newRequests > 0 && <span className="text-cyan-400">новых: {o.newRequests}</span>}
+              {o.waiting > 0 && <span className="text-cyan-400">ждут ответа: {o.waiting}</span>}
             </div>
           </button>
         ))}
@@ -241,12 +276,16 @@ export default function App() {
         <div className="ml-auto flex items-center gap-2">
           <div className="flex rounded-full border border-cyan-500/20 p-1">
             <button type="button" onClick={() => { setView('chats'); setStatus(''); }}
-              className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs transition sm:px-3 ${view === 'chats' ? 'bg-cyan-500 text-white' : 'text-slate-300 hover:text-white'}`}>
+              title={badges.unanswered ? `Без ответа: ${badges.unanswered}` : 'Все сообщения отвечены'}
+              className={`relative inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs transition sm:px-3 ${view === 'chats' ? 'bg-cyan-500 text-white' : 'text-slate-300 hover:text-white'}`}>
               <MessageSquare className="h-3.5 w-3.5" /> <span className="hidden sm:inline">Чаты</span>
+              <Badge value={badges.unanswered} />
             </button>
             <button type="button" onClick={() => { setView('requests'); setChatId(''); }}
-              className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs transition sm:px-3 ${view === 'requests' ? 'bg-cyan-500 text-white' : 'text-slate-300 hover:text-white'}`}>
+              title={badges.newRequests ? `Новых заявок: ${badges.newRequests}` : 'Новых заявок нет'}
+              className={`relative inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs transition sm:px-3 ${view === 'requests' ? 'bg-cyan-500 text-white' : 'text-slate-300 hover:text-white'}`}>
               <InboxIcon className="h-3.5 w-3.5" /> <span className="hidden sm:inline">Заявки</span>
+              <Badge value={badges.newRequests} tone="amber" />
             </button>
           </div>
           <button type="button" onClick={logout}
