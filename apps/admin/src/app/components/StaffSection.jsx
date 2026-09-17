@@ -371,12 +371,12 @@ export default function StaffSection({ adminKey }) {
           type="button"
           onClick={() => setInbox({ operator, mode: 'chats' })}
           className="relative inline-flex items-center gap-1.5 rounded-lg border border-cyan-500/20 px-2.5 py-1.5 text-[11px] text-slate-300 transition hover:border-cyan-500/50 hover:text-white"
-          title={counters[operator.id]?.unanswered
-            ? `Без ответа: ${counters[operator.id].unanswered}`
+          title={counters[operator.id]?.waiting
+            ? `Клиентов ждут ответа: ${counters[operator.id].waiting} (сообщений: ${counters[operator.id].unanswered})`
             : `Читать переписку оператора ${operator.name}`}
         >
           <MessageSquare className="h-3.5 w-3.5" /> Чаты
-          <Badge value={counters[operator.id]?.unanswered} />
+          <Badge value={counters[operator.id]?.waiting} />
         </button>
         <button
           type="button"

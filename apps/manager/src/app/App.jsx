@@ -180,7 +180,10 @@ export default function App() {
 
   // Числа для значков. Сервер присылает их вместе со списком операторов,
   // который и так обновляется каждые пять секунд, — отдельный запрос не нужен.
-  const badges = totals || { unanswered: 0, newRequests: 0 };
+  // На кнопке — число КЛИЕНТОВ, ждущих ответа, а не сообщений.
+  // Один человек мог написать пять раз подряд, но для оператора это
+  // по-прежнему один разговор, который надо закрыть.
+  const badges = totals || { waiting: 0, unanswered: 0, newRequests: 0 };
 
   const selectedOperator = operators.find((o) => o.id === operatorId) || null;
 
@@ -208,10 +211,10 @@ export default function App() {
                   заявок оператор ещё не взял в работу. По ним сразу видно,
                   кто разгребает, а кто нет. */}
               <span className="ml-auto flex shrink-0 items-center gap-1.5">
-                {o.unanswered > 0 && (
-                  <span title={`Сообщений без ответа: ${o.unanswered}`}
+                {o.waiting > 0 && (
+                  <span title={`Клиентов ждут ответа: ${o.waiting} (сообщений: ${o.unanswered})`}
                     className="inline-flex items-center gap-1 rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white">
-                    <MessageSquare className="h-3 w-3" /> {o.unanswered}
+                    <MessageSquare className="h-3 w-3" /> {o.waiting}
                   </span>
                 )}
                 {o.newRequests > 0 && (
@@ -220,7 +223,7 @@ export default function App() {
                     <InboxIcon className="h-3 w-3" /> {o.newRequests}
                   </span>
                 )}
-                {o.unanswered === 0 && o.newRequests === 0 && (
+                {o.waiting === 0 && o.newRequests === 0 && (
                   <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] text-emerald-300">всё отвечено</span>
                 )}
               </span>
@@ -228,7 +231,7 @@ export default function App() {
             <div className="mt-1.5 flex flex-wrap gap-x-3 text-[11px] text-slate-500">
               <span>чатов: {o.chats}</span>
               <span>заявок: {o.requests}</span>
-              {o.waiting > 0 && <span className="text-cyan-400">ждут ответа: {o.waiting}</span>}
+              {o.unanswered > 0 && <span className="text-slate-400">сообщений: {o.unanswered}</span>}
             </div>
           </button>
         ))}
@@ -276,10 +279,12 @@ export default function App() {
         <div className="ml-auto flex items-center gap-2">
           <div className="flex rounded-full border border-cyan-500/20 p-1">
             <button type="button" onClick={() => { setView('chats'); setStatus(''); }}
-              title={badges.unanswered ? `Без ответа: ${badges.unanswered}` : 'Все сообщения отвечены'}
+              title={badges.waiting
+                ? `Ждут ответа клиентов: ${badges.waiting}${badges.unanswered ? ` (сообщений: ${badges.unanswered})` : ''}`
+                : 'Все клиенты получили ответ'}
               className={`relative inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs transition sm:px-3 ${view === 'chats' ? 'bg-cyan-500 text-white' : 'text-slate-300 hover:text-white'}`}>
               <MessageSquare className="h-3.5 w-3.5" /> <span className="hidden sm:inline">Чаты</span>
-              <Badge value={badges.unanswered} />
+              <Badge value={badges.waiting} />
             </button>
             <button type="button" onClick={() => { setView('requests'); setChatId(''); }}
               title={badges.newRequests ? `Новых заявок: ${badges.newRequests}` : 'Новых заявок нет'}

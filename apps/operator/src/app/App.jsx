@@ -180,7 +180,10 @@ export default function App() {
 
   // Числа для значков. Сервер присылает их вместе со списком операторов,
   // который и так обновляется каждые пять секунд, — отдельный запрос не нужен.
-  const badges = totals || { unanswered: 0, newRequests: 0 };
+  // На кнопке — число КЛИЕНТОВ, ждущих ответа, а не сообщений.
+  // Один человек мог написать пять раз подряд, но для оператора это
+  // по-прежнему один разговор, который надо закрыть.
+  const badges = totals || { waiting: 0, unanswered: 0, newRequests: 0 };
 
   const selectedOperator = operators.find((o) => o.id === operatorId) || null;
 
@@ -251,10 +254,12 @@ export default function App() {
         <div className="ml-auto flex items-center gap-2">
           <div className="flex rounded-full border border-cyan-500/20 p-1">
             <button type="button" onClick={() => { setView('chats'); setStatus(''); }}
-              title={badges.unanswered ? `Без ответа: ${badges.unanswered}` : 'Все сообщения отвечены'}
+              title={badges.waiting
+                ? `Ждут ответа клиентов: ${badges.waiting}${badges.unanswered ? ` (сообщений: ${badges.unanswered})` : ''}`
+                : 'Все клиенты получили ответ'}
               className={`relative inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs transition sm:px-3 ${view === 'chats' ? 'bg-cyan-500 text-white' : 'text-slate-300 hover:text-white'}`}>
               <MessageSquare className="h-3.5 w-3.5" /> <span className="hidden sm:inline">Чаты</span>
-              <Badge value={badges.unanswered} />
+              <Badge value={badges.waiting} />
             </button>
             <button type="button" onClick={() => { setView('requests'); setChatId(''); }}
               title={badges.newRequests ? `Новых заявок: ${badges.newRequests}` : 'Новых заявок нет'}

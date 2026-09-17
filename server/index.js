@@ -214,15 +214,24 @@ function parseBody(request) {
   });
 }
 
+// Проверка контактов на стороне сервера. Интерфейс проверяет то же самое,
+// но запрос можно отправить и мимо него — а мусорные адреса и номера потом
+// разбирать операторам.
+function badContact(name, email, phone) {
+  if (!name || !email || !phone) return 'Имя, email и телефон обязательны.';
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return 'Адрес почты выглядит неверно.';
+  const digits = String(phone).replace(/\D/g, '');
+  if (digits.length < 7 || digits.length > 15) return 'Номер телефона выглядит неверно.';
+  return '';
+}
+
 // ---------- Чат (для клиента на основном сайте) ----------
 function handleChatStart(body, response) {
   const name = String(body.name || '').trim();
   const email = String(body.email || '').trim();
   const phone = String(body.phone || '').trim();
-  if (!name || !email || !phone) {
-    json(response, 400, { message: 'Имя, email и телефон обязательны.' });
-    return;
-  }
+  const contactError = badContact(name, email, phone);
+  if (contactError) { json(response, 400, { message: contactError }); return; }
   const id = randomUUID();
   // Клиент закрепляется за оператором: случайно, но один раз и навсегда.
   // Если этот же человек уже писал или оставлял заявку — попадёт к тому же.
@@ -401,6 +410,8 @@ function handleContact(body, response) {
   }
   const email = String(body.email).trim();
   const phone = String(body.phone).trim();
+  const contactError = badContact(String(body.name).trim(), email, phone);
+  if (contactError) { json(response, 400, { message: contactError }); return; }
   // Тот же механизм, что и в чате: если клиент уже писал — заявка уйдёт
   // тому же оператору. Если это первое обращение — оператор выбирается случайно.
   const operatorId = staff.assignOperator({ email, phone });

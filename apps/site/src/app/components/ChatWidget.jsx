@@ -1,4 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense } from 'react';
+import { isEmail } from './lib/contacts.js';
+
+// База правил телефонных номеров весит около сотни килобайт. Держать её
+// в основном файле незачем: она нужна, только когда человек дошёл до формы.
+// Поэтому поле подгружается отдельно и не задерживает первую отрисовку.
+const PhoneField = lazy(() => import('./PhoneField.jsx'));
 import { motion, AnimatePresence } from 'motion/react';
 import { MessageCircle, X, Send, FileText } from 'lucide-react';
 import { postJson, getJson } from '../lib/api.js';
@@ -57,6 +64,11 @@ export function ChatWidget() {
   const [open, setOpen] = useState(false);
   const [session, setSession] = useState(loadSession); // { sessionId, name, email, phone }
   const [form, setForm] = useState({ name: '', email: '', phone: '' });
+  // Страна для номера. По умолчанию Узбекистан — большинство обращений оттуда,
+  // остальным достаточно выбрать свою из списка.
+  const [country, setCountry] = useState('UZ');
+  // Номер в международном виде (+998901234567) — его и отправляем.
+  const [phoneE164, setPhoneE164] = useState('');
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [status, setStatus] = useState(''); // error/info text
@@ -160,9 +172,19 @@ export function ChatWidget() {
   const startChat = async () => {
     const name = form.name.trim();
     const email = form.email.trim();
-    const phone = form.phone.trim();
-    if (!name || !email || !phone) {
+    // В заявку уходит номер в международном виде: +998901234567.
+    // Так его одинаково поймут и оператор, и телефон, и почтовая программа.
+    const phone = phoneE164;
+    if (!name || !email || !form.phone.trim()) {
       setStatus(tr("Заполните имя, email и телефон."));
+      return;
+    }
+    if (!isEmail(email)) {
+      setStatus(tr("Проверьте адрес почты — похоже, в нём опечатка."));
+      return;
+    }
+    if (!phone) {
+      setStatus(tr("Проверьте номер телефона: он не подходит под выбранную страну."));
       return;
     }
     setStarting(true);
@@ -241,15 +263,30 @@ export function ChatWidget() {
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   type="email"
+                  inputMode="email"
+                  autoComplete="email"
                   placeholder="Email"
-                  className="rounded-2xl border border-slate-200 dark:border-cyan-500/20 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-cyan-500 dark:bg-slate-900 dark:text-white"
+                  className={`rounded-2xl border bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-cyan-500 dark:bg-slate-900 dark:text-white ${
+                    form.email && !isEmail(form.email)
+                      ? 'border-amber-400 dark:border-amber-500/60'
+                      : 'border-slate-200 dark:border-cyan-500/20'
+                  }`}
                 />
-                <input
+                <Suspense fallback={<div className="h-[46px] rounded-2xl border border-slate-200 bg-slate-50 dark:border-cyan-500/20 dark:bg-slate-900" />}><PhoneField
+                  country={country}
+                  onCountryChange={setCountry}
                   value={form.phone}
-                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  onChange={(phone, e164) => { setForm({ ...form, phone }); setPhoneE164(e164); }}
+                  language={language}
                   placeholder={tr("Телефон")}
-                  className="rounded-2xl border border-slate-200 dark:border-cyan-500/20 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-cyan-500 dark:bg-slate-900 dark:text-white"
-                />
+                  inputClassName="rounded-2xl border border-slate-200 dark:border-cyan-500/20 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-cyan-500 dark:bg-slate-900 dark:text-white"
+                  labels={{
+                    country: tr("Страна"),
+                    hint: tr("Цифр в номере: {n}"),
+                    progress: tr("Введено {a} из {n}"),
+                    ok: tr("Номер верный"),
+                  }}
+                /></Suspense>
                 {status && <div className="text-sm text-red-500">{status}</div>}
                 <button
                   type="button"

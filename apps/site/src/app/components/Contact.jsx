@@ -1,4 +1,11 @@
 import { motion } from 'motion/react';
+import { lazy, Suspense } from 'react';
+import { isEmail } from './lib/contacts.js';
+
+// База правил телефонных номеров весит около сотни килобайт. Держать её
+// в основном файле незачем: она нужна, только когда человек дошёл до формы.
+// Поэтому поле подгружается отдельно и не задерживает первую отрисовку.
+const PhoneField = lazy(() => import('./PhoneField.jsx'));
 import { Mail, MapPin, MessageCircle, Phone, Send } from 'lucide-react';
 import { useState } from 'react';
 import { CONTACT_INFO, localize } from '../data/siteData.js';
@@ -8,6 +15,9 @@ import { postJson } from '../lib/api.js';
 export function Contact() {
   const { language, text } = useSite();
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
+  // Страна для номера телефона; по умолчанию Узбекистан.
+  const [country, setCountry] = useState('UZ');
+  const [phoneE164, setPhoneE164] = useState('');
   const [status, setStatus] = useState({ type: '', message: '' });
   const [isSending, setIsSending] = useState(false);
 
@@ -21,7 +31,18 @@ export function Contact() {
     setStatus({ type: '', message: '' });
 
     try {
-      const { name, email, phone, message } = formData;
+      const { name, email, message } = formData;
+      if (!isEmail(email.trim())) {
+        setStatus({ type: 'error', message: tr("Проверьте адрес почты — похоже, в нём опечатка.") });
+        setIsSending(false);
+        return;
+      }
+      const phone = phoneE164;
+      if (!phone) {
+        setStatus({ type: 'error', message: tr("Проверьте номер телефона: он не подходит под выбранную страну.") });
+        setIsSending(false);
+        return;
+      }
       // Заявка уходит в раздел «Заявки» кабинета, а не в переписку: у неё
       // свой жизненный цикл — новая, в работе, обработана. Оператор
       // назначается тот же, что и по онлайн-чату этого клиента.
@@ -77,7 +98,21 @@ export function Contact() {
               </div>
               <div>
                 <label htmlFor="phone" className="mb-2 block text-sm font-medium text-slate-600 dark:text-slate-400">{text.contact.phone}</label>
-                <input id="phone" value={formData.phone} onChange={handleChange('phone')} required placeholder={text.contact.phonePlaceholder} className="w-full rounded-2xl border border-slate-200 dark:border-cyan-500/15 bg-slate-50 px-4 py-3 text-slate-900 outline-none focus:border-cyan-500 dark:bg-slate-900 dark:text-white" />
+                <Suspense fallback={<div className="h-[46px] rounded-2xl border border-slate-200 bg-slate-50 dark:border-cyan-500/20 dark:bg-slate-900" />}><PhoneField
+                  country={country}
+                  onCountryChange={setCountry}
+                  value={formData.phone}
+                  onChange={(phone, e164) => { setFormData((prev) => ({ ...prev, phone })); setPhoneE164(e164); }}
+                  language={language}
+                  placeholder={text.contact.phonePlaceholder}
+                  inputClassName="w-full rounded-2xl border border-slate-200 dark:border-cyan-500/15 bg-slate-50 px-4 py-3 text-slate-900 outline-none focus:border-cyan-500 dark:bg-slate-900 dark:text-white"
+                  labels={{
+                    country: tr("Страна"),
+                    hint: tr("Цифр в номере: {n}"),
+                    progress: tr("Введено {a} из {n}"),
+                    ok: tr("Номер верный"),
+                  }}
+                /></Suspense>
               </div>
               <div>
                 <label htmlFor="message" className="mb-2 block text-sm font-medium text-slate-600 dark:text-slate-400">{text.contact.message}</label>
