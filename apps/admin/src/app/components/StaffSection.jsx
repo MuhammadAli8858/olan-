@@ -7,7 +7,7 @@
 // ---------------------------------------------------------------------------
 
 import { useEffect, useState } from 'react';
-import { UserPlus, Trash2, KeyRound, Users, Headset, ChevronDown, ChevronRight, Eye, EyeOff, AlertTriangle, Check, X, MessageSquare, Inbox as InboxIcon, ArrowLeft, MessageSquareOff, Paperclip, PenLine, ShieldCheck } from 'lucide-react';
+import { UserPlus, Trash2, KeyRound, Users, Headset, ChevronDown, ChevronRight, Eye, EyeOff, AlertTriangle, Check, X, MessageSquare, Inbox as InboxIcon, Paperclip, PenLine, ShieldCheck } from 'lucide-react';
 import { getJson, postJson } from '../lib/api.js';
 import { ChatList, ChatThread, RequestStats, RequestList } from './Inbox.jsx';
 

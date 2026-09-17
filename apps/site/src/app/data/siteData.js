@@ -4476,6 +4476,21 @@ export const MONITOR = {
       note: { ru: 'защищённое соединение', en: 'encrypted connection', uz: 'himoyalangan ulanish', zh: '加密连接', ar: 'اتصال مؤمَّن', uk: 'захищене з\'єднання' },
     },
   ],
+  plate: { pattern: '## L ### LL', letters: 'ABCEHKMPTX' },
+  kinds: [
+    { ru: 'Превышение скорости', en: 'Speeding', uz: 'Tezlikdan oshish', zh: '超速', ar: 'تجاوز السرعة', uk: 'Перевищення швидкості' },
+    { ru: 'Проезд на красный свет', en: 'Running a red light', uz: 'Qizil chiroqda o‘tish', zh: '闯红灯', ar: 'تجاوز الإشارة الحمراء', uk: 'Проїзд на червоне світло' },
+    { ru: 'Нарушение правил парковки', en: 'Parking violation', uz: 'Parkovka qoidalarini buzish', zh: '违章停车', ar: 'مخالفة الوقوف', uk: 'Порушення правил паркування' },
+    { ru: 'Полоса общественного транспорта (А)', en: 'Bus lane (A)', uz: 'Jamoat transporti yo‘lagi (A)', zh: '公交专用道（A）', ar: 'مسار النقل العام (A)', uk: 'Смуга громадського транспорту (А)' },
+    { ru: 'Железнодорожный переезд', en: 'Railway crossing', uz: 'Temir yo‘l kesishmasi', zh: '铁路道口', ar: 'مزلقان السكة الحديدية', uk: 'Залізничний переїзд' },
+  ],
+  places: [
+    { ru: 'Городской перекрёсток', en: 'City intersection', uz: 'Shahar chorrahasi', zh: '城市路口', ar: 'تقاطع حضري', uk: 'Міське перехрестя' },
+    { ru: 'Загородная трасса', en: 'Intercity highway', uz: 'Shahardan tashqari trassa', zh: '城际公路', ar: 'طريق خارج المدينة', uk: 'Заміська траса' },
+    { ru: 'Городская парковочная зона', en: 'City parking zone', uz: 'Shahar parkovka zonasi', zh: '城市停车区', ar: 'منطقة وقوف حضرية', uk: 'Міська зона паркування' },
+    { ru: 'Регулируемый перекрёсток', en: 'Signalised intersection', uz: 'Tartibga solinadigan chorraha', zh: '信号灯路口', ar: 'تقاطع بإشارة', uk: 'Регульоване перехрестя' },
+    { ru: 'Магистраль между городами', en: 'Intercity motorway', uz: 'Shaharlararo magistral', zh: '城际干线', ar: 'طريق سريع بين المدن', uk: 'Магістраль між містами' },
+  ],
 };
 
 export function localize(value, language) {

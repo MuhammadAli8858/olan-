@@ -12,7 +12,7 @@
 // ---------------------------------------------------------------------------
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Activity, Radio } from 'lucide-react';
+import { Activity } from 'lucide-react';
 import { useSite } from '../context/SiteContext.jsx';
 import { localize, MONITOR, PROJECTS, VIOLATION_SOLUTIONS } from '../data/siteData.js';
 import { tr } from '../lib/i18n.js';
@@ -47,12 +47,15 @@ function statsFor(language) {
 }
 
 
-// Номер в узбекском формате: 01 A 123 AA
+// Номер собирается по шаблону из админ-панели: # — цифра, L — буква,
+// остальные знаки остаются как есть. По умолчанию узбекский вид: 01 A 123 AA.
 function makePlate() {
-  const letters = 'ABCEHKMPTX';
-  const pick = () => letters[Math.floor(Math.random() * letters.length)];
-  const region = String(Math.floor(Math.random() * 90) + 10);
-  return `${region} ${pick()} ${String(Math.floor(Math.random() * 900) + 100)} ${pick()}${pick()}`;
+  const setup = MONITOR.plate || {};
+  const letters = String(setup.letters || 'ABCEHKMPTX');
+  const pattern = String(setup.pattern || '## L ### LL');
+  return pattern.replace(/[#L]/g, (ch) => (ch === '#'
+    ? String(Math.floor(Math.random() * 10))
+    : letters[Math.floor(Math.random() * letters.length)] || 'A'));
 }
 
 function formatClock(date) {
@@ -94,11 +97,16 @@ export function LiveMonitor() {
 
   // Виды нарушений и участки берём из контента сайта — тогда лента
   // автоматически переводится вместе с ним.
-  const kinds = useMemo(
-    () => VIOLATION_SOLUTIONS.map((item) => localize(item.title, language)).filter(Boolean),
-    [language],
-  );
+  const kinds = useMemo(() => {
+    // Список задаётся в админ-панели. Если он пуст, берём заголовки
+    // из раздела «Задачи» — так лента не окажется пустой на старом контенте.
+    const own = (MONITOR.kinds || []).map((item) => localize(item, language)).filter(Boolean);
+    if (own.length) return own;
+    return VIOLATION_SOLUTIONS.map((item) => localize(item.title, language)).filter(Boolean);
+  }, [language]);
   const places = useMemo(() => {
+    const own = (MONITOR.places || []).map((item) => localize(item, language)).filter(Boolean);
+    if (own.length) return own;
     const list = PROJECTS.map((p) => localize(p.location, language) || localize(p.title, language)).filter(Boolean);
     return list.length ? list : ['—'];
   }, [language]);

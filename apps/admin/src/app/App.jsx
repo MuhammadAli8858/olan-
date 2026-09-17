@@ -333,6 +333,34 @@ function MonitorEditor({ content, patch, lang }) {
     c.MONITOR.stats = c.MONITOR.stats.filter((_, i) => i !== index);
   });
 
+  const setPlate = (field, value) => patch((c) => {
+    c.MONITOR = c.MONITOR || {};
+    c.MONITOR.plate = { ...(c.MONITOR.plate || {}), [field]: value };
+  });
+  const addRow = (field) => patch((c) => {
+    c.MONITOR = c.MONITOR || {};
+    c.MONITOR[field] = [...(c.MONITOR[field] || []), {}];
+  });
+  const setRow = (field, index, value) => patch((c) => {
+    c.MONITOR = c.MONITOR || {};
+    const list = [...(c.MONITOR[field] || [])];
+    list[index] = { ...(list[index] || {}), [lang]: value };
+    c.MONITOR[field] = list;
+  });
+  const removeRow = (field, index) => patch((c) => {
+    if (!c.MONITOR || !Array.isArray(c.MONITOR[field])) return;
+    c.MONITOR[field] = c.MONITOR[field].filter((_, i) => i !== index);
+  });
+
+  // Живой пример номера — чтобы шаблон не приходилось держать в голове.
+  const plateSample = useMemo(() => {
+    const letters = String(mon.plate?.letters || 'ABCEHKMPTX');
+    const pattern = String(mon.plate?.pattern || '## L ### LL');
+    return pattern.replace(/[#L]/g, (ch) => (ch === '#'
+      ? String(Math.floor(Math.random() * 10))
+      : letters[Math.floor(Math.random() * letters.length)] || 'A'));
+  }, [mon.plate?.letters, mon.plate?.pattern]);
+
   const stats = Array.isArray(mon.stats) ? mon.stats : [];
   const field = (key) => mon[key]?.[lang] || '';
 
@@ -365,6 +393,83 @@ function MonitorEditor({ content, patch, lang }) {
         <p className="mt-3 text-xs text-slate-500">
           Сами строки ленты формируются автоматически из решений и проектов — это демонстрация работы, а не реальные данные.
         </p>
+      </div>
+
+      <div className={cardCls}>
+        <div className="mb-3 text-sm font-semibold text-white">Номера в ленте</div>
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          <div>
+            <label className={labelCls}>Шаблон номера</label>
+            <input className={inputCls} value={mon.plate?.pattern || ''}
+              onChange={(e) => setPlate('pattern', e.target.value)} />
+            <p className="mt-1 text-xs text-slate-500">
+              <b>#</b> — цифра, <b>L</b> — буква. Остальные знаки остаются как есть.
+              Пример узбекского номера: <code>## L ### LL</code>
+            </p>
+          </div>
+          <div>
+            <label className={labelCls}>Какие буквы использовать</label>
+            <input className={inputCls} value={mon.plate?.letters || ''}
+              onChange={(e) => setPlate('letters', e.target.value.toUpperCase())} />
+            <p className="mt-1 text-xs text-slate-500">
+              Сейчас получается: <b className="text-cyan-300">{plateSample}</b>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className={cardCls}>
+        <div className="mb-3 flex items-center justify-between">
+          <div className="text-sm font-semibold text-white">Виды нарушений в ленте</div>
+          <button type="button" onClick={() => addRow('kinds')}
+            className="rounded-xl border border-cyan-500/30 px-3 py-1.5 text-xs text-cyan-300 transition hover:border-cyan-500">
+            + Добавить
+          </button>
+        </div>
+        <div className="space-y-2">
+          {(mon.kinds || []).length === 0 && (
+            <div className="text-xs text-slate-500">
+              Список пуст — в ленте будут показываться заголовки из раздела «Задачи».
+            </div>
+          )}
+          {(mon.kinds || []).map((item, index) => (
+            <div key={index} className="flex items-center gap-2">
+              <input className={inputCls} value={item?.[lang] || ''}
+                onChange={(e) => setRow('kinds', index, e.target.value)} />
+              <button type="button" onClick={() => removeRow('kinds', index)}
+                className="shrink-0 rounded-lg px-2 py-1 text-xs text-slate-500 transition hover:bg-red-500/10 hover:text-red-400">
+                удалить
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className={cardCls}>
+        <div className="mb-3 flex items-center justify-between">
+          <div className="text-sm font-semibold text-white">Места в ленте</div>
+          <button type="button" onClick={() => addRow('places')}
+            className="rounded-xl border border-cyan-500/30 px-3 py-1.5 text-xs text-cyan-300 transition hover:border-cyan-500">
+            + Добавить
+          </button>
+        </div>
+        <div className="space-y-2">
+          {(mon.places || []).length === 0 && (
+            <div className="text-xs text-slate-500">
+              Список пуст — в ленте будут показываться адреса из раздела «Наши проекты».
+            </div>
+          )}
+          {(mon.places || []).map((item, index) => (
+            <div key={index} className="flex items-center gap-2">
+              <input className={inputCls} value={item?.[lang] || ''}
+                onChange={(e) => setRow('places', index, e.target.value)} />
+              <button type="button" onClick={() => removeRow('places', index)}
+                className="shrink-0 rounded-lg px-2 py-1 text-xs text-slate-500 transition hover:bg-red-500/10 hover:text-red-400">
+                удалить
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className={cardCls}>
