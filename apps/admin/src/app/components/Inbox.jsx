@@ -66,7 +66,7 @@ function ChatAttachment({ file }) {
   );
 }
 
-export function ChatThread({ authKey, sessionId, onBack }) {
+export function ChatThread({ authKey, sessionId, onBack, onDeleted }) {
   const [thread, setThread] = useState(null);
   const [reply, setReply] = useState('');
   const [error, setError] = useState('');
@@ -111,6 +111,18 @@ export function ChatThread({ authKey, sessionId, onBack }) {
     try {
       await postJson('/api/chat/message/delete', { key: authKey, sessionId, messageId: message.id });
       await load();
+    } catch (e) { setError(e.message); }
+  };
+
+  // Удаление всей переписки. Спрашиваем дважды: восстановить нельзя,
+  // а вместе с чатом уходят и присланные в нём файлы.
+  const deleteChat = async () => {
+    const count = thread && thread.messages ? thread.messages.length : 0;
+    const who = thread ? thread.name : '';
+    if (!confirm(`Удалить переписку с клиентом «${who}»?\n\nБудет стёрто сообщений: ${count}, вместе с присланными файлами. Отменить это нельзя.`)) return;
+    try {
+      await postJson('/api/chat/delete', { key: authKey, sessionId });
+      if (onDeleted) onDeleted();
     } catch (e) { setError(e.message); }
   };
 
@@ -168,6 +180,17 @@ export function ChatThread({ authKey, sessionId, onBack }) {
           <span className="ml-auto inline-flex shrink-0 items-center gap-1.5 rounded-full bg-slate-800 px-2.5 py-1 text-[11px] text-slate-400">
             <Lock className="h-3 w-3" /> только чтение
           </span>
+        )}
+
+        {/* Удаление всей переписки. Сервер отдаёт этот флаг только
+            администратору, поэтому у оператора и менеджера кнопки нет. */}
+        {thread.canDeleteChat && (
+          <button type="button" onClick={deleteChat}
+            title="Удалить всю переписку с этим клиентом"
+            className={`${thread.canWrite ? 'ml-auto' : 'ml-2'} inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-red-500/30 px-2.5 py-1.5 text-[11px] text-red-400 transition hover:bg-red-500/10 hover:text-red-300`}>
+            <Trash2 className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Удалить чат</span>
+          </button>
         )}
       </div>
 

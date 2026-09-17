@@ -12,7 +12,7 @@
 import './env.js';
 import { createServer } from 'node:http';
 import { randomUUID } from 'node:crypto';
-import { mkdirSync, readFileSync, writeFileSync, existsSync, watch } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync, existsSync, unlinkSync, watch } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
@@ -959,6 +959,9 @@ function handleInboxThread(response, query) {
     // из тех, что им видны (проверка видимости выше по коду).
     canWrite: viewer.canWrite && (viewer.kind === 'admin' || viewer.role === 'manager' || (viewer.user && viewer.user.id === session.operatorId)),
     canDelete: viewer.canDelete === true,
+    // Удалить переписку целиком может только администратор: это уже не
+    // правка отдельного сообщения, а уничтожение истории обращения.
+    canDeleteChat: viewer.kind === 'admin',
     canSendFiles: viewer.canSendFiles && (viewer.kind === 'admin' || viewer.role === 'manager' || (viewer.user && viewer.user.id === session.operatorId)),
   });
 }
@@ -1021,6 +1024,40 @@ function handleInboxRequestStatus(body, response) {
   writeJson(messagesFile, messages);
   console.log(`[request] ${viewer.user ? viewer.user.name : 'Администратор'}: заявка от ${item.name} → ${status}`);
   json(response, 200, { ok: true, request: item });
+}
+
+// Удаление всей переписки с клиентом. Только администратор.
+//
+// Вместе с чатом убираем и присланные в нём файлы — иначе они остались бы
+// лежать на диске навсегда, а ссылки на них уже никому не видны.
+function handleChatDelete(body, response) {
+  if (!body || body.key !== ADMIN_KEY) {
+    json(response, 401, { message: 'Удалять переписку может только администратор.' });
+    return;
+  }
+  const sessionId = String(body.sessionId || '');
+  const session = chats[sessionId];
+  if (!session) { json(response, 404, { message: 'Чат не найден.' }); return; }
+
+  let removedFiles = 0;
+  for (const message of session.messages || []) {
+    const url = message.file && message.file.url;
+    if (!url) continue;
+    // Берём только имя файла: путь из сообщения наружу не доверяем.
+    const name = path.basename(String(url));
+    try {
+      const full = path.join(CHAT_UPLOAD_DIR, name);
+      if (existsSync(full)) { unlinkSync(full); removedFiles += 1; }
+    } catch (error) {
+      console.warn('[chat] Файл не удалён:', name, error.message);
+    }
+  }
+
+  const count = (session.messages || []).length;
+  delete chats[sessionId];
+  persistChats();
+  console.log(`[chat] Удалена переписка #${sessionId} — ${session.name}: сообщений ${count}, файлов ${removedFiles}`);
+  json(response, 200, { ok: true, messages: count, files: removedFiles });
 }
 
 // ---------- Файлы и фото в чате ----------
@@ -1300,6 +1337,7 @@ const server = createServer(async (request, response) => {
     if (request.method === 'POST' && pathname === '/api/operator/reply') { handleOperatorReply(await parseBody(request), response); return; }
     if (request.method === 'POST' && pathname === '/api/chat/message/delete') { handleChatMessageDelete(await parseBody(request), response); return; }
     if (request.method === 'POST' && pathname === '/api/chat/upload') { handleChatUpload(await parseBody(request), response); return; }
+    if (request.method === 'POST' && pathname === '/api/chat/delete') { handleChatDelete(await parseBody(request), response); return; }
     if (request.method === 'GET' && pathname === '/api/operator/me') { handleOperatorMe(response, query); return; }
     if (request.method === 'GET' && pathname === '/api/operator/requests') { handleOperatorRequests(response, query); return; }
     if (request.method === 'POST' && pathname === '/api/operator/logout') { handleOperatorLogout(await parseBody(request), response); return; }

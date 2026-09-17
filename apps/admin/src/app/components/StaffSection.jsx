@@ -18,6 +18,8 @@ import { ChatList, ChatThread, RequestStats, RequestList } from './Inbox.jsx';
 function OperatorInbox({ adminKey, operator, mode, onClose }) {
   const [view, setView] = useState(mode);
   const [chatId, setChatId] = useState('');
+  // Счётчик заставляет список чатов перечитаться после удаления.
+  const [listStamp, setListStamp] = useState(0);
   const [status, setStatus] = useState('');
 
   useEffect(() => { setView(mode); setChatId(''); setStatus(''); }, [mode, operator]);
@@ -52,10 +54,13 @@ function OperatorInbox({ adminKey, operator, mode, onClose }) {
         {view === 'chats' ? (
           <div className="grid min-h-0 flex-1 grid-cols-1 md:grid-cols-[320px_1fr]">
             <div className={`min-h-0 border-r border-cyan-500/15 ${chatId ? 'hidden md:block' : ''}`}>
-              <ChatList authKey={adminKey} operatorId={operator.id} selected={chatId} onSelect={setChatId} />
+              <ChatList key={listStamp} authKey={adminKey} operatorId={operator.id} selected={chatId} onSelect={setChatId} />
             </div>
             <div className={`min-h-0 ${chatId ? '' : 'hidden md:block'}`}>
-              <ChatThread authKey={adminKey} sessionId={chatId} onBack={() => setChatId('')} />
+              {/* Удалили переписку — закрываем её и перечитываем список,
+                  иначе слева остался бы чат, которого уже нет. */}
+              <ChatThread authKey={adminKey} sessionId={chatId} onBack={() => setChatId('')}
+                onDeleted={() => { setChatId(''); setListStamp((n) => n + 1); }} />
             </div>
           </div>
         ) : (
