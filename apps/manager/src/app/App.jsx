@@ -1,16 +1,16 @@
 // ---------------------------------------------------------------------------
-// Кабинет оператора: https://ваш-адрес/operator/
+// Кабинет менеджера: https://ваш-адрес/menedjer/
 //
-// Оператор видит свои чаты и свои заявки, отвечает клиентам, отправляет файлы
-// и меняет статусы заявок. Права на ответ и на файлы выдаёт администратор.
+// Менеджер видит список своих операторов, читает их переписку и заявки.
+// Писать в чаты и удалять сообщения он может, только если администратор
+// включил ему доступ кнопкой «Правит чаты» в разделе «Сотрудники».
 //
-// Менеджеру здесь делать нечего — у него свой кабинет по адресу /menedjer/.
-// Если он войдёт сюда, мы не пустим и покажем ссылку на нужный адрес.
+// Оператору здесь делать нечего — у него свой кабинет по адресу /operator/.
 // ---------------------------------------------------------------------------
 
 import { useEffect, useState } from 'react';
 import {
-  LogOut, MessageSquare, Inbox as InboxIcon, Users, Headset, RefreshCw, Lock, ArrowLeft,
+  LogOut, MessageSquare, Inbox as InboxIcon, Users, Headset, RefreshCw, Lock, ArrowLeft, PenLine,
 } from 'lucide-react';
 import { postJson, getJson } from './lib/api.js';
 import { ChatList, ChatThread, RequestStats, RequestList } from './components/Inbox.jsx';
@@ -18,12 +18,12 @@ import { ChatList, ChatThread, RequestStats, RequestList } from './components/In
 // В хранилище лежит токен сессии, выданный сервером. Пароль не сохраняется.
 // Токен хранится под своим ключом, иначе вход в один кабинет выбрасывал бы
 // из другого при работе в одном браузере.
-const KEY_STORE = 'olan-operator-token';
+const KEY_STORE = 'olan-manager-token';
 
 // Кабинет заперт на одну роль. Проверка стоит и на сервере, здесь она
 // нужна, чтобы человек сразу увидел, куда ему идти, а не пустой экран.
-const CABINET_ROLE = 'operator';
-const OTHER_CABINET = { title: 'кабинет менеджера', url: '/menedjer/' };
+const CABINET_ROLE = 'manager';
+const OTHER_CABINET = { title: 'кабинет оператора', url: '/operator/' };
 
 export default function App() {
   const [key, setKey] = useState(() => {
@@ -207,7 +207,7 @@ export default function App() {
     <div className="flex h-screen flex-col overflow-hidden bg-black text-white">
       <header className="flex shrink-0 flex-wrap items-center gap-2 border-b border-cyan-500/15 bg-slate-950 px-3 py-3 sm:px-5">
         <div className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-base font-bold text-transparent sm:text-lg">
-          OLAN<span className="hidden sm:inline"> — Кабинет оператора</span>
+          OLAN<span className="hidden sm:inline"> — Кабинет менеджера</span>
         </div>
 
         {me && (
@@ -218,10 +218,19 @@ export default function App() {
           </span>
         )}
 
-        {isManager && (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-800 px-3 py-1 text-[11px] text-slate-400">
-            <Lock className="h-3 w-3" /> только чтение
-          </span>
+        {/* Что менеджеру разрешено в переписке, решает администратор
+            кнопкой «Правит чаты». Показываем текущее состояние, чтобы
+            не гадать, почему поле ввода то есть, то нет. */}
+        {me && (
+          me.rights && me.rights.canChat ? (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-3 py-1 text-[11px] text-emerald-300">
+              <PenLine className="h-3 w-3" /> можно писать и удалять
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-800 px-3 py-1 text-[11px] text-slate-400">
+              <Lock className="h-3 w-3" /> только чтение
+            </span>
+          )
         )}
 
         <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs ${online ? 'bg-emerald-500/15 text-emerald-300' : 'bg-red-500/15 text-red-300'}`}>

@@ -53,6 +53,8 @@ const REQUIRED = [
   'apps/admin/src/main.jsx',
   'apps/operator/index.html',
   'apps/operator/src/main.jsx',
+  'apps/manager/index.html',
+  'apps/manager/src/main.jsx',
 ];
 const missing = REQUIRED.filter((f) => !existsSync(path.join(rootDir, f)));
 if (missing.length) {

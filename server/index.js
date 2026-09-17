@@ -1404,6 +1404,7 @@ async function start() {
       console.log(`           сайт     → http://localhost:${port}/`);
       console.log(`           админка  → http://localhost:${port}/admin/`);
       console.log(`           оператор → http://localhost:${port}/operator/`);
+      console.log(`           менеджер → http://localhost:${port}/menedjer/`);
     }
     console.log('(пароль админа — в .env, сотрудники заводятся в админ-панели)\n');
   });

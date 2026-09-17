@@ -18,6 +18,7 @@ const COLORS = {
   site: '\x1b[32m',     // зелёный
   admin: '\x1b[35m',    // фиолетовый
   operator: '\x1b[33m', // жёлтый
+  manager: '\x1b[35m', // фиолетовый
 };
 const RESET = '\x1b[0m';
 
@@ -30,6 +31,7 @@ const TASKS = [
   { name: 'site', args: ['run', 'site'] },
   { name: 'admin', args: ['run', 'admin'] },
   { name: 'operator', args: ['run', 'operator'] },
+  { name: 'manager', args: ['run', 'manager'] },
 ];
 
 const children = [];

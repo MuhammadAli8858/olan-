@@ -43,6 +43,7 @@ export function createStaticHandler(rootDir, uploadsDir, chatFilesDir) {
     ...(chatFilesDir ? [{ prefix: '/chat-files', dir: chatFilesDir }] : []),
     { prefix: '/admin', dir: path.join(rootDir, 'apps', 'admin', 'dist') },
     { prefix: '/operator', dir: path.join(rootDir, 'apps', 'operator', 'dist') },
+    { prefix: '/menedjer', dir: path.join(rootDir, 'apps', 'manager', 'dist') },
     { prefix: '/', dir: path.join(rootDir, 'apps', 'site', 'dist') },
   ].filter((m) => existsSync(m.dir));
 
