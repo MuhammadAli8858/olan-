@@ -11,6 +11,7 @@ import { useState } from 'react';
 import { CONTACT_INFO, localize } from '../data/siteData.js';
 import { useSite } from '../context/SiteContext.jsx';
 import { postJson } from '../lib/api.js';
+import { tr } from '../lib/i18n.js';
 
 export function Contact() {
   const { language, text } = useSite();

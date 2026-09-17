@@ -146,6 +146,58 @@ if (existsSync(siteDataPath)) {
 }
 
 // --- Итог -------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Помощники, вызванные без импорта.
+//
+// Сборщик такую ошибку не ловит: для него tr() — просто обращение к чему-то
+// глобальному. Падает уже в браузере, причём падает вся страница: React
+// снимает дерево целиком, и посетитель видит пустой экран. Один раз мы
+// на этом обожглись — теперь проверяем на сборке.
+// ---------------------------------------------------------------------------
+if (!serverOnly) {
+  const HELPERS = {
+    tr: /from '[^']*i18n\.js'/,
+    localize: /from '[^']*siteData\.js'/,
+    postJson: /from '[^']*api\.js'/,
+    getJson: /from '[^']*api\.js'/,
+  };
+
+  const collect = (dir, out = []) => {
+    if (!existsSync(dir)) return out;
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) collect(full, out);
+      else if (/\.(jsx|js)$/.test(entry.name)) out.push(full);
+    }
+    return out;
+  };
+
+  const broken = [];
+  for (const app of ['site', 'admin', 'operator', 'manager']) {
+    for (const file of collect(path.join(rootDir, 'apps', app, 'src'))) {
+      const code = readFileSync(file, 'utf8');
+      for (const [name, importPattern] of Object.entries(HELPERS)) {
+        const used = new RegExp(`(?<![\\w.])${name}\\(`).test(code);
+        if (!used) continue;
+        const declared = new RegExp(`(?:import|const)\\s*\\{[^}]*\\b${name}\\b[^}]*\\}`).test(code)
+          || new RegExp(`(?:function|const)\\s+${name}\\b`).test(code);
+        if (declared && (name !== 'tr' || importPattern.test(code) || /useSite\(\)/.test(code))) continue;
+        if (!declared) broken.push(`${path.relative(rootDir, file)} → ${name}()`);
+      }
+    }
+  }
+
+  if (broken.length) {
+    fail(
+      'Функция вызывается, но не импортирована',
+      'Сборка пройдёт, а страница в браузере упадёт целиком — посетитель увидит пустой экран.',
+      ...broken.map((b) => `  ${b}`),
+      'Добавьте импорт в начало файла.',
+    );
+  }
+}
+
 if (problems.length === 0) {
   if (afterInstall) {
     console.log(`\n${C.green}${C.bold}Всё установлено правильно.${C.off}`);
