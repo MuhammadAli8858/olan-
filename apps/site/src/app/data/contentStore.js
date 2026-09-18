@@ -14,7 +14,8 @@ import {
   TESTIMONIALS,
   CONTACT_INFO,
   LANGUAGE_OPTIONS,
-  // Блоки из корпоративной презентации   COMPANY,
+  // Блоки из корпоративной презентации
+  COMPANY,
   COMPANY_STATS,
   DIRECTIONS,
   PORTFOLIO,
@@ -89,8 +90,14 @@ export async function loadContent() {
     const content = await res.json();
     applyServerContent(content);
     return true;
-  } catch {
-    /* сервер недоступен — используем встроенный контент */
+  } catch (error) {
+    // Раньше здесь молчали, и из-за этого поломка внутри applyServerContent
+    // выглядела как «сервер недоступен»: сайт молча оставался со встроенным
+    // контентом, а правки из админ-панели не появлялись. Теперь ошибка видна
+    // в консоли браузера — её сразу видно при проверке.
+    if (error && error.name !== 'AbortError' && typeof console !== 'undefined') {
+      console.error('[content] Контент с сервера не применён:', error);
+    }
     return false;
   }
 }

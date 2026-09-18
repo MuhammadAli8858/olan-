@@ -53,6 +53,9 @@ for (const app of APPS) {
   });
   const { window } = dom;
   window.matchMedia = (q) => ({ matches: false, media: q, addListener() {}, removeListener() {}, addEventListener() {}, removeEventListener() {}, dispatchEvent() { return false; } });
+  // Пустой наблюдатель. Пробовал сразу сообщать «элемент виден», чтобы
+  // отрисовались и секции, появляющиеся при прокрутке, — но так ломаются
+  // анимации появления, и страницы выходит меньше, а не больше.
   window.IntersectionObserver = class { observe() {} unobserve() {} disconnect() {} };
   window.ResizeObserver = class { observe() {} unobserve() {} disconnect() {} };
   window.scrollTo = () => {};
@@ -74,5 +77,53 @@ for (const app of APPS) {
   errors.slice(0, 2).forEach((e) => console.log(`    → ${e.split('\n')[0].slice(0, 160)}`));
 }
 
-console.log(failed ? `\nПРОБЛЕМНЫХ ПРИЛОЖЕНИЙ: ${failed}` : '\nВсе четыре приложения запускаются без ошибок.');
+// ---------------------------------------------------------------------------
+// Доходят ли правки из админ-панели до страницы.
+//
+// Сайт рисуется дважды: сперва со встроенным контентом, затем — с тем,
+// что пришло с сервера. Если второй шаг ломается, страница выглядит целой,
+// но показывает старое, и человек видит «в админке меняю, на сайте ничего».
+// Ровно так один раз и случилось. Поэтому подменяем два поля метками и
+// проверяем, что обе появились в разметке.
+//
+// Метки взяты по разные стороны от середины функции applyServerContent:
+// первая — из начала списка, вторая — из конца. Поломка в середине
+// пропустила бы первую и срезала вторую.
+{
+  const marked = JSON.parse(JSON.stringify(content));
+  const HEAD = 'МЕТКА-НАЧАЛО-СПИСКА';
+  const TAIL = 'МЕТКА-КОНЕЦ-СПИСКА';
+  if (marked.BENEFITS && marked.BENEFITS[0]) marked.BENEFITS[0].title = { ru: HEAD, en: HEAD, uz: HEAD, zh: HEAD, ar: HEAD, uk: HEAD };
+  if (marked.MONITOR) marked.MONITOR.title = { ru: TAIL, en: TAIL, uz: TAIL, zh: TAIL, ar: TAIL, uk: TAIL };
+
+  const errors = [];
+  const vc = new VirtualConsole();
+  vc.on('jsdomError', (e) => { if (!String(e.message).includes('getContext')) errors.push(String(e.message)); });
+  vc.on('error', (...a) => errors.push(a.join(' ')));
+
+  const dom = new JSDOM(fs.readFileSync(`${ROOT}/apps/site/dist/index.html`, 'utf8'), {
+    runScripts: 'dangerously', url: 'https://olan.uz/', pretendToBeVisual: true, virtualConsole: vc,
+  });
+  const { window } = dom;
+  window.matchMedia = (q) => ({ matches: false, media: q, addListener() {}, removeListener() {}, addEventListener() {}, removeEventListener() {}, dispatchEvent() { return false; } });
+  // Пустой наблюдатель. Пробовал сразу сообщать «элемент виден», чтобы
+  // отрисовались и секции, появляющиеся при прокрутке, — но так ломаются
+  // анимации появления, и страницы выходит меньше, а не больше.
+  window.IntersectionObserver = class { observe() {} unobserve() {} disconnect() {} };
+  window.ResizeObserver = class { observe() {} unobserve() {} disconnect() {} };
+  window.scrollTo = () => {};
+  window.fetch = async (u) => ({ ok: true, status: 200, json: async () => (String(u).includes('/api/content') ? marked : {}) });
+
+  window.eval(fs.readFileSync(`${TMP}/site.js`, 'utf8'));
+  await new Promise((r) => { setTimeout(r, 1500); });
+
+  const html = window.document.getElementById('root')?.innerHTML || '';
+  const headOk = html.includes(HEAD);
+  const tailOk = html.includes(TAIL);
+  if (!headOk || !tailOk) failed += 1;
+  console.log(`${headOk && tailOk ? '✓' : '✗'} правки из админ-панели доходят до страницы: начало списка ${headOk ? 'да' : 'НЕТ'}, конец списка ${tailOk ? 'да' : 'НЕТ'}`);
+  errors.slice(0, 2).forEach((e) => console.log(`    → ${e.split('\n')[0].slice(0, 160)}`));
+}
+
+console.log(failed ? `\nПРОБЛЕМНЫХ ПРИЛОЖЕНИЙ: ${failed}` : '\nВсе проверки пройдены.');
 process.exit(failed ? 1 : 0);
