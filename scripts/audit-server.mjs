@@ -97,7 +97,7 @@ const run = async () => {
   section('Контент');
   const c = (await get('/api/content')).d;
   check('шесть языков', c.LANGUAGE_OPTIONS.length === 6);
-  check('блок мониторинга на месте', Boolean(c.MONITOR && c.MONITOR.plate && c.MONITOR.kinds && c.MONITOR.places));
+  check('блок мониторинга на месте', Boolean(c.MONITOR && c.MONITOR.kinds && c.MONITOR.places));
   check('словарь подписей на месте', Object.keys(c.UI_TEXT.ru.s || {}).length > 100);
   const save = await post('/api/admin/save', { key: KEY, content: c, autoTranslate: false });
   check('сохранение контента', save.s === 200);

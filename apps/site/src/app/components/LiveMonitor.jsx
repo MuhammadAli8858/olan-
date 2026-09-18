@@ -15,6 +15,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Activity } from 'lucide-react';
 import { useSite } from '../context/SiteContext.jsx';
 import { localize, MONITOR, PROJECTS, VIOLATION_SOLUTIONS } from '../data/siteData.js';
+import { randomPlate } from '../lib/plates.js';
 import { tr } from '../lib/i18n.js';
 
 // Подписи блока берутся из контента — раздел «Мониторинг» в админ-панели.
@@ -46,27 +47,6 @@ function statsFor(language) {
     .filter((item) => item.key || item.value);
 }
 
-
-// Номер для строки ленты.
-//
-// Сначала смотрим список, вписанный в админ-панели: если он есть, берём
-// номера только оттуда. Списка нет — собираем по шаблону, где # это цифра,
-// L это буква, а остальные знаки остаются как есть. По умолчанию выходит
-// узбекский вид: 01 A 123 AA.
-function makePlate() {
-  const setup = MONITOR.plate || {};
-
-  const own = (Array.isArray(setup.list) ? setup.list : [])
-    .map((item) => String(item || '').trim())
-    .filter(Boolean);
-  if (own.length) return own[Math.floor(Math.random() * own.length)];
-
-  const letters = String(setup.letters || 'ABCEHKMPTX');
-  const pattern = String(setup.pattern || '## L ### LL');
-  return pattern.replace(/[#L]/g, (ch) => (ch === '#'
-    ? String(Math.floor(Math.random() * 10))
-    : letters[Math.floor(Math.random() * letters.length)] || 'A'));
-}
 
 function formatClock(date) {
   return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -132,7 +112,7 @@ export function LiveMonitor() {
       return {
         id: counterRef.current,
         at: formatClock(new Date()),
-        plate: makePlate(),
+        plate: randomPlate(),
         kind: kinds[Math.floor(Math.random() * kinds.length)],
         place: places[Math.floor(Math.random() * places.length)],
         speed: Math.floor(Math.random() * 70) + 65,

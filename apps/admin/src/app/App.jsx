@@ -333,10 +333,6 @@ function MonitorEditor({ content, patch, lang }) {
     c.MONITOR.stats = c.MONITOR.stats.filter((_, i) => i !== index);
   });
 
-  const setPlate = (field, value) => patch((c) => {
-    c.MONITOR = c.MONITOR || {};
-    c.MONITOR.plate = { ...(c.MONITOR.plate || {}), [field]: value };
-  });
   const addRow = (field) => patch((c) => {
     c.MONITOR = c.MONITOR || {};
     c.MONITOR[field] = [...(c.MONITOR[field] || []), {}];
@@ -351,18 +347,6 @@ function MonitorEditor({ content, patch, lang }) {
     if (!c.MONITOR || !Array.isArray(c.MONITOR[field])) return;
     c.MONITOR[field] = c.MONITOR[field].filter((_, i) => i !== index);
   });
-
-  // Сколько своих номеров вписано: от этого зависит, работает шаблон или нет.
-  const plateCount = (mon.plate?.list || []).map((x) => String(x || '').trim()).filter(Boolean).length;
-
-  // Живой пример номера — чтобы шаблон не приходилось держать в голове.
-  const plateSample = useMemo(() => {
-    const letters = String(mon.plate?.letters || 'ABCEHKMPTX');
-    const pattern = String(mon.plate?.pattern || '## L ### LL');
-    return pattern.replace(/[#L]/g, (ch) => (ch === '#'
-      ? String(Math.floor(Math.random() * 10))
-      : letters[Math.floor(Math.random() * letters.length)] || 'A'));
-  }, [mon.plate?.letters, mon.plate?.pattern]);
 
   const stats = Array.isArray(mon.stats) ? mon.stats : [];
   const field = (key) => mon[key]?.[lang] || '';
@@ -399,46 +383,17 @@ function MonitorEditor({ content, patch, lang }) {
       </div>
 
       <div className={cardCls}>
-        <div className="mb-3 text-sm font-semibold text-white">Номера в ленте</div>
-
-        {/* Свои номера имеют приоритет: пока список не пуст, лента берёт
-            номера только из него, а шаблон ниже не используется. */}
-        <div className="mb-4">
-          <label className={labelCls}>Свои номера — по одному в строке</label>
-          <textarea
-            rows={6}
-            className={`${inputCls} font-mono`}
-            placeholder={'01 A 777 AA\n10 B 123 CD\n30 X 555 KK'}
-            value={(mon.plate?.list || []).join('\n')}
-            onChange={(e) => setPlate('list', e.target.value.split('\n'))}
-            onBlur={(e) => setPlate('list', e.target.value.split('\n').map((x) => x.trim()).filter(Boolean))}
-          />
-          <p className="mt-1 text-xs text-slate-500">
-            {plateCount > 0
-              ? `В ленте будут показываться только эти номера — ${plateCount} шт. Очистите поле, чтобы вернуться к случайным.`
-              : 'Поле пустое — номера собираются случайно по шаблону ниже.'}
-          </p>
-        </div>
-
-        <div className={`grid grid-cols-1 gap-3 md:grid-cols-2 ${plateCount > 0 ? 'opacity-50' : ''}`}>
-          <div>
-            <label className={labelCls}>Шаблон номера</label>
-            <input className={inputCls} value={mon.plate?.pattern || ''}
-              onChange={(e) => setPlate('pattern', e.target.value)} />
-            <p className="mt-1 text-xs text-slate-500">
-              <b>#</b> — цифра, <b>L</b> — буква. Остальные знаки остаются как есть.
-              Пример узбекского номера: <code>## L ### LL</code>
-            </p>
-          </div>
-          <div>
-            <label className={labelCls}>Какие буквы использовать</label>
-            <input className={inputCls} value={mon.plate?.letters || ''}
-              onChange={(e) => setPlate('letters', e.target.value.toUpperCase())} />
-            <p className="mt-1 text-xs text-slate-500">
-              Сейчас получается: <b className="text-cyan-300">{plateSample}</b>
-            </p>
-          </div>
-        </div>
+        <div className="mb-2 text-sm font-semibold text-white">Номера в ленте</div>
+        <p className="text-xs leading-relaxed text-slate-400">
+          Номера подставляются автоматически и вручную не задаются. Генератор собирает
+          их по правилам шести стран СНГ — Узбекистан, Россия, Казахстан, Кыргызстан,
+          Таджикистан, Беларусь — с настоящими кодами регионов и форматом каждой страны.
+          В ленте они идут вперемешку.
+        </p>
+        <p className="mt-2 text-xs text-slate-500">
+          Правила описаны в файле <code>apps/site/src/app/lib/plates.js</code> — там же
+          меняется список стран и частота, с которой каждая попадается.
+        </p>
       </div>
 
       <div className={cardCls}>

@@ -4476,7 +4476,6 @@ export const MONITOR = {
       note: { ru: 'защищённое соединение', en: 'encrypted connection', uz: 'himoyalangan ulanish', zh: '加密连接', ar: 'اتصال مؤمَّن', uk: 'захищене з\'єднання' },
     },
   ],
-  plate: { list: [], pattern: '## L ### LL', letters: 'ABCEHKMPTX' },
   kinds: [
     { ru: 'Превышение скорости', en: 'Speeding', uz: 'Tezlikdan oshish', zh: '超速', ar: 'تجاوز السرعة', uk: 'Перевищення швидкості' },
     { ru: 'Проезд на красный свет', en: 'Running a red light', uz: 'Qizil chiroqda o‘tish', zh: '闯红灯', ar: 'تجاوز الإشارة الحمراء', uk: 'Проїзд на червоне світло' },
