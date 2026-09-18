@@ -352,6 +352,9 @@ function MonitorEditor({ content, patch, lang }) {
     c.MONITOR[field] = c.MONITOR[field].filter((_, i) => i !== index);
   });
 
+  // Сколько своих номеров вписано: от этого зависит, работает шаблон или нет.
+  const plateCount = (mon.plate?.list || []).map((x) => String(x || '').trim()).filter(Boolean).length;
+
   // Живой пример номера — чтобы шаблон не приходилось держать в голове.
   const plateSample = useMemo(() => {
     const letters = String(mon.plate?.letters || 'ABCEHKMPTX');
@@ -397,7 +400,27 @@ function MonitorEditor({ content, patch, lang }) {
 
       <div className={cardCls}>
         <div className="mb-3 text-sm font-semibold text-white">Номера в ленте</div>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+
+        {/* Свои номера имеют приоритет: пока список не пуст, лента берёт
+            номера только из него, а шаблон ниже не используется. */}
+        <div className="mb-4">
+          <label className={labelCls}>Свои номера — по одному в строке</label>
+          <textarea
+            rows={6}
+            className={`${inputCls} font-mono`}
+            placeholder={'01 A 777 AA\n10 B 123 CD\n30 X 555 KK'}
+            value={(mon.plate?.list || []).join('\n')}
+            onChange={(e) => setPlate('list', e.target.value.split('\n'))}
+            onBlur={(e) => setPlate('list', e.target.value.split('\n').map((x) => x.trim()).filter(Boolean))}
+          />
+          <p className="mt-1 text-xs text-slate-500">
+            {plateCount > 0
+              ? `В ленте будут показываться только эти номера — ${plateCount} шт. Очистите поле, чтобы вернуться к случайным.`
+              : 'Поле пустое — номера собираются случайно по шаблону ниже.'}
+          </p>
+        </div>
+
+        <div className={`grid grid-cols-1 gap-3 md:grid-cols-2 ${plateCount > 0 ? 'opacity-50' : ''}`}>
           <div>
             <label className={labelCls}>Шаблон номера</label>
             <input className={inputCls} value={mon.plate?.pattern || ''}

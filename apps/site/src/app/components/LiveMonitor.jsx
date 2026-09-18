@@ -47,10 +47,20 @@ function statsFor(language) {
 }
 
 
-// Номер собирается по шаблону из админ-панели: # — цифра, L — буква,
-// остальные знаки остаются как есть. По умолчанию узбекский вид: 01 A 123 AA.
+// Номер для строки ленты.
+//
+// Сначала смотрим список, вписанный в админ-панели: если он есть, берём
+// номера только оттуда. Списка нет — собираем по шаблону, где # это цифра,
+// L это буква, а остальные знаки остаются как есть. По умолчанию выходит
+// узбекский вид: 01 A 123 AA.
 function makePlate() {
   const setup = MONITOR.plate || {};
+
+  const own = (Array.isArray(setup.list) ? setup.list : [])
+    .map((item) => String(item || '').trim())
+    .filter(Boolean);
+  if (own.length) return own[Math.floor(Math.random() * own.length)];
+
   const letters = String(setup.letters || 'ABCEHKMPTX');
   const pattern = String(setup.pattern || '## L ### LL');
   return pattern.replace(/[#L]/g, (ch) => (ch === '#'
