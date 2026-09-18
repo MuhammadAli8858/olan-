@@ -159,12 +159,32 @@ export class SiteDataFile {
   }
 
   // Читает siteData.js как ES-модуль и достаёт из него данные.
+  //
+  // Файл правят руками в редакторе, и в момент правки он почти всегда
+  // сломан: недописанная кавычка, лишняя запятая. Раньше такая секунда
+  // роняла весь сайт — сервер отвечал ошибкой, и посетитель видел пустую
+  // страницу. Теперь при неудачном чтении отдаём последнюю рабочую
+  // версию и пишем причину в лог: сайт продолжает работать, а правка
+  // применится, как только файл снова станет целым.
   async read() {
     const current = this.stamp();
     if (this.cache && current === this.cacheStamp) return this.cache;
 
     const url = `${pathToFileURL(this.filePath).href}?v=${encodeURIComponent(current || Date.now())}`;
-    const module = await import(url);
+    let module;
+    try {
+      module = await import(url);
+    } catch (error) {
+      if (this.cache) {
+        if (this.brokenStamp !== current) {
+          this.brokenStamp = current;
+          console.warn(`[content] В siteData.js ошибка, показываем прошлую версию: ${error.message.split('\n')[0]}`);
+        }
+        return this.cache;
+      }
+      throw error;
+    }
+
     const content = {};
     for (const key of CONTENT_KEYS) {
       if (module[key] !== undefined) content[key] = module[key];
@@ -172,6 +192,7 @@ export class SiteDataFile {
     // structuredClone, чтобы наружу не утекали ссылки на объекты модуля.
     this.cache = structuredClone(content);
     this.cacheStamp = current;
+    this.brokenStamp = null;
     return this.cache;
   }
 
