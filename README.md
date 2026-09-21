@@ -587,6 +587,7 @@ import { tr } from '../lib/i18n.js';
 
 ```bash
 npm run audit          # запускает все четыре приложения и ловит падения
+npm run audit:admin    # открывает все 17 разделов админки
 npm run audit:server   # 40 проверок серверной логики
 ```
 

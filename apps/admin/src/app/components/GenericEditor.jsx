@@ -21,7 +21,12 @@ import { Plus, Trash2, ChevronDown, ChevronRight, Languages, GripVertical } from
 import { ImageField, ImageListEditor } from './ImageUpload.jsx';
 
 // Коды языков сайта — по ним узнаём многоязычное поле.
-const LANG_CODES = new Set(['ru', 'uz', 'en', 'uk', 'zh', 'kk', 'be']);
+// Коды языков, по которым поле узнаётся как многоязычное.
+// Раньше здесь не было арабского, а у каждого текстового поля есть ключ ar:
+// редактор переставал узнавать такие поля и рисовал их вложенными объектами
+// с шестью сырыми строками — «▶ Заголовок», «▶ Примечание» и так далее.
+// kk и be оставлены для старого контента, где они ещё встречаются.
+const LANG_CODES = new Set(['ru', 'en', 'uz', 'zh', 'ar', 'uk', 'kk', 'be']);
 
 // Поля, которые не являются текстом для перевода.
 const TECHNICAL_FIELDS = new Set(['id', 'icon', 'number', 'n', 'value', 'link']);
@@ -99,17 +104,28 @@ const labelCls = 'mb-1 block text-xs font-semibold uppercase tracking-wide text-
 
 // Короткое название записи для заголовка свёрнутого блока.
 function entryLabel(item, index, lang) {
-  if (item && typeof item === 'object') {
-    for (const key of ['title', 'name', 'type', 'label', 'question']) {
-      const field = item[key];
-      if (isLocalized(field)) return field[lang] || field.ru || '';
-      if (typeof field === 'string' && field) return field;
+  const text = (field) => {
+    if (isLocalized(field)) return String(field[lang] || field.ru || '').replace(/\s+/g, ' ').trim();
+    if (typeof field === 'string') return field.replace(/\s+/g, ' ').trim();
+    return '';
+  };
+
+  if (item && typeof item === 'object' && !isLocalized(item)) {
+    // Сначала поля, которые обычно и есть название записи.
+    for (const key of ['title', 'name', 'type', 'label', 'question', 'role', 'term', 'problem']) {
+      const found = text(item[key]);
+      if (found) return item.number ? `${item.number} · ${found}` : found;
+    }
+    // Иначе — первый непустой текст записи, чтобы не было безликих «Запись 4».
+    for (const [key, field] of Object.entries(item)) {
+      if (TECHNICAL_FIELDS.has(key)) continue;
+      const found = text(field);
+      if (found) return found.length > 70 ? `${found.slice(0, 70)}…` : found;
     }
     if (item.id) return String(item.id);
   }
-  if (isLocalized(item)) return item[lang] || item.ru || '';
-  if (typeof item === 'string') return item;
-  return `Запись ${index + 1}`;
+  const plain = text(item);
+  return plain || `Запись ${index + 1}`;
 }
 
 // Заготовка новой записи: копируем структуру соседа и очищаем тексты.
@@ -186,7 +202,16 @@ function ListEditor({ items, onChange, lang, onTranslate, translating, depth, ad
   const [open, setOpen] = useState({});
 
   const setAt = (index, next) => onChange(list.map((item, i) => (i === index ? next : item)));
-  const removeAt = (index) => onChange(list.filter((_, i) => i !== index));
+  // Целую запись верхнего уровня (продукт, направление, этап) удаляем
+  // только после подтверждения — как в «Решениях». Строку внутри списка
+  // удаляем сразу: её проще вписать заново, чем каждый раз подтверждать.
+  const removeAt = (index) => {
+    if (depth === 0) {
+      const name = entryLabel(list[index], index, lang);
+      if (typeof window !== 'undefined' && !window.confirm(`Удалить «${name}»?`)) return;
+    }
+    onChange(list.filter((_, i) => i !== index));
+  };
   const add = () => onChange([...list, blankLike(list[0] ?? { ru: '' })]);
   const move = (index, delta) => {
     const target = index + delta;
@@ -200,7 +225,10 @@ function ListEditor({ items, onChange, lang, onTranslate, translating, depth, ad
     <div className="space-y-2">
       {list.map((item, index) => {
         const simple = isLocalized(item) || typeof item !== 'object';
-        const expanded = open[index] !== false;
+        // Верхний уровень раздела свёрнут: сначала видно список, а подробности
+        // открываются по клику — как в «Решениях». Вложенные списки внутри
+        // открытой записи показываем сразу, их обычно немного.
+        const expanded = open[index] !== undefined ? open[index] : depth > 0;
 
         if (simple) {
           return (

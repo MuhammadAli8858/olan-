@@ -1,7 +1,7 @@
 {
   "name": "olan",
   "private": true,
-  "version": "41.0.0",
+  "version": "42.0.0",
   "type": "module",
   "description": "OLAN HIGH TECH — сайт, админ-панель и кабинет оператора в одном проекте",
   "engines": {
@@ -24,7 +24,8 @@
     "seo": "node scripts/seo.js",
     "translate": "node scripts/translate-all.mjs",
     "audit": "node scripts/audit-apps.mjs",
-    "audit:server": "node scripts/audit-server.mjs"
+    "audit:server": "node scripts/audit-server.mjs",
+    "audit:admin": "node scripts/audit-admin.mjs"
   },
   "dependencies": {
     "libphonenumber-js": "^1.13.13",

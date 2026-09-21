@@ -8,7 +8,7 @@ function resolveApiBaseUrl() {
   if (fromEnv) return String(fromEnv).replace(/\/+$/, '');
   if (typeof window !== 'undefined' && window.location) {
     const { protocol, hostname, port, origin } = window.location;
-    const DEV_PORTS = ['5173', '9000', '9090'];
+    const DEV_PORTS = ['5173', '9000', '9090', '9091'];
     if (DEV_PORTS.includes(port)) return `${protocol}//${hostname}:3001`;
     return origin;
   }

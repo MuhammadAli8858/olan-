@@ -6,9 +6,9 @@
 // как раньше при ручном вводе, поэтому ничего в сайте менять не нужно.
 // ---------------------------------------------------------------------------
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Upload, Trash2, Plus, ImageOff, Loader2 } from 'lucide-react';
-import { postJson } from '../lib/api.js';
+import { postJson, API_BASE_URL } from '../lib/api.js';
 
 const MAX_MB = 10;
 
@@ -22,9 +22,23 @@ function readAsDataUrl(file) {
   });
 }
 
+// Короткий путь /products/... указывает на сервер, а не на саму админку.
+// В продакшене это один и тот же адрес, а при разработке админка открыта
+// на порту 9000, а картинки раздаёт сервер на 3001 — без этой поправки
+// превью пыталось взять файл у админки и показывало битую иконку.
+export function resolveMediaUrl(src) {
+  const value = String(src || '');
+  if (!value) return '';
+  if (/^(https?:|data:|blob:)/i.test(value)) return value;
+  return value.startsWith('/') ? `${API_BASE_URL}${value}` : value;
+}
+
 // Маленький предпросмотр. Если картинки нет — показываем заглушку.
 function Preview({ src }) {
   const [broken, setBroken] = useState(false);
+  // Новый путь — новая попытка. Раньше одна неудачная загрузка превью
+  // запоминалась навсегда, и все следующие картинки тоже выглядели битыми.
+  useEffect(() => { setBroken(false); }, [src]);
   if (!src || broken) {
     return (
       <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-slate-800 bg-black/40 text-slate-600">
@@ -34,7 +48,7 @@ function Preview({ src }) {
   }
   return (
     <img
-      src={src}
+      src={resolveMediaUrl(src)}
       alt=""
       onError={() => setBroken(true)}
       className="h-14 w-14 shrink-0 rounded-xl border border-slate-800 bg-black/40 object-cover"

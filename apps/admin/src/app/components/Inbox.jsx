@@ -12,7 +12,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { MessageSquare, Inbox, RefreshCw, Send, ArrowLeft, Clock, Lock, Trash2, Paperclip, FileText, PlayCircle, CheckCircle2, Mail, Phone, ExternalLink } from 'lucide-react';
-import { getJson, postJson } from '../lib/api.js';
+import { getJson, postJson, API_BASE_URL } from '../lib/api.js';
 
 export const STATUSES = [
   { id: 'new', label: 'Новая', dot: 'bg-cyan-400', chip: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30' },
@@ -46,18 +46,21 @@ export function formatShort(iso) {
 // Вложение в сообщении: картинку показываем сразу, остальное — ссылкой.
 function ChatAttachment({ file }) {
   if (!file || !file.url) return null;
+  // Путь /chat-files/... раздаёт сервер; при разработке кабинет открыт на
+  // другом порту, поэтому адрес собираем от сервера, а не от страницы.
+  const url = /^(https?:|data:|blob:)/i.test(file.url) ? file.url : `${API_BASE_URL}${file.url}`;
   const size = file.size ? `${(file.size / 1024).toFixed(0)} КБ` : '';
 
   if (file.isImage) {
     return (
-      <a href={file.url} target="_blank" rel="noreferrer" className="block">
-        <img src={file.url} alt={file.name || ''} className="max-h-56 w-auto rounded-xl object-contain" />
+      <a href={url} target="_blank" rel="noreferrer" className="block">
+        <img src={url} alt={file.name || ''} className="max-h-56 w-auto rounded-xl object-contain" />
       </a>
     );
   }
 
   return (
-    <a href={file.url} target="_blank" rel="noreferrer"
+    <a href={url} target="_blank" rel="noreferrer"
       className="flex items-center gap-2 rounded-xl bg-black/20 px-3 py-2 transition hover:bg-black/30">
       <FileText className="h-4 w-4 shrink-0" />
       <span className="min-w-0 truncate text-xs underline">{file.name || 'файл'}</span>
