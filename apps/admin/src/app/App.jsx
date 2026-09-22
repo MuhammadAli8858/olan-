@@ -5,6 +5,7 @@ import { Menu, X, Undo2, ArrowLeft, Globe, GitBranch, Download, FileDown } from 
 import { describeChange } from './lib/changes.js';
 import { ImageField, ImageListEditor } from './components/ImageUpload.jsx';
 import GenericEditor from './components/GenericEditor.jsx';
+import { FRAMES } from './lib/imageFrames.js';
 import { Building2 as BuildingIcon, Layers, Package, Route, Workflow as WorkflowIcon, UsersRound } from 'lucide-react';
 import { getJson, postJson, API_BASE_URL } from './lib/api.js';
 
@@ -123,7 +124,7 @@ function ProductsEditor({ content, patch, lang, onTranslate, busyId, adminKey })
                 })}
               </div>
             </div>
-            <div className="md:col-span-2"><label className={labelCls}>Картинки — загрузите с компьютера или впишите путь</label><ImageListEditor adminKey={adminKey} items={p.images} placeholder="/products/my-device.png" onChange={(arr) => patch((c) => { c.PRODUCTS[i].images = arr; })} /></div>
+            <div className="md:col-span-2"><label className={labelCls}>Картинки — загрузите с компьютера или впишите путь</label><ImageListEditor frame={FRAMES.products} adminKey={adminKey} items={p.images} placeholder="/products/my-device.png" onChange={(arr) => patch((c) => { c.PRODUCTS[i].images = arr; })} /></div>
             <div className="flex items-center gap-4 md:col-span-2">
               <label className="flex items-center gap-2 text-sm text-slate-300"><input type="checkbox" checked={!!p.inStock} onChange={(e) => patch((c) => { c.PRODUCTS[i].inStock = e.target.checked; })} /> В наличии</label>
               <DeleteBtn label="Удалить прибор" onClick={() => { if (confirm('Удалить этот прибор?')) patch((c) => { c.PRODUCTS.splice(i, 1); }); }} />
@@ -178,7 +179,7 @@ function ProjectsEditor({ content, patch, lang, onTranslate, busyId, adminKey })
           <div className="mt-3"><TranslateBtn lang={lang} busy={busyId === (p.id || i)} onClick={() => onTranslate('PROJECTS', i, ['title', 'location'], [], p.id || i)} /></div>
           <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
             <div><label className={labelCls}>ID</label><input className={inputCls} value={p.id || ''} onChange={(e) => patch((c) => { c.PROJECTS[i].id = e.target.value; })} /></div>
-            <div className="md:col-span-2"><label className={labelCls}>Картинка — загрузите с компьютера или впишите путь</label><ImageField adminKey={adminKey} value={p.image} onChange={(v) => patch((c) => { c.PROJECTS[i].image = v; })} /></div>
+            <div className="md:col-span-2"><label className={labelCls}>Картинка — загрузите с компьютера или впишите путь</label><ImageField frame={FRAMES.projects} adminKey={adminKey} value={p.image} onChange={(v) => patch((c) => { c.PROJECTS[i].image = v; })} /></div>
             <div><label className={labelCls}>Заголовок ({lang})</label><input className={inputCls} value={p.title?.[lang] || ''} onChange={(e) => patch((c) => { c.PROJECTS[i].title = { ...(c.PROJECTS[i].title || {}), [lang]: e.target.value }; })} /></div>
             <div><label className={labelCls}>Подпись / место ({lang})</label><input className={inputCls} value={p.location?.[lang] || ''} onChange={(e) => patch((c) => { c.PROJECTS[i].location = { ...(c.PROJECTS[i].location || {}), [lang]: e.target.value }; })} /></div>
             <div className="md:col-span-2"><DeleteBtn label="Удалить проект" onClick={() => { if (confirm('Удалить этот проект?')) patch((c) => { c.PROJECTS.splice(i, 1); }); }} /></div>
@@ -1181,6 +1182,7 @@ export default function App() {
                 title="О компании"
                 hint="Подзаголовок, вступление, миссия «к чему стремимся», опоры группы, блок «Один партнёр» и локальный контур в Узбекистане."
                 value={content.COMPANY}
+                frame={FRAMES.company}
                 onChange={(v) => patch((c) => { c.COMPANY = v; })}
                 lang={lang} onTranslate={translateField} translating={busyId === 'field'} adminKey={key}
               />
@@ -1191,6 +1193,7 @@ export default function App() {
                   title="Направления деятельности"
                   hint="Семь направлений группы — карточки на главной странице."
                   value={content.DIRECTIONS}
+                frame={FRAMES.directions}
                   onChange={(v) => patch((c) => { c.DIRECTIONS = v; })}
                   lang={lang} onTranslate={translateField} translating={busyId === 'field'} adminKey={key}
                 />
@@ -1218,6 +1221,7 @@ export default function App() {
                 title="Продуктовая линейка"
                 hint="Девять продуктов группы. Каждый открывается отдельной страницей: состав, области применения и референсы."
                 value={content.PORTFOLIO}
+                frame={FRAMES.portfolio}
                 onChange={(v) => patch((c) => { c.PORTFOLIO = v; })}
                 lang={lang} onTranslate={translateField} translating={busyId === 'field'} adminKey={key}
               />

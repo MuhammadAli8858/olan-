@@ -9,6 +9,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Upload, Trash2, Plus, ImageOff, Loader2 } from 'lucide-react';
 import { postJson, API_BASE_URL } from '../lib/api.js';
+import { FRAMES, checkAgainstFrame, ratioLabel } from '../lib/imageFrames.js';
 
 const MAX_MB = 10;
 
@@ -33,26 +34,53 @@ export function resolveMediaUrl(src) {
   return value.startsWith('/') ? `${API_BASE_URL}${value}` : value;
 }
 
-// Маленький предпросмотр. Если картинки нет — показываем заглушку.
-function Preview({ src }) {
+// Предпросмотр в той же рамке, что на сайте, и с той же обрезкой.
+// Раньше превью было квадратным и не показывало, что сайт срежет по краям.
+// Теперь видно ровно то, что увидит посетитель, а реальный размер файла
+// передаётся наверх — по нему строится предупреждение.
+function Preview({ src, frame = FRAMES.default, onMeasure }) {
   const [broken, setBroken] = useState(false);
   // Новый путь — новая попытка. Раньше одна неудачная загрузка превью
   // запоминалась навсегда, и все следующие картинки тоже выглядели битыми.
-  useEffect(() => { setBroken(false); }, [src]);
+  useEffect(() => { setBroken(false); if (onMeasure) onMeasure(null); }, [src]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const box = 'h-[72px] shrink-0 overflow-hidden rounded-xl border border-slate-800 bg-black/40';
+  const width = Math.round(72 * (frame.width / frame.height));
+
   if (!src || broken) {
     return (
-      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-slate-800 bg-black/40 text-slate-600">
+      <div className={`${box} flex items-center justify-center text-slate-600`} style={{ width }}>
         <ImageOff className="h-5 w-5" />
       </div>
     );
   }
   return (
-    <img
-      src={resolveMediaUrl(src)}
-      alt=""
-      onError={() => setBroken(true)}
-      className="h-14 w-14 shrink-0 rounded-xl border border-slate-800 bg-black/40 object-cover"
-    />
+    <div className={box} style={{ width }} title="Так картинка будет обрезана на сайте">
+      <img
+        src={resolveMediaUrl(src)}
+        alt=""
+        onLoad={(e) => onMeasure && onMeasure({ width: e.currentTarget.naturalWidth, height: e.currentTarget.naturalHeight })}
+        onError={() => setBroken(true)}
+        className="h-full w-full object-cover"
+      />
+    </div>
+  );
+}
+
+// Подсказка о нужном размере и, если картинка уже есть, разбор её размеров.
+function SizeHint({ frame = FRAMES.default, size }) {
+  const warning = size ? checkAgainstFrame(size.width, size.height, frame) : null;
+  return (
+    <div className="space-y-1 text-[11px] leading-relaxed">
+      <div className="text-slate-400">
+        Нужный размер: <b className="text-cyan-300">{frame.width} × {frame.height} px</b>
+        {' '}(пропорции {ratioLabel(frame.width, frame.height)})
+        {size && <span className="text-slate-500"> · сейчас {size.width} × {size.height} px</span>}
+      </div>
+      {frame.where && <div className="text-slate-500">{frame.where}</div>}
+      {warning && <div className="text-amber-400">⚠ {warning}</div>}
+      {size && !warning && <div className="text-emerald-400">✓ Пропорции подходят — картинка покажется полностью.</div>}
+    </div>
   );
 }
 
@@ -100,11 +128,12 @@ export function UploadButton({ adminKey, onUploaded, label = 'Загрузить
   );
 }
 
-// Одна картинка: предпросмотр, поле пути и кнопка загрузки.
-export function ImageField({ adminKey, value, onChange, placeholder = '/products/file.png' }) {
+// Одна картинка: предпросмотр, поле пути, кнопка загрузки и подсказка по размеру.
+export function ImageField({ adminKey, value, onChange, placeholder = '/products/file.png', frame = FRAMES.default }) {
+  const [size, setSize] = useState(null);
   return (
-    <div className="flex items-center gap-3">
-      <Preview src={value} />
+    <div className="flex items-start gap-3">
+      <Preview src={value} frame={frame} onMeasure={setSize} />
       <div className="min-w-0 flex-1 space-y-2">
         <input
           value={value || ''}
@@ -121,34 +150,23 @@ export function ImageField({ adminKey, value, onChange, placeholder = '/products
             </button>
           )}
         </div>
+        <SizeHint frame={frame} size={value ? size : null} />
       </div>
     </div>
   );
 }
 
 // Несколько картинок: список с предпросмотром и загрузкой.
-export function ImageListEditor({ adminKey, items, onChange, placeholder = '/products/file.png' }) {
+export function ImageListEditor({ adminKey, items, onChange, placeholder = '/products/file.png', frame = FRAMES.default }) {
   const list = Array.isArray(items) ? items : [];
   const setAt = (index, value) => onChange(list.map((item, i) => (i === index ? value : item)));
   const removeAt = (index) => onChange(list.filter((_, i) => i !== index));
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {list.map((item, index) => (
-        <div key={index} className="flex items-center gap-3">
-          <Preview src={item} />
-          <input
-            value={item || ''}
-            onChange={(e) => setAt(index, e.target.value)}
-            placeholder={placeholder}
-            className="min-w-0 flex-1 rounded-xl border border-cyan-500/20 bg-slate-900 px-3 py-2 text-sm text-white outline-none focus:border-cyan-400"
-          />
-          <button type="button" onClick={() => removeAt(index)}
-            className="shrink-0 rounded-xl border border-slate-700 p-2 text-slate-400 transition hover:border-red-500/40 hover:text-red-400"
-            title="Удалить картинку">
-            <Trash2 className="h-4 w-4" />
-          </button>
-        </div>
+        <ImageListRow key={index} item={item} frame={frame} placeholder={placeholder}
+          onChange={(v) => setAt(index, v)} onRemove={() => removeAt(index)} />
       ))}
 
       <div className="flex flex-wrap items-center gap-2">
@@ -157,6 +175,35 @@ export function ImageListEditor({ adminKey, items, onChange, placeholder = '/pro
           className="inline-flex items-center gap-1.5 rounded-xl border border-cyan-500/20 px-2.5 py-1.5 text-xs text-slate-300 transition hover:text-white">
           <Plus className="h-3.5 w-3.5" /> Вписать путь вручную
         </button>
+      </div>
+      {/* Общая подсказка — один раз под списком, а у каждой строки
+          только разбор её собственного файла. */}
+      {list.length === 0 && <SizeHint frame={frame} />}
+    </div>
+  );
+}
+
+// Строка списка: у каждой картинки свой размер, поэтому и разбор свой.
+function ImageListRow({ item, frame, placeholder, onChange, onRemove }) {
+  const [size, setSize] = useState(null);
+  return (
+    <div className="flex items-start gap-3">
+      <Preview src={item} frame={frame} onMeasure={setSize} />
+      <div className="min-w-0 flex-1 space-y-1.5">
+        <div className="flex items-center gap-2">
+          <input
+            value={item || ''}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={placeholder}
+            className="min-w-0 flex-1 rounded-xl border border-cyan-500/20 bg-slate-900 px-3 py-2 text-sm text-white outline-none focus:border-cyan-400"
+          />
+          <button type="button" onClick={onRemove}
+            className="shrink-0 rounded-xl border border-slate-700 p-2 text-slate-400 transition hover:border-red-500/40 hover:text-red-400"
+            title="Удалить картинку">
+            <Trash2 className="h-4 w-4" />
+          </button>
+        </div>
+        <SizeHint frame={frame} size={item ? size : null} />
       </div>
     </div>
   );

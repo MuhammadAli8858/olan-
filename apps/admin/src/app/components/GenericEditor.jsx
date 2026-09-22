@@ -197,7 +197,7 @@ function ValueField({ value, onChange, lang, onTranslate, translating, fieldKey 
 
 // ------------------------------- список записей -------------------------------
 
-function ListEditor({ items, onChange, lang, onTranslate, translating, depth, adminKey }) {
+function ListEditor({ items, onChange, lang, onTranslate, translating, depth, adminKey, frame }) {
   const list = Array.isArray(items) ? items : [];
   const [open, setOpen] = useState({});
 
@@ -267,7 +267,7 @@ function ListEditor({ items, onChange, lang, onTranslate, translating, depth, ad
             {expanded && (
               <div className="border-t border-slate-800 p-3">
                 <ObjectEditor value={item} onChange={(v) => setAt(index, v)} lang={lang}
-                  onTranslate={onTranslate} translating={translating} depth={depth + 1} adminKey={adminKey} />
+                  onTranslate={onTranslate} translating={translating} depth={depth + 1} adminKey={adminKey} frame={frame} />
               </div>
             )}
           </div>
@@ -284,7 +284,7 @@ function ListEditor({ items, onChange, lang, onTranslate, translating, depth, ad
 
 // ------------------------------ объект с полями ------------------------------
 
-function ObjectEditor({ value, onChange, lang, onTranslate, translating, depth = 0, adminKey }) {
+function ObjectEditor({ value, onChange, lang, onTranslate, translating, depth = 0, adminKey, frame }) {
   const entries = Object.entries(value || {});
   const technical = entries.filter(([key]) => TECHNICAL_FIELDS.has(key) && !isLocalized(value[key]));
   const content = entries.filter(([key]) => !(TECHNICAL_FIELDS.has(key) && !isLocalized(value[key])));
@@ -311,8 +311,8 @@ function ObjectEditor({ value, onChange, lang, onTranslate, translating, depth =
             <div key={key}>
               <label className={labelCls}>{labelFor(key)}</label>
               {Array.isArray(field)
-                ? <ImageListEditor adminKey={adminKey} items={field} onChange={(v) => set(key, v)} />
-                : <ImageField adminKey={adminKey} value={field} onChange={(v) => set(key, v)} />}
+                ? <ImageListEditor frame={frame} adminKey={adminKey} items={field} onChange={(v) => set(key, v)} />
+                : <ImageField frame={frame} adminKey={adminKey} value={field} onChange={(v) => set(key, v)} />}
             </div>
           );
         }
@@ -322,7 +322,7 @@ function ObjectEditor({ value, onChange, lang, onTranslate, translating, depth =
             <div key={key}>
               <label className={labelCls}>{labelFor(key)} <span className="text-slate-600">({field.length})</span></label>
               <ListEditor items={field} onChange={(v) => set(key, v)} lang={lang}
-                onTranslate={onTranslate} translating={translating} depth={depth} adminKey={adminKey} />
+                onTranslate={onTranslate} translating={translating} depth={depth} adminKey={adminKey} frame={frame} />
             </div>
           );
         }
@@ -333,7 +333,7 @@ function ObjectEditor({ value, onChange, lang, onTranslate, translating, depth =
               <summary className="cursor-pointer text-sm font-semibold text-cyan-300">{labelFor(key)}</summary>
               <div className="mt-3">
                 <ObjectEditor value={field} onChange={(v) => set(key, v)} lang={lang}
-                  onTranslate={onTranslate} translating={translating} depth={depth + 1} adminKey={adminKey} />
+                  onTranslate={onTranslate} translating={translating} depth={depth + 1} adminKey={adminKey} frame={frame} />
               </div>
             </details>
           );
@@ -353,7 +353,7 @@ function ObjectEditor({ value, onChange, lang, onTranslate, translating, depth =
 
 // --------------------------------- обёртка ---------------------------------
 
-export default function GenericEditor({ title, hint, value, onChange, lang, onTranslate, translating, adminKey }) {
+export default function GenericEditor({ title, hint, value, onChange, lang, onTranslate, translating, adminKey, frame }) {
   if (value === undefined || value === null) {
     return <div className="text-sm text-slate-500">Этот раздел пока пуст.</div>;
   }
@@ -367,8 +367,8 @@ export default function GenericEditor({ title, hint, value, onChange, lang, onTr
 
       <div className="rounded-3xl border border-cyan-500/15 bg-slate-900/40 p-4">
         {Array.isArray(value)
-          ? <ListEditor items={value} onChange={onChange} lang={lang} onTranslate={onTranslate} translating={translating} depth={0} adminKey={adminKey} />
-          : <ObjectEditor value={value} onChange={onChange} lang={lang} onTranslate={onTranslate} translating={translating} adminKey={adminKey} />}
+          ? <ListEditor items={value} onChange={onChange} lang={lang} onTranslate={onTranslate} translating={translating} depth={0} adminKey={adminKey} frame={frame} />
+          : <ObjectEditor value={value} onChange={onChange} lang={lang} onTranslate={onTranslate} translating={translating} adminKey={adminKey} frame={frame} />}
       </div>
     </div>
   );

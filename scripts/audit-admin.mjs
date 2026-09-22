@@ -89,11 +89,17 @@ for (const label of TABS) {
   // полями с подписями ru/en/uz внутри раскрывающегося блока.
   const rawLang = [...doc.querySelectorAll('label')].filter((l) => /^(ru|en|uz|zh|ar|uk)$/i.test(l.textContent.trim())).length;
 
-  const ok = size > 800 && tabErrors.length === 0 && rawLang === 0;
+  // В разделах с картинками у поля загрузки должна стоять подсказка,
+  // какого размера фото нужно, — иначе загружают что попало и сайт режет края.
+  const needsHint = ['Приборы', 'Наши проекты', 'Направления', 'Продукты группы', 'Профиль компании'].includes(label);
+  const hasHint = (main ? main.textContent : '').includes('Нужный размер');
+
+  const ok = size > 800 && tabErrors.length === 0 && rawLang === 0 && (!needsHint || hasHint);
   if (!ok) failed += 1;
   const notes = [];
   if (tabErrors.length) notes.push(`ошибок ${tabErrors.length}`);
   if (rawLang) notes.push(`сырых языковых полей ${rawLang}`);
+  if (needsHint) notes.push(hasHint ? 'подсказка размера есть' : 'НЕТ ПОДСКАЗКИ РАЗМЕРА');
   console.log(`${ok ? '✓' : '✗'} ${label}${notes.length ? ' — ' + notes.join(', ') : ''}`);
   tabErrors.slice(0, 1).forEach((e) => console.log(`    → ${e.split('\n')[0].slice(0, 150)}`));
 }
