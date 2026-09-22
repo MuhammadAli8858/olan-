@@ -68,18 +68,32 @@ function Preview({ src, frame = FRAMES.default, onMeasure }) {
 }
 
 // Подсказка о нужном размере и, если картинка уже есть, разбор её размеров.
+// Сначала — сколько на сколько загружать, затем — какого размера рамка
+// на сайте: это те самые «400 × 300», которые видит посетитель.
 function SizeHint({ frame = FRAMES.default, size }) {
   const warning = size ? checkAgainstFrame(size.width, size.height, frame) : null;
+  const site = Array.isArray(frame.site) ? frame.site : [];
   return (
     <div className="space-y-1 text-[11px] leading-relaxed">
-      <div className="text-slate-400">
-        Нужный размер: <b className="text-cyan-300">{frame.width} × {frame.height} px</b>
-        {' '}(пропорции {ratioLabel(frame.width, frame.height)})
+      <div className="text-slate-300">
+        Загружайте фото: <b className="text-cyan-300">{frame.width} × {frame.height} px</b>
         {size && <span className="text-slate-500"> · сейчас {size.width} × {size.height} px</span>}
       </div>
+      {site.length > 0 && (
+        <div className="text-slate-400">
+          На сайте рамка:{' '}
+          {site.map((s, i) => (
+            <span key={s.screen}>
+              {i > 0 && ', '}
+              <b className="text-slate-200">{s.width} × {s.height} px</b> на экране {s.screen} px
+            </span>
+          ))}
+          . Файл нужен вдвое крупнее рамки — иначе на современных экранах фото будет мыльным.
+        </div>
+      )}
       {frame.where && <div className="text-slate-500">{frame.where}</div>}
       {warning && <div className="text-amber-400">⚠ {warning}</div>}
-      {size && !warning && <div className="text-emerald-400">✓ Пропорции подходят — картинка покажется полностью.</div>}
+      {size && !warning && <div className="text-emerald-400">✓ Размер подходит — фото покажется полностью.</div>}
     </div>
   );
 }

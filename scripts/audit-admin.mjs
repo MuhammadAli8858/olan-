@@ -92,7 +92,7 @@ for (const label of TABS) {
   // В разделах с картинками у поля загрузки должна стоять подсказка,
   // какого размера фото нужно, — иначе загружают что попало и сайт режет края.
   const needsHint = ['Приборы', 'Наши проекты', 'Направления', 'Продукты группы', 'Профиль компании'].includes(label);
-  const hasHint = (main ? main.textContent : '').includes('Нужный размер');
+  const hasHint = (main ? main.textContent : '').includes('Загружайте фото');
 
   const ok = size > 800 && tabErrors.length === 0 && rawLang === 0 && (!needsHint || hasHint);
   if (!ok) failed += 1;
