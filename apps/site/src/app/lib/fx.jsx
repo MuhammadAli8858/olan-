@@ -41,7 +41,9 @@ export function CountUp({ value, duration = 1900 }) {
   const text = String(value ?? '');
   // Анимируем только значения, которые начинаются с числа: «123″», «400 Вт».
   // «RTX 3060» или «до 16 ч» — это названия и формулировки, их не трогаем.
-  const match = text.match(/^([+~≈]?)(\d[\d\s\u00a0.,]*\d|\d)(.*)$/);
+  const found = text.match(/^([+~≈]?)(\d[\d\s\u00a0.,]*\d|\d)(.*)$/);
+  // «2D / 3D», «24/7», «4 из 6» — обозначения, а не количества: их тоже не крутим.
+  const match = found && !/^[A-Za-zА-Яа-яЁё/]/.test(found[3]) && !/\d/.test(found[3]) ? found : null;
   const [shown, setShown] = useState(match ? `${match[1]}0${match[3]}` : text);
   useEffect(() => {
     if (!match) { setShown(text); return undefined; }
@@ -53,6 +55,7 @@ export function CountUp({ value, duration = 1900 }) {
     const grouped = /[\s\u00a0]/.test(match[2]);
     const fmt = (v) => {
       let s = v.toFixed(decimals);
+      if (match[2].includes(',')) s = s.replace('.', ',');
       if (grouped) s = s.replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0');
       return `${match[1]}${s}${match[3]}`;
     };

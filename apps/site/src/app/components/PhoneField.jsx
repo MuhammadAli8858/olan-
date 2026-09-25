@@ -21,6 +21,7 @@ import {
   getExampleNumber,
 } from 'libphonenumber-js';
 import examples from 'libphonenumber-js/examples.mobile.json';
+import { tr } from '../lib/i18n.js';
 
 // Флаг страны — это две буквы её кода, сдвинутые в область символов-флагов.
 // Отдельные картинки для двухсот сорока стран не нужны.
@@ -105,7 +106,7 @@ export default function PhoneField({
             value={country}
             onChange={(e) => { onCountryChange(e.target.value); onChange('', ''); }}
             className={`${inputClassName} w-[104px] appearance-none pr-7`}
-            aria-label={labels.country || 'Страна'}
+            aria-label={labels.country || tr('Страна')}
           >
             {countries.map((c) => (
               <option key={c.code} value={c.code}>{c.flag} {c.dial}</option>
@@ -130,16 +131,16 @@ export default function PhoneField({
       <div className="mt-1 text-[11px]">
         {digits === 0 && expected > 0 && (
           <span className="text-slate-500">
-            {(labels.hint || 'Цифр в номере: {n}').replace('{n}', expected)}
+            {(labels.hint || tr('Цифр в номере: {n}')).replace('{n}', expected)}
           </span>
         )}
         {digits > 0 && !valid && (
           <span className={touched ? 'text-amber-400' : 'text-slate-500'}>
-            {(labels.progress || 'Введено {a} из {n}').replace('{a}', digits).replace('{n}', expected || '?')}
+            {(labels.progress || tr('Введено {a} из {n}')).replace('{a}', digits).replace('{n}', expected || '?')}
           </span>
         )}
         {digits > 0 && valid && (
-          <span className="text-emerald-400">{labels.ok || 'Номер верный'}</span>
+          <span className="text-emerald-400">{labels.ok || tr('Номер верный')}</span>
         )}
       </div>
     </div>

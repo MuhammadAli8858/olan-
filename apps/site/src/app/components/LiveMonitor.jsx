@@ -24,13 +24,13 @@ import { tr } from '../lib/i18n.js';
 function labelsFor(language) {
   const pick = (field, fallback) => localize(MONITOR[field], language) || tr(fallback);
   return {
-    tag: pick('tag', "Мониторинг"),
-    title: pick('title', "Комплексы на связи"),
-    lead: pick('lead', "Так выглядит работа системы: комплексы фиксируют нарушения и передают материал в центр обработки."),
-    feed: pick('feedTitle', "Лента фиксаций"),
-    demo: pick('demoLabel', "демонстрация работы"),
-    active: pick('activeLabel', "В РАБОТЕ"),
-    live: pick('liveLabel', "ЭФИР"),
+    tag: pick('tag', tr('Мониторинг')),
+    title: pick('title', tr('Комплексы на связи')),
+    lead: pick('lead', tr('Так выглядит работа системы: комплексы фиксируют нарушения и передают материал в центр обработки.')),
+    feed: pick('feedTitle', tr('Лента фиксаций')),
+    demo: pick('demoLabel', tr('демонстрация работы')),
+    active: pick('activeLabel', tr('В РАБОТЕ')),
+    live: pick('liveLabel', tr('ЭФИР')),
   };
 }
 

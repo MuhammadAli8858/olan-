@@ -62,7 +62,7 @@ function Lightbox({ images, index, onClose, onPrev, onNext, alt }) {
     >
       <div className="flex shrink-0 items-center justify-between px-4 py-3">
         <span className="text-sm text-white/70">
-          {images.length > 1 ? `${index + 1} из ${images.length}` : ''}
+          {images.length > 1 ? `${index + 1} ${tr('из')} ${images.length}` : ''}
         </span>
         <button type="button" onClick={onClose}
           className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/20 text-white transition hover:bg-white/10"
@@ -156,7 +156,7 @@ function PhotoStack({ images, alt, onOpen }) {
 
         {images.length > 1 && (
           <span className="absolute bottom-3 left-3 rounded-full bg-black/60 px-3 py-1.5 text-xs text-white backdrop-blur">
-            ещё {images.length - 1}
+            {tr('ещё {n}').replace('{n}', images.length - 1)}
           </span>
         )}
       </button>

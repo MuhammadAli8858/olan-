@@ -219,7 +219,7 @@ function AppContent() {
         ) : route === 'workflow' ? (
           <Deferred minHeight={600}><Workflow /></Deferred>
         ) : route === 'projects' ? (
-          <Deferred minHeight={600}><div className="dark"><Projects /></div></Deferred>
+          <Deferred minHeight={600}><Projects onHome={goHome} /></Deferred>
         ) : route === 'team' ? (
           <Deferred minHeight={600}>
             <PageHead onHome={goHome} tag={tr('Команда')} title={tr('Компетенции команды')}

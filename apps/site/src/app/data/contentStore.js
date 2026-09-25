@@ -27,7 +27,7 @@ import {
   FORM_FACTORS,
   SERVICE_CASES,
   MONITOR,
-  HERO_SLIDES,
+  HERO_SLIDES, HOME_RAIL,
 } from './siteData.js';
 
 // Объект заменяем не целиком, а по полям: ссылка на него разошлась
@@ -81,6 +81,7 @@ export function applyServerContent(content) {
   replaceObject(FORM_FACTORS, content.FORM_FACTORS);
   replaceObject(MONITOR, content.MONITOR);
   replaceArray(HERO_SLIDES, content.HERO_SLIDES);
+  replaceArray(HOME_RAIL, content.HOME_RAIL);
 }
 
 export async function loadContent() {

@@ -12,10 +12,10 @@
 // Карточки строятся из PRODUCTS и PORTFOLIO — новый продукт из админки
 // появляется в ленте сам.
 // ---------------------------------------------------------------------------
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { ArrowDown, ArrowRight } from 'lucide-react';
 import { useSite } from '../context/SiteContext.jsx';
-import { COMPANY, localize, PORTFOLIO, PRODUCTS } from '../data/siteData.js';
+import { COMPANY, HOME_RAIL, localize, PORTFOLIO, PRODUCTS } from '../data/siteData.js';
 import { tr } from '../lib/i18n.js';
 import { Icon } from '../lib/icons.jsx';
 import { Img, isStudio } from '../lib/img.jsx';
@@ -43,7 +43,26 @@ function buildItems(language) {
     image: p.image, icon: p.icon, badge: localize(p.badge, language),
     stage: p.id === 'wider' && !p.image,
   }));
-  return [...devices, ...platforms];
+  return orderRail([...devices, ...platforms]);
+}
+
+// Порядок из админки («Порядок продуктов»): сначала сохранённый список,
+// скрытые карточки пропускаем, новые — которых в списке ещё нет — в конец.
+function orderRail(all) {
+  const saved = Array.isArray(HOME_RAIL) ? HOME_RAIL : [];
+  if (!saved.length) return all;
+  const keyOf = (it) => (it.device ? `device:${it.device}` : `product:${it.product}`);
+  const byKey = new Map(all.map((it) => [keyOf(it), it]));
+  const out = [];
+  const seen = new Set();
+  saved.forEach((entry) => {
+    const key = entry && entry.key;
+    if (!key || seen.has(key) || !byKey.has(key)) return;
+    seen.add(key);
+    if (!entry.hidden) out.push(byKey.get(key));
+  });
+  all.forEach((it) => { if (!seen.has(keyOf(it))) out.push(it); });
+  return out;
 }
 
 function CardMedia({ item, eager }) {
@@ -70,13 +89,16 @@ function CardMedia({ item, eager }) {
 
 export function ProductRail({ onOpenDevice, onOpenProduct, onNavigate }) {
   const { language } = useSite();
-  const items = useMemo(() => buildItems(language), [language]);
+  // Без кеширования: после загрузки правок из админки лента перестраивается.
+  const items = buildItems(language);
   const total = items.length;
-  const firstPlatform = items.findIndex((it) => it.group === 'platforms');
+  const orderSig = items.map((it) => it.key).join('|');
+  const kinds = useRef([]);
+  kinds.current = items.map((it) => it.group);
   const groups = [
-    { id: 'devices', label: tr('Комплексы фиксации'), start: 0 },
-    ...(firstPlatform >= 0 ? [{ id: 'platforms', label: tr('Продукты группы'), start: firstPlatform }] : []),
-  ];
+    { id: 'devices', label: tr('Комплексы фиксации'), start: items.findIndex((it) => it.group === 'devices') },
+    { id: 'platforms', label: tr('Продукты группы'), start: items.findIndex((it) => it.group === 'platforms') },
+  ].filter((gr) => gr.start >= 0).sort((a, b) => a.start - b.start);
 
   const sectionRef = useRef(null);
   const pinRef = useRef(null);
@@ -123,7 +145,9 @@ export function ProductRail({ onOpenDevice, onOpenProduct, onNavigate }) {
         list[i].style.setProperty('--p', Math.max(-1.2, Math.min(1.2, p)).toFixed(3));
       }
       const probe = g.x + g.vw * 0.4;
-      const nextGroup = firstPlatform >= 0 && probe >= (g.lefts[firstPlatform] || Infinity) ? 'platforms' : 'devices';
+      let at = 0;
+      for (let i = 0; i < g.lefts.length; i += 1) if (g.lefts[i] <= probe) at = i;
+      const nextGroup = kinds.current[Math.min(at, kinds.current.length - 1)] || 'devices';
       if (nextGroup !== lastGroup) { lastGroup = nextGroup; setGroup(nextGroup); }
       // Фото подгружаем чуть впереди видимой части, а не все шестнадцать сразу.
       let visibleEnd = 0;
@@ -166,7 +190,7 @@ export function ProductRail({ onOpenDevice, onOpenProduct, onNavigate }) {
       viewport.removeEventListener('scroll', kick);
       window.removeEventListener('resize', measure);
     };
-  }, [swipe, total, firstPlatform, language]);
+  }, [swipe, total, orderSig, language]);
 
   // Переход к группе или к карточке: прокручиваем страницу ровно настолько,
   // чтобы лента встала на нужное место.

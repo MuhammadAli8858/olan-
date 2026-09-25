@@ -5,8 +5,9 @@ import { Menu, X, Undo2, ArrowLeft, Globe, GitBranch, Download, FileDown } from 
 import { describeChange } from './lib/changes.js';
 import { ImageField, ImageListEditor } from './components/ImageUpload.jsx';
 import GenericEditor from './components/GenericEditor.jsx';
+import { RailOrderEditor } from './components/RailOrderEditor.jsx';
 import { FRAMES } from './lib/imageFrames.js';
-import { Building2 as BuildingIcon, Layers, Package, Route, Workflow as WorkflowIcon, UsersRound } from 'lucide-react';
+import { Building2 as BuildingIcon, Layers, Package, Route, Workflow as WorkflowIcon, UsersRound, ArrowUpDown } from 'lucide-react';
 import { getJson, postJson, API_BASE_URL } from './lib/api.js';
 
 const KEY_STORE = 'olan-admin-key';
@@ -935,6 +936,7 @@ export default function App() {
 
   const tabs = [
     { id: 'banners', label: 'Баннеры на главной', icon: ImageIcon },
+    { id: 'rail', label: 'Порядок продуктов', icon: ArrowUpDown },
     { id: 'products', label: 'Приборы', icon: Box },
     { id: 'solutions', label: 'Решения', icon: Lightbulb },
     { id: 'projects', label: 'Наши проекты', icon: ImageIcon },
@@ -1174,6 +1176,7 @@ export default function App() {
             {tab === 'monitor' && <MonitorEditor content={content} patch={patch} lang={lang} />}
             {tab === 'contact' && <ContactEditor content={content} patch={patch} lang={lang} onTranslateContact={onTranslateContact} busy={busyId === 'contact'} />}
             {tab === 'texts' && <TextsEditor content={content} patch={patch} lang={lang} />}
+            {tab === 'rail' && <RailOrderEditor content={content} patch={patch} />}
             {tab === 'banners' && (
               <GenericEditor
                 title="Баннеры на главной"

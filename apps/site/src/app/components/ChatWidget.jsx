@@ -35,7 +35,7 @@ function loadSession() {
 // остальное — ссылкой с названием и размером.
 function ChatFile({ file }) {
   if (!file || !file.url) return null;
-  const size = file.size ? `${(file.size / 1024).toFixed(0)} КБ` : '';
+  const size = file.size ? `${(file.size / 1024).toFixed(0)} ${tr('КБ')}` : '';
 
   if (file.isImage) {
     return (
@@ -303,7 +303,7 @@ export function ChatWidget() {
                 <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto bg-slate-50 p-4 dark:bg-black">
                   <div className="flex justify-start">
                     <div className="max-w-[80%] rounded-2xl rounded-tl-sm bg-white px-4 py-2 text-sm text-slate-700 shadow dark:bg-slate-900 dark:text-slate-200">
-                      Здравствуйте, {session.name}! Напишите ваш вопрос — мы ответим здесь и продублируем на ваш email.
+                      {tr('Здравствуйте, {name}! Напишите ваш вопрос — мы ответим здесь и продублируем на ваш email.').replace('{name}', session.name)}
                     </div>
                   </div>
                   {messages.map((m) => (

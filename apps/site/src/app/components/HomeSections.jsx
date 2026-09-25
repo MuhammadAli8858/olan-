@@ -11,6 +11,8 @@ import { tr } from '../lib/i18n.js';
 import { Icon } from '../lib/icons.jsx';
 import { Img } from '../lib/img.jsx';
 import { CountUp, oneLine, Reveal, toList, useParallaxVar } from '../lib/fx.jsx';
+import { ProjectCard } from './Projects.jsx';
+import { ProjectLightbox } from './ProjectLightbox.jsx';
 
 // Фото по умолчанию для решений. Если в админке у решения указано своё
 // изображение (поле image), берётся оно.
@@ -160,9 +162,13 @@ export function StatsBand({ onNavigate }) {
   );
 }
 
+// Нажатие на карточку открывает само фото на весь экран; листать можно
+// все проекты, а не только пять с главной.
 export function ProjectsShowcase({ onNavigate }) {
   const { language } = useSite();
-  const list = (PROJECTS || []).slice(0, 5);
+  const [open, setOpen] = useState(null);
+  const all = PROJECTS || [];
+  const list = all.slice(0, 5);
   if (!list.length) return null;
   return (
     <section className="o-section" id="projects-home">
@@ -174,17 +180,12 @@ export function ProjectsShowcase({ onNavigate }) {
           </button>
         </Reveal>
         <div className="o-projects">
-          {list.map((p, i) => (
-            <button key={p.id} type="button" className="o-proj" onClick={() => onNavigate('projects')}>
-              <span className="o-proj__media">
-                <Img src={p.image} alt="" sizes={i === 0 ? '(max-width: 900px) 100vw, 45vw' : '(max-width: 560px) 100vw, 30vw'} />
-              </span>
-              <span className="o-proj__loc">{localize(p.location, language)}</span>
-              <span className="o-proj__title">{localize(p.title, language)}</span>
-            </button>
-          ))}
+          {list.map((p, i) => <ProjectCard key={p.id || i} project={p} index={i} big={i === 0} language={language} onOpen={setOpen} />)}
         </div>
       </div>
+      {open !== null && all[open] ? (
+        <ProjectLightbox items={all} index={open} language={language} onClose={() => setOpen(null)} onChange={setOpen} />
+      ) : null}
     </section>
   );
 }

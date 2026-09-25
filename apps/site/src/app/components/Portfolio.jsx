@@ -8,14 +8,14 @@
 // Если у продукта есть ссылка (поле link), в конце стоит кнопка на сайт
 // продукта — так у Wider есть переход на touchwider.com.
 // ---------------------------------------------------------------------------
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { Fragment, lazy, Suspense, useEffect, useState } from 'react';
 import { ArrowLeft, ArrowRight, CheckCircle2, ChevronRight, ExternalLink, Info } from 'lucide-react';
 import { useSite } from '../context/SiteContext.jsx';
 import { FORM_FACTORS, localize, PORTFOLIO, SOFTWARE_FEATURES } from '../data/siteData.js';
 import { tr } from '../lib/i18n.js';
 import { Icon } from '../lib/icons.jsx';
 import { Img, isStudio } from '../lib/img.jsx';
-import { CountUp, oneLine, Reveal, toList } from '../lib/fx.jsx';
+import { CountUp, oneLine, prefersReducedMotion, Reveal, toList } from '../lib/fx.jsx';
 
 const WiderScreen = lazy(() => import('./WiderScreen.jsx').then((m) => ({ default: m.WiderScreen })));
 
@@ -65,7 +65,15 @@ export function Portfolio({ onOpen }) {
   );
 }
 
-// Живые иллюстрации для разделов страницы (поле visual у раздела).
+// Живые иллюстрации для разделов страницы (поле visual у раздела):
+// touch, audio, battery, brand — для Wider; scan — распознавание номера;
+// map — карта города; net — сеть узлов; chain — блокчейн; radar — радар.
+const MAP_ROADS = ['M0 212 C 80 192, 140 122, 220 140 S 340 92, 400 70', 'M58 0 C 92 92, 120 162, 150 300', 'M238 300 C 252 222, 302 160, 400 152'];
+const MAP_PINS = [[152, 138], [268, 112], [96, 198]];
+const NET_NODES = [[70, 150], [170, 70], [170, 230], [270, 150], [350, 70], [350, 230]];
+const NET_LINKS = [[0, 1], [0, 2], [1, 3], [2, 3], [3, 4], [3, 5], [1, 4], [2, 5]];
+// Точка загорается, когда над ней проходит луч: задержка = угол / 360 × оборот.
+const RADAR_BLIPS = [[70, 30, 0.4], [62, 72, 1.34], [30, 62, 2.12]];
 function Vignette({ kind }) {
   if (kind === 'touch') {
     return (
@@ -86,6 +94,82 @@ function Vignette({ kind }) {
             <i key={i} style={{ '--t': `${0.45 + ((i * 37) % 9) / 10}s`, '--d': `${-(i * 0.13).toFixed(2)}s`,
               '--h1': (0.35 + ((i * 53) % 65) / 100).toFixed(2), '--h2': (0.2 + ((i * 29) % 60) / 100).toFixed(2) }} />
           ))}
+        </div>
+      </div>
+    );
+  }
+  const still = prefersReducedMotion();
+  if (kind === 'scan') {
+    return (
+      <div className="o-vg">
+        <div className="o-vg__scan">
+          <span className="o-vg__target"><span className="o-vg__plate">01 A 777 AA</span></span>
+          <span className="o-vg__chip">01 A 777 AA · 99%</span>
+        </div>
+      </div>
+    );
+  }
+  if (kind === 'map') {
+    return (
+      <div className="o-vg">
+        <svg className="o-vg__svg" viewBox="0 0 400 300" aria-hidden="true">
+          <g className="o-vg__grid">
+            {Array.from({ length: 9 }, (_, i) => <line key={`v${i}`} x1={i * 50} y1="0" x2={i * 50} y2="300" />)}
+            {Array.from({ length: 7 }, (_, i) => <line key={`h${i}`} x1="0" y1={i * 50} x2="400" y2={i * 50} />)}
+          </g>
+          {MAP_ROADS.map((d) => <path key={d} className="o-vg__road" d={d} />)}
+          {still ? null : MAP_ROADS.map((d, i) => (
+            <circle key={`c${d}`} className="o-vg__car" r="4.5"><animateMotion dur={`${6 + i * 1.8}s`} repeatCount="indefinite" path={d} /></circle>
+          ))}
+          {MAP_PINS.map(([x, y], i) => (
+            <g key={`p${x}`} transform={`translate(${x} ${y})`}>
+              <circle className="o-vg__pulse" r="18" style={{ animationDelay: `${i * 0.7}s` }} />
+              <circle className="o-vg__pin" r="6" />
+            </g>
+          ))}
+        </svg>
+      </div>
+    );
+  }
+  if (kind === 'net') {
+    return (
+      <div className="o-vg">
+        <svg className="o-vg__svg" viewBox="0 0 420 300" aria-hidden="true">
+          {NET_LINKS.map(([a, b]) => (
+            <line key={`${a}-${b}`} className="o-vg__link" x1={NET_NODES[a][0]} y1={NET_NODES[a][1]} x2={NET_NODES[b][0]} y2={NET_NODES[b][1]} />
+          ))}
+          {still ? null : NET_LINKS.slice(0, 6).map(([a, b], i) => (
+            <circle key={`k${a}-${b}`} className="o-vg__packet" r="4.5">
+              <animateMotion dur={`${2.2 + (i % 3) * 0.8}s`} repeatCount="indefinite"
+                path={`M${NET_NODES[a][0]} ${NET_NODES[a][1]} L${NET_NODES[b][0]} ${NET_NODES[b][1]}`} />
+            </circle>
+          ))}
+          {NET_NODES.map(([x, y], i) => (
+            <circle key={`n${x}-${y}`} className={`o-vg__node${i === 3 ? ' o-vg__node--hub' : ''}`} cx={x} cy={y} r={i === 3 ? 17 : 11} />
+          ))}
+        </svg>
+      </div>
+    );
+  }
+  if (kind === 'chain') {
+    return (
+      <div className="o-vg">
+        <div className="o-vg__chain">
+          {[0, 1, 2, 3].map((i) => (
+            <Fragment key={i}>
+              {i ? <span className="o-vg__joint" style={{ '--i': i }} /> : null}
+              <span className="o-vg__block" style={{ '--i': i }}><i /><i /><i /></span>
+            </Fragment>
+          ))}
+        </div>
+      </div>
+    );
+  }
+  if (kind === 'radar') {
+    return (
+      <div className="o-vg">
+        <div className="o-vg__radar">
+          {RADAR_BLIPS.map(([x, y, d]) => <i key={`${x}${y}`} style={{ '--x': `${x}%`, '--y': `${y}%`, '--d': `${d}s` }} />)}
         </div>
       </div>
     );
