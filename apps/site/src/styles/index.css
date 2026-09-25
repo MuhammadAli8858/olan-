@@ -1,6 +1,9 @@
 @import './fonts.css';
 @import './tailwind.css';
 @import './theme.css';
+@import './olan-base.css';
+@import './olan-hero.css';
+@import './olan-sections.css';
 
 /* Custom animations and styles for the automotive radar website */
 @layer base {
@@ -220,8 +223,8 @@ html {
 .text-lead { font-size: clamp(1rem, 0.95rem + 0.3vw, 1.2rem); line-height: 1.65; }
 
 /* Те же размеры для обычных тегов, если класс не проставлен. */
-h1:not([class*="text-"]) { font-size: clamp(1.75rem, 1rem + 2.1vw, 2.9rem); line-height: 1.12; }
-h2:not([class*="text-"]) { font-size: clamp(1.45rem, 0.95rem + 1.3vw, 2.15rem); line-height: 1.18; }
+:where(h1:not([class*="text-"])) { font-size: clamp(1.75rem, 1rem + 2.1vw, 2.9rem); line-height: 1.12; }
+:where(h2:not([class*="text-"])) { font-size: clamp(1.45rem, 0.95rem + 1.3vw, 2.15rem); line-height: 1.18; }
 
 /* Длинные абзацы не растягиваем на весь монитор: возвращаться
    к началу строки длиной в полтора метра тяжело. */

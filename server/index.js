@@ -18,6 +18,7 @@ import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { SiteDataFile } from './siteDataFile.js';
 import { createStaticHandler } from './static.js';
+import { compressBuffer, contentHash, pickEncoding } from './compress.js';
 import { Staff } from './users.js';
 import { localName, needsExternalTranslation, transliterate } from './translit.js';
 import { translateOne, syncOnSave, fillMissing, countMissing, resetTranslatorHealth, checkTranslator, apiKey, AUTO_LANGS, MANUAL_LANGS } from './translate.js';
@@ -441,10 +442,41 @@ function handleAdminMessages(response, query) {
 }
 
 // ---------- Контент сайта: читаем и пишем прямо в siteData.js ----------
-async function handleGetContent(response) {
+// Контент для сайта. Он большой (шесть языков, ~550 КБ), поэтому:
+//  • сайт присылает отпечаток контента, вшитый при сборке (?have=…); если
+//    на сервере тот же контент, отвечаем 204 — скачивать нечего;
+//  • иначе отдаём сжатым (brotli/gzip, ~120–160 КБ) с отпечатком в ETag,
+//    чтобы при следующем визите браузер получил короткое «не изменилось».
+let contentPack = null;
+async function handleGetContent(request, response, query) {
   try {
     const content = await siteData.read();
-    json(response, 200, content);
+    const body = JSON.stringify(content);
+    if (!contentPack || contentPack.body !== body) {
+      contentPack = { body, raw: Buffer.from(body), hash: contentHash(body), br: null, gzip: null };
+    }
+    const etag = `"${contentPack.hash}"`;
+    const headers = {
+      'Cache-Control': 'no-cache',
+      ETag: etag,
+      Vary: 'Accept-Encoding',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+      'Access-Control-Expose-Headers': 'ETag',
+    };
+    const have = query ? (typeof query.get === 'function' ? query.get('have') : query.have) : null;
+    if (have && have === contentPack.hash) { response.writeHead(204, headers); response.end(); return; }
+    if (request && request.headers['if-none-match'] === etag) { response.writeHead(304, headers); response.end(); return; }
+    const encoding = pickEncoding(request);
+    let payload = contentPack.raw;
+    if (encoding) {
+      if (!contentPack[encoding]) contentPack[encoding] = compressBuffer(contentPack.raw, encoding);
+      payload = contentPack[encoding];
+      headers['Content-Encoding'] = encoding;
+    }
+    response.writeHead(200, { ...headers, 'Content-Type': 'application/json; charset=utf-8', 'Content-Length': payload.length });
+    response.end(payload);
   } catch (error) {
     console.error('[content] Не удалось прочитать siteData.js:', error.message);
     json(response, 500, { message: `Не удалось прочитать siteData.js: ${error.message}` });
@@ -1390,7 +1422,7 @@ const server = createServer(async (request, response) => {
     if (request.method === 'POST' && pathname === '/api/contact') { handleContact(await parseBody(request), response); return; }
     if (request.method === 'GET' && pathname === '/api/admin/messages') { handleAdminMessages(response, query); return; }
 
-    if (request.method === 'GET' && pathname === '/api/content') { await handleGetContent(response); return; }
+    if (request.method === 'GET' && pathname === '/api/content') { await handleGetContent(request, response, query); return; }
     if (request.method === 'GET' && pathname === '/api/content/version') { handleContentVersion(response); return; }
     if (request.method === 'POST' && pathname === '/api/admin/save') { await handleAdminSave(await parseBody(request), response); return; }
     if (request.method === 'POST' && pathname === '/api/admin/translate-all') { await handleAdminTranslateAll(await parseBody(request), response); return; }

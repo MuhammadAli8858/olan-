@@ -11,7 +11,7 @@
 // ---------------------------------------------------------------------------
 
 import { motion } from 'motion/react';
-import * as Icons from 'lucide-react';
+import { Icons } from '../lib/icons.jsx';
 import { ArrowLeft, ArrowRight, ImageOff } from 'lucide-react';
 import { useState } from 'react';
 import { useSite } from '../context/SiteContext.jsx';

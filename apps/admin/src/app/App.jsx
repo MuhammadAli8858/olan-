@@ -934,6 +934,7 @@ export default function App() {
   }
 
   const tabs = [
+    { id: 'banners', label: 'Баннеры на главной', icon: ImageIcon },
     { id: 'products', label: 'Приборы', icon: Box },
     { id: 'solutions', label: 'Решения', icon: Lightbulb },
     { id: 'projects', label: 'Наши проекты', icon: ImageIcon },
@@ -1173,6 +1174,16 @@ export default function App() {
             {tab === 'monitor' && <MonitorEditor content={content} patch={patch} lang={lang} />}
             {tab === 'contact' && <ContactEditor content={content} patch={patch} lang={lang} onTranslateContact={onTranslateContact} busy={busyId === 'contact'} />}
             {tab === 'texts' && <TextsEditor content={content} patch={patch} lang={lang} />}
+            {tab === 'banners' && (
+              <GenericEditor
+                title="Баннеры на главной"
+                hint="Слайды первого экрана. short — подпись на вкладке под баннером. link — куда ведёт кнопка: solution-<id>, product-<id>, device-<id> (прибор из раздела «Приборы») или название страницы. effect — анимация поверх фото: capture, radar, sun, glint, wider (панорамный экран) или пусто. align — сторона текста: left или right."
+                value={content.HERO_SLIDES}
+                frame={FRAMES.banners}
+                onChange={(v) => patch((c) => { c.HERO_SLIDES = v; })}
+                lang={lang} onTranslate={translateField} translating={busyId === 'field'} adminKey={key}
+              />
+            )}
 
             {/* Блоки из корпоративной презентации. Правятся универсальным
                 редактором: он сам разбирает структуру данных, поэтому новые

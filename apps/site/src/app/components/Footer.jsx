@@ -1,65 +1,71 @@
-import { ArrowUp } from 'lucide-react';
+// ---------------------------------------------------------------------------
+// Подвал: тёмный, с колонками продуктов, как у hikvision.com.
+// Все ссылки собираются из контента, контакты — из CONTACT_INFO.
+// ---------------------------------------------------------------------------
+import { ArrowUp, Clock, Mail, MapPin, Phone } from 'lucide-react';
 import { useSite } from '../context/SiteContext.jsx';
-import { CONTACT_INFO } from '../data/siteData.js';
+import { CONTACT_INFO, localize, PORTFOLIO, PRODUCTS } from '../data/siteData.js';
 import { tr } from '../lib/i18n.js';
+import { oneLine } from '../lib/fx.jsx';
 
-export function Footer({ onNavigate, onSection }) {
-  const { text } = useSite();
+export function Footer({ onNavigate, onSection, onOpenDevice, onHome }) {
+  const { text, language, setLanguage, languageOptions } = useSite();
+  const c = CONTACT_INFO || {};
+  const footer = (text && text.footer) || {};
 
-  const footerLinks = [
-    { label: text.nav.catalog, action: () => onSection('catalog') },
-    { label: text.nav.solutions, action: () => onSection('solutions') },
-    { label: text.nav.projects, action: () => onSection('projects') },
-    { label: text.nav.about, action: () => onNavigate('about') },
-    { label: text.nav.contact, action: () => onSection('contact') },
-    { label: text.nav.faq, action: () => onSection('faq') },
+  const devices = (PRODUCTS || []).map((p) => ({ key: p.id, label: p.brand || oneLine(localize(p.name, language)), onClick: () => onOpenDevice(p.id) }));
+  const platforms = (PORTFOLIO || []).filter((p) => p.id !== 'catalog')
+    .map((p) => ({ key: p.id, label: localize(p.title, language), onClick: () => onNavigate(`product-${p.id}`) }));
+  const company = [
+    { key: 'about', label: tr('О компании'), onClick: () => onNavigate('about') },
+    { key: 'directions', label: tr('Все услуги'), onClick: () => onNavigate('directions') },
+    { key: 'cases', label: tr('Задачи заказчика'), onClick: () => onNavigate('cases') },
+    { key: 'projects', label: tr('Проекты'), onClick: () => onNavigate('projects') },
+    { key: 'team', label: tr('Команда'), onClick: () => onNavigate('team') },
+    { key: 'engagement', label: tr('Модели работы'), onClick: () => onNavigate('engagement') },
+    { key: 'faq', label: tr('Частые вопросы'), onClick: () => onNavigate('faq') },
+    { key: 'contact', label: tr('Контакты'), onClick: () => onSection('contact') },
   ];
 
+  const column = (title, links) => (
+    <div>
+      <h4>{title}</h4>
+      <ul>{links.map((l) => <li key={l.key}><button type="button" onClick={l.onClick}>{l.label}</button></li>)}</ul>
+    </div>
+  );
+
   return (
-    <footer className="relative border-t border-slate-200 dark:border-cyan-500/15 bg-white py-16 transition-colors dark:bg-black/80">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
+    <footer className="o-footer">
+      <div className="o-wrap">
+        <div className="o-footer__top">
           <div>
-            <div className="flex items-center gap-3">
-              <img src="/olan_logo.svg" alt={text.brand} className="h-12 w-12 rounded-xl object-cover" />
-              <div>
-                <div className="bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-xl font-bold text-transparent">{text.brand}</div>
-                <div className="text-sm text-slate-600 dark:text-slate-400">{tr("Фиксация нарушений ПДД")}</div>
-              </div>
-            </div>
-            <p className="mt-5 max-w-md text-sm leading-7 text-slate-600 dark:text-slate-300">{text.footer.description}</p>
-          </div>
-          <div>
-            <h4 className="text-lg font-bold text-slate-900 dark:text-white">{text.footer.company}</h4>
-            <div className="mt-4 flex flex-col gap-3">
-              {footerLinks.map((link) => (
-                <button key={link.label} type="button" onClick={link.action} className="text-left text-sm text-slate-600 transition hover:text-cyan-600 dark:text-slate-300 dark:hover:text-cyan-400">
-                  {link.label}
-                </button>
-              ))}
+            <button type="button" className="o-logo" onClick={onHome}>
+              <img src="/logo-mark.webp" alt="" width="38" height="38" loading="lazy" />
+              <span>{text.brand}</span>
+            </button>
+            {footer.description ? <p className="o-footer__about">{footer.description}</p> : null}
+            <div className="o-footer__contacts">
+              {c.phone ? <a href={c.phoneHref}><Phone />{c.phone}</a> : null}
+              {c.email ? <a href={c.emailHref}><Mail />{c.email}</a> : null}
+              {c.address ? <span><MapPin />{localize(c.address, language)}</span> : null}
+              {c.hours ? <span><Clock />{localize(c.hours, language)}</span> : null}
             </div>
           </div>
-          <div>
-            <h4 className="text-lg font-bold text-slate-900 dark:text-white">{text.footer.support}</h4>
-            <div className="mt-4 space-y-3 text-sm text-slate-600 dark:text-slate-300">
-              <a href={CONTACT_INFO.phoneHref} className="block transition hover:text-cyan-600 dark:hover:text-cyan-400">{CONTACT_INFO.phone}</a>
-              <a href={CONTACT_INFO.emailHref} className="block transition hover:text-cyan-600 dark:hover:text-cyan-400">{CONTACT_INFO.email}</a>
-              <div>{text.footer.privacy}</div>
-              <div>{text.footer.terms}</div>
-            </div>
+          <div className="o-footer__cols">
+            {column(tr('Комплексы фиксации'), devices)}
+            {column(tr('Продукты группы'), [...platforms, { key: 'catalog', label: tr('Каталог оборудования'), onClick: () => onNavigate('catalog') }])}
+            {column(footer.company || tr('О компании'), company)}
           </div>
         </div>
-
-        <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-slate-200 dark:border-cyan-500/15 pt-6 md:flex-row md:items-center">
-          <div className="text-sm text-slate-600 dark:text-slate-400">{text.footer.copyright}</div>
-          <button
-            type="button"
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="inline-flex items-center gap-2 rounded-full border border-slate-200 dark:border-cyan-500/20 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-cyan-500/40 hover:text-cyan-600 dark:text-slate-200"
-          >
-            <ArrowUp className="h-4 w-4" />
-            {text.actions.backToTop}
-          </button>
+        <div className="o-footer__bottom">
+          <span>{footer.copyright}</span>
+          <div>
+            <select aria-label={text.actions.language} value={language} onChange={(e) => setLanguage(e.target.value)}>
+              {languageOptions.map((o) => <option key={o.code} value={o.code}>{o.label}</option>)}
+            </select>
+            <button type="button" className="o-icon-btn" aria-label={tr('Наверх')}
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}><ArrowUp /></button>
+          </div>
         </div>
       </div>
     </footer>

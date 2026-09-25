@@ -1,3 +1,4 @@
+/* global __OLAN_CONTENT_HASH__ */
 // Подгружает контент сайта с сервера (админ-панель сохраняет его туда) и
 // заменяет встроенные данные «на месте». Если сервер недоступен — остаётся
 // встроенная версия, и сайт продолжает работать.
@@ -26,6 +27,7 @@ import {
   FORM_FACTORS,
   SERVICE_CASES,
   MONITOR,
+  HERO_SLIDES,
 } from './siteData.js';
 
 // Объект заменяем не целиком, а по полям: ссылка на него разошлась
@@ -78,14 +80,20 @@ export function applyServerContent(content) {
   replaceObject(SOFTWARE_FEATURES, content.SOFTWARE_FEATURES);
   replaceObject(FORM_FACTORS, content.FORM_FACTORS);
   replaceObject(MONITOR, content.MONITOR);
+  replaceArray(HERO_SLIDES, content.HERO_SLIDES);
 }
 
 export async function loadContent() {
   try {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 3500);
-    const res = await fetch(`${API_BASE_URL}/api/content`, { signal: controller.signal });
+    // Ждём только начала ответа; сам контент может качаться дольше.
+    const timer = setTimeout(() => controller.abort(), 8000);
+    // Отпечаток контента, вшитый при сборке. Если на сервере тот же контент,
+    // сервер ответит 204 и скачивать 550 КБ текстов не придётся.
+    const built = typeof __OLAN_CONTENT_HASH__ !== 'undefined' ? __OLAN_CONTENT_HASH__ : '';
+    const res = await fetch(`${API_BASE_URL}/api/content${built ? `?have=${encodeURIComponent(built)}` : ''}`, { signal: controller.signal });
     clearTimeout(timer);
+    if (res.status === 204) return true;
     if (!res.ok) return false;
     const content = await res.json();
     applyServerContent(content);

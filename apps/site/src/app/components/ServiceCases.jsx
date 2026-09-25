@@ -9,7 +9,7 @@
 // ---------------------------------------------------------------------------
 
 import { motion } from 'motion/react';
-import * as Icons from 'lucide-react';
+import { Icons } from '../lib/icons.jsx';
 import { ArrowRight, ShieldAlert, CheckCircle2 } from 'lucide-react';
 import { useSite } from '../context/SiteContext.jsx';
 import { localize, SERVICE_CASES } from '../data/siteData.js';

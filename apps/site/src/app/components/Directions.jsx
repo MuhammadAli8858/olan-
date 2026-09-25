@@ -5,7 +5,7 @@
 // ---------------------------------------------------------------------------
 
 import { motion } from 'motion/react';
-import * as Icons from 'lucide-react';
+import { Icons } from '../lib/icons.jsx';
 import { ArrowRight } from 'lucide-react';
 import { useSite } from '../context/SiteContext.jsx';
 import { localize, DIRECTIONS } from '../data/siteData.js';

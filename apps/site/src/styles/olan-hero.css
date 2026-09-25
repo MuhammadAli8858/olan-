@@ -1,0 +1,156 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   Первый экран: баннеры во всю высоту, как у Hikvision.
+
+   Движение снято «как камерой», а не нарисовано: медленный наезд с
+   замедлением, глубина при движении мыши, зерно плёнки. Эффекты поверх
+   фото подчиняются физике: вспышка резко загорается и медленно гаснет,
+   блик идёт по стеклу с разгоном и торможением, светодиод мигает без
+   плавности — так, как мигают настоящие индикаторы.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.o-hero { position: relative; height: 100vh; height: 100svh; min-height: 34rem; max-height: 68rem; overflow: hidden;
+  background: #07090d; color: #fff; isolation: isolate; touch-action: pan-y; overflow: clip; }
+.o-hero__slide { position: absolute; inset: 0; opacity: 0; visibility: hidden;
+  transition: opacity 1.4s var(--o-ease-soft), visibility 0s linear 1.4s; }
+.o-hero__slide.is-active { z-index: 1; opacity: 1; visibility: visible; transition: opacity 1.4s var(--o-ease-soft), visibility 0s; }
+.o-hero__slide.is-leaving { visibility: visible; }
+
+/* глубина: мышь и прокрутка двигают кадр, как подвес камеры */
+.o-hero__depth { position: absolute; inset: -2.5%; will-change: transform;
+  transform: translate3d(var(--mx, 0px), calc(var(--my, 0px) + var(--sy, 0px)), 0); }
+.o-hero__kb { position: absolute; inset: 0; transform-origin: var(--kb-o, 50% 50%); }
+.o-hero__slide.is-active .o-hero__kb, .o-hero__slide.is-leaving .o-hero__kb { animation: o-kb 13s cubic-bezier(.3, .1, .3, 1) both; }
+@keyframes o-kb { from { transform: scale(1.15) translate3d(var(--kb-x, 0%), var(--kb-y, 0%), 0); } to { transform: scale(1.03); } }
+.o-hero__img { position: absolute; inset: 0; }
+.o-hero__img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background-size: cover; background-position: center; }
+.o-hero__anchor { position: absolute; pointer-events: none; }
+
+.o-hero__shade { position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: linear-gradient(90deg, rgba(5, 7, 10, .78) 0%, rgba(5, 7, 10, .44) 34%, rgba(5, 7, 10, 0) 64%),
+              linear-gradient(0deg, rgba(5, 7, 10, .84) 0%, rgba(5, 7, 10, .24) 32%, rgba(5, 7, 10, 0) 55%); }
+.o-hero__slide[data-align="right"] .o-hero__shade {
+  background: linear-gradient(270deg, rgba(5, 7, 10, .78) 0%, rgba(5, 7, 10, .44) 34%, rgba(5, 7, 10, 0) 64%),
+              linear-gradient(0deg, rgba(5, 7, 10, .84) 0%, rgba(5, 7, 10, .24) 32%, rgba(5, 7, 10, 0) 55%); }
+
+/* зерно плёнки: прячет мягкость увеличенных фото и делает кадр «живым» */
+.o-hero__grain { position: absolute; inset: -60%; z-index: 3; pointer-events: none; opacity: .075; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: o-grain 1.1s steps(6) infinite; }
+@keyframes o-grain { 0% { transform: translate(0, 0); } 20% { transform: translate(-3%, 2%); } 40% { transform: translate(2%, -3%); }
+  60% { transform: translate(-2%, -1%); } 80% { transform: translate(3%, 3%); } 100% { transform: translate(0, 0); } }
+
+/* текст */
+.o-hero__content { position: absolute; z-index: 4; inset-inline: 0; bottom: clamp(7.5rem, 17vh, 11.5rem); pointer-events: none; }
+.o-hero__text { max-width: 41rem; pointer-events: auto; transform: translate3d(var(--tx, 0px), var(--ty, 0px), 0); }
+.o-hero__slide[data-align="right"] .o-hero__text { margin-inline-start: auto; }
+.o-hero__badge { display: inline-flex; margin-bottom: 1.1rem; padding: .32rem .8rem; border-radius: 999px; background: var(--o-brand); color: #fff; font-size: .78rem; font-weight: 600; }
+.o-hero__title { font-size: clamp(2.1rem, 1.1rem + 3.4vw, 4.3rem); line-height: 1.04; letter-spacing: -.032em; font-weight: 650; color: #fff; text-wrap: balance; }
+.o-w { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: .1em; margin-bottom: -.1em; }
+.o-w > span { display: inline-block; transform: translate3d(0, 108%, 0); transition: transform 1.15s var(--o-ease); transition-delay: calc(380ms + var(--i, 0) * 55ms); }
+.o-hero__slide.is-active .o-w > span { transform: none; }
+.o-hero__desc { margin-top: 1.2rem; max-width: 35rem; font-size: clamp(1rem, .94rem + .35vw, 1.2rem); line-height: 1.55; color: rgba(255, 255, 255, .85); }
+.o-hero__actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 2rem; }
+.o-fade { opacity: 0; transform: translate3d(0, 16px, 0); transition: opacity 1s var(--o-ease-soft), transform 1.2s var(--o-ease); transition-delay: var(--d, 700ms); }
+.o-hero__slide.is-active .o-fade { opacity: 1; transform: none; }
+.o-hero__slide.is-leaving .o-hero__text { opacity: 0; transition: opacity .45s var(--o-ease-soft); }
+.o-hero.is-instant .o-w > span, .o-hero.is-instant .o-fade { transition: none !important; }
+
+/* вкладки с прогрессом внизу */
+.o-hero__nav { position: absolute; z-index: 5; inset-inline: 0; bottom: 0; }
+/* справа оставляем место под кружок онлайн-чата */
+.o-hero__bar { display: flex; align-items: flex-end; gap: 2rem; padding-bottom: clamp(1.4rem, 3.5vh, 2.4rem); padding-right: max(var(--o-pad), 5.25rem); }
+.o-hero__tabs { flex: 1; display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 1.25rem; }
+.o-hero__tab { position: relative; padding: 1rem 0 0; border: 0; background: none; color: rgba(255, 255, 255, .58); font-size: .88rem; font-weight: 500;
+  text-align: start; cursor: pointer; transition: color .4s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.o-hero__tab::before, .o-hero__tab i { content: ''; position: absolute; top: 0; inset-inline: 0; height: 2px; }
+.o-hero__tab::before { background: rgba(255, 255, 255, .26); }
+.o-hero__tab i { background: #fff; transform: scaleX(0); transform-origin: left; }
+[dir="rtl"] .o-hero__tab i { transform-origin: right; }
+.o-hero__tab:hover, .o-hero__tab.is-active { color: #fff; }
+.o-hero__tab.is-active i { animation: o-fill var(--dur, 7000ms) linear forwards; }
+.o-hero.is-paused .o-hero__tab.is-active i { animation-play-state: paused; }
+@keyframes o-fill { to { transform: scaleX(1); } }
+.o-hero__ctrl { display: flex; gap: .4rem; }
+.o-hero__ctrl button { width: 2.6rem; height: 2.6rem; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .35); background: rgba(8, 10, 14, .2);
+  backdrop-filter: blur(8px); color: #fff; display: grid; place-items: center; cursor: pointer; transition: background-color .3s, color .3s, border-color .3s; }
+.o-hero__ctrl button:hover { background: #fff; color: #0c0e13; border-color: #fff; }
+.o-hero__ctrl svg { width: 1.05rem; height: 1.05rem; }
+
+/* ───────── эффекты поверх фото ───────── */
+/* вспышка ИК-подсветки: резкий старт, долгое затухание */
+.o-fx-flash { position: absolute; width: 46%; aspect-ratio: 1; border-radius: 50%; opacity: 0; mix-blend-mode: screen; transform: translate(-50%, -50%) scale(.6);
+  background: radial-gradient(circle, rgba(255, 250, 240, 1) 0%, rgba(255, 240, 215, .7) 7%, rgba(255, 226, 190, .28) 20%, rgba(255, 210, 170, .08) 38%, transparent 60%); }
+.o-fx-flash.is-on { animation: o-flash 1.15s cubic-bezier(.12, .8, .2, 1) both; }
+@keyframes o-flash { 0% { opacity: 0; transform: translate(-50%, -50%) scale(.55); } 6% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.12); } }
+/* ореол горящего красного сигнала */
+.o-fx-bloom { position: absolute; width: 4.5%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; mix-blend-mode: screen;
+  background: radial-gradient(circle, rgba(255, 80, 64, .95), rgba(255, 60, 50, .28) 42%, transparent 70%); }
+/* уголки захвата цели */
+.o-fx-box { position: absolute; --c: rgba(255, 255, 255, .95); --l: clamp(8px, 1.2vw, 16px);
+  background: linear-gradient(var(--c), var(--c)) 0 0 / var(--l) 2px, linear-gradient(var(--c), var(--c)) 0 0 / 2px var(--l),
+    linear-gradient(var(--c), var(--c)) 100% 0 / var(--l) 2px, linear-gradient(var(--c), var(--c)) 100% 0 / 2px var(--l),
+    linear-gradient(var(--c), var(--c)) 0 100% / var(--l) 2px, linear-gradient(var(--c), var(--c)) 0 100% / 2px var(--l),
+    linear-gradient(var(--c), var(--c)) 100% 100% / var(--l) 2px, linear-gradient(var(--c), var(--c)) 100% 100% / 2px var(--l);
+  background-repeat: no-repeat; opacity: 0; transform: scale(1.3); transition: opacity .3s var(--o-ease-soft), transform .7s var(--o-ease); }
+.o-fx-box.is-on { opacity: 1; transform: none; }
+.o-fx-box.is-alert { --c: #ff5b57; }
+.o-fx-tag { position: absolute; display: flex; align-items: center; gap: .45rem; padding: .32rem .6rem; border-radius: .35rem; background: rgba(8, 10, 14, .74);
+  backdrop-filter: blur(6px); color: #fff; font-size: clamp(.62rem, .5rem + .25vw, .78rem); font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums;
+  opacity: 0; transform: translate(-50%, calc(-100% - .5rem)); transition: opacity .4s var(--o-ease-soft), transform .7s var(--o-ease); }
+.o-fx-tag.is-on { opacity: 1; transform: translate(-50%, calc(-100% - .9rem)); }
+.o-fx-tag b { color: #ff8a85; font-weight: 700; }
+.o-fx-tag i { width: .45rem; height: .45rem; border-radius: 50%; background: var(--o-ok); box-shadow: 0 0 8px var(--o-ok); }
+.o-fx-tag.is-alert i { background: var(--o-alert); box-shadow: 0 0 8px var(--o-alert); }
+/* волны радара расходятся по дороге эллипсами — так лежит окружность в перспективе */
+.o-fx-radar { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.o-fx-radar ellipse { fill: none; stroke: rgba(170, 212, 255, .85); stroke-width: 1.4; vector-effect: non-scaling-stroke; transform-box: fill-box; transform-origin: center;
+  opacity: 0; animation: o-wave 3.6s cubic-bezier(.2, .6, .35, 1) infinite; animation-delay: calc(var(--i) * 1.2s); }
+@keyframes o-wave { 0% { transform: scale(.04); opacity: 0; } 12% { opacity: .7; } 100% { transform: scale(1); opacity: 0; } }
+/* солнце в объективе: ядро, анаморфный штрих и «зайчики» на линии через центр кадра */
+.o-fx-sun { position: absolute; inset: 0; z-index: 3; pointer-events: none; mix-blend-mode: screen;
+  transform: translate3d(calc(var(--mx, 0px) * -2.2), calc(var(--my, 0px) * -2.2), 0); }
+.o-fx-sun__core { position: absolute; left: 3%; top: -6%; width: 48vmax; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 238, 200, .95) 0%, rgba(255, 205, 140, .42) 10%, rgba(255, 170, 90, .15) 28%, transparent 58%);
+  animation: o-breathe 7s ease-in-out infinite; }
+.o-fx-sun__streak { position: absolute; left: -15%; top: 1%; width: 85%; height: 2px; transform: rotate(9deg); filter: blur(1px);
+  background: linear-gradient(90deg, transparent, rgba(255, 214, 160, .55), transparent); }
+.o-fx-ghost { position: absolute; border-radius: 50%; transform: translate(-50%, -50%); }
+@keyframes o-breathe { 0%, 100% { opacity: .85; } 50% { opacity: 1; } }
+.o-fx-mote { position: absolute; width: var(--s, 3px); height: var(--s, 3px); border-radius: 50%; background: rgba(255, 240, 215, .9); filter: blur(.6px); opacity: 0;
+  animation: o-mote var(--t, 14s) linear infinite; animation-delay: var(--dl, 0s); }
+@keyframes o-mote { 0% { opacity: 0; transform: translate3d(0, 0, 0); } 15% { opacity: .8; } 85% { opacity: .55; } 100% { opacity: 0; transform: translate3d(var(--dx, 40px), var(--dy, -60px), 0); } }
+/* светодиод прибора: мигает рывком, без плавности */
+.o-fx-led { position: absolute; width: .45%; min-width: 4px; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: #3dff7a;
+  box-shadow: 0 0 6px 2px rgba(61, 255, 122, .8), 0 0 18px 6px rgba(61, 255, 122, .3); animation: o-led 1.6s steps(1) infinite; }
+@keyframes o-led { 0%, 12% { opacity: 1; } 12.01%, 100% { opacity: .08; } }
+/* блик, проходящий по стеклу камеры */
+.o-fx-glass { position: absolute; overflow: hidden; border-radius: 4%; }
+.o-fx-glass::before { content: ''; position: absolute; top: -30%; bottom: -30%; left: -60%; width: 38%; mix-blend-mode: screen;
+  background: linear-gradient(100deg, transparent 0%, rgba(255, 255, 255, .08) 35%, rgba(255, 255, 255, .55) 50%, rgba(255, 255, 255, .08) 65%, transparent 100%);
+  transform: skewX(-18deg); animation: o-glint 6.5s cubic-bezier(.45, .05, .25, 1) infinite 1.4s; }
+@keyframes o-glint { 0% { transform: skewX(-18deg) translateX(0); opacity: 0; } 4% { opacity: 1; } 26% { transform: skewX(-18deg) translateX(520%); opacity: 1; }
+  27%, 100% { transform: skewX(-18deg) translateX(520%); opacity: 0; } }
+.o-fx-glass::after { content: ''; position: absolute; inset: 0; background: radial-gradient(60% 50% at 30% 40%, rgba(120, 170, 255, .16), transparent 70%); animation: o-breathe 6s ease-in-out infinite; }
+
+/* сцена Wider — студия с панорамным экраном */
+.o-hero__stage { position: absolute; inset: 0; background: radial-gradient(90% 70% at 62% 42%, #1a2536 0%, #0b1019 55%, #06080c 100%); }
+.o-hero__stage canvas, .o-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+@media (max-width: 760px) {
+  .o-hero__tab { font-size: 0; padding-top: .8rem; }
+  .o-hero__tabs { gap: .45rem; }
+  .o-hero__bar { gap: 1rem; }
+  .o-hero__ctrl button { width: 2.3rem; height: 2.3rem; }
+  .o-hero__ctrl button:not(:nth-child(2)) { display: none; }
+  .o-hero__content { bottom: 5.8rem; }
+  .o-hero__slide .o-hero__shade, .o-hero__slide[data-align="right"] .o-hero__shade {
+    background: linear-gradient(0deg, rgba(5, 7, 10, .9) 0%, rgba(5, 7, 10, .55) 42%, rgba(5, 7, 10, .08) 72%); }
+  .o-hero__slide[data-align="right"] .o-hero__text { margin-inline-start: 0; }
+  .o-hero__actions .o-btn--light { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .o-hero__slide, .o-hero__slide.is-active { transition: opacity .3s linear, visibility 0s; }
+  .o-hero__kb, .o-hero__grain, .o-fx-flash, .o-fx-radar ellipse, .o-fx-mote, .o-fx-led, .o-fx-glass::before, .o-fx-glass::after, .o-fx-sun__core { animation: none !important; }
+  .o-w > span, .o-fade { transition: none !important; transform: none !important; opacity: 1 !important; }
+}

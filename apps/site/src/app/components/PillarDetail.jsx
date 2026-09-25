@@ -14,7 +14,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import * as Icons from 'lucide-react';
+import { Icons } from '../lib/icons.jsx';
 import { X, ChevronLeft, ChevronRight, ImageOff, Expand } from 'lucide-react';
 import { useSite } from '../context/SiteContext.jsx';
 import { localize } from '../data/siteData.js';

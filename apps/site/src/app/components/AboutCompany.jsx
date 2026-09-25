@@ -12,7 +12,7 @@
 
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import * as Icons from 'lucide-react';
+import { Icons } from '../lib/icons.jsx';
 import { ArrowRight, Quote } from 'lucide-react';
 import { useSite } from '../context/SiteContext.jsx';
 import { localize, COMPANY, COMPANY_STATS } from '../data/siteData.js';

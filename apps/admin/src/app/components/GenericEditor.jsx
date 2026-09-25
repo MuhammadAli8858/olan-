@@ -29,7 +29,7 @@ import { ImageField, ImageListEditor } from './ImageUpload.jsx';
 const LANG_CODES = new Set(['ru', 'en', 'uz', 'zh', 'ar', 'uk', 'kk', 'be']);
 
 // Поля, которые не являются текстом для перевода.
-const TECHNICAL_FIELDS = new Set(['id', 'icon', 'number', 'n', 'value', 'link']);
+const TECHNICAL_FIELDS = new Set(['id', 'icon', 'number', 'n', 'value', 'link', 'effect', 'align', 'visual']);
 
 // Поля, которые хранят путь к картинке. Для них показываем загрузку файла
 // с компьютера вместо обычного текстового поля.
@@ -38,6 +38,18 @@ const IMAGE_FIELDS = new Set(['image', 'images', 'gallery', 'photo', 'photos', '
 // Понятные подписи вместо машинных имён.
 const FIELD_LABELS = {
   tagline: 'Подзаголовок компании',
+  short: 'Короткая подпись',
+  effect: 'Анимация на баннере (capture, radar, sun, glint, wider)',
+  align: 'Сторона текста (left или right)',
+  cta: 'Текст кнопки',
+  badge: 'Метка',
+  linkLabel: 'Текст кнопки перехода на сайт',
+  highlights: 'Цифры продукта',
+  sections: 'Разделы страницы',
+  visual: 'Иллюстрация (touch, audio, battery, brand)',
+  specs: 'Характеристики',
+  clients: 'Клиенты',
+  clientsTitle: 'Заголовок блока клиентов',
   badges: 'Метки под заголовком',
   intro: 'Вступление',
   what: 'Чем занимается',

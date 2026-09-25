@@ -94,7 +94,10 @@ for (const app of APPS) {
   const HEAD = 'МЕТКА-НАЧАЛО-СПИСКА';
   const TAIL = 'МЕТКА-КОНЕЦ-СПИСКА';
   if (marked.BENEFITS && marked.BENEFITS[0]) marked.BENEFITS[0].title = { ru: HEAD, en: HEAD, uz: HEAD, zh: HEAD, ar: HEAD, uk: HEAD };
-  if (marked.MONITOR) marked.MONITOR.title = { ru: TAIL, en: TAIL, uz: TAIL, zh: TAIL, ar: TAIL, uk: TAIL };
+  // С v45 блок «Мониторинг» на главной не выводится, а последним ключом,
+  // который сайт применяет из админки, стали баннеры первого экрана.
+  if (marked.HERO_SLIDES && marked.HERO_SLIDES[0]) marked.HERO_SLIDES[0].title = { ru: TAIL, en: TAIL, uz: TAIL, zh: TAIL, ar: TAIL, uk: TAIL };
+  else if (marked.MONITOR) marked.MONITOR.title = { ru: TAIL, en: TAIL, uz: TAIL, zh: TAIL, ar: TAIL, uk: TAIL };
 
   const errors = [];
   const vc = new VirtualConsole();
@@ -115,6 +118,10 @@ for (const app of APPS) {
   window.fetch = async (u) => ({ ok: true, status: 200, json: async () => (String(u).includes('/api/content') ? marked : {}) });
 
   window.eval(fs.readFileSync(`${TMP}/site.js`, 'utf8'));
+  await new Promise((r) => { setTimeout(r, 1500); });
+  // Разделы ниже первого экрана монтируются при прокрутке. Наблюдатель здесь
+  // пустой, поэтому включаем их тем же событием, что и кнопка «Контакты».
+  window.dispatchEvent(new window.Event('olan:mount-all'));
   await new Promise((r) => { setTimeout(r, 1500); });
 
   const html = window.document.getElementById('root')?.innerHTML || '';

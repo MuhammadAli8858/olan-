@@ -8,7 +8,7 @@
 
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import * as Icons from 'lucide-react';
+import { Icons } from '../lib/icons.jsx';
 import { CheckCircle2, ShieldCheck, ArrowRight } from 'lucide-react';
 import { useSite } from '../context/SiteContext.jsx';
 import { PillarDetail } from './PillarDetail.jsx';

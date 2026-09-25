@@ -1,7 +1,7 @@
 {
   "name": "olan",
   "private": true,
-  "version": "44.0.0",
+  "version": "46.0.0",
   "type": "module",
   "description": "OLAN HIGH TECH — сайт, админ-панель и кабинет оператора в одном проекте",
   "engines": {
@@ -18,7 +18,7 @@
     "admin": "node scripts/check.js --quiet && vite --config vite.admin.config.js",
     "operator": "node scripts/check.js --quiet && vite --config vite.operator.config.js",
     "manager": "node scripts/check.js --quiet && vite --config vite.manager.config.js",
-    "build": "node scripts/check.js --quiet && vite build --config vite.site.config.js && vite build --config vite.admin.config.js && vite build --config vite.operator.config.js && vite build --config vite.manager.config.js && node scripts/seo.js",
+    "build": "node scripts/check.js --quiet && vite build --config vite.site.config.js && vite build --config vite.admin.config.js && vite build --config vite.operator.config.js && vite build --config vite.manager.config.js && node scripts/seo.js && node scripts/precompress.mjs",
     "preview": "vite preview --config vite.site.config.js",
     "postinstall": "node scripts/check.js --after-install",
     "seo": "node scripts/seo.js",

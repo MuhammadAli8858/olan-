@@ -1,297 +1,335 @@
 // ---------------------------------------------------------------------------
-// Продуктовая линейка: девять продуктов группы.
+// Продукты группы: сетка карточек и отдельная страница продукта.
 //
-// На главной — сетка карточек с номером, названием и коротким описанием.
-// По клику открывается отдельная страница продукта с полным составом
-// возможностей, областями применения и референсами.
+// Страница продукта устроена как у Hikvision: крупный первый экран,
+// липкое меню разделов, цифры, возможности, блоки «картинка + текст»,
+// таблица характеристик и финальный призыв. Все блоки необязательные —
+// страница собирается из тех полей, что заполнены в админке.
+// Если у продукта есть ссылка (поле link), в конце стоит кнопка на сайт
+// продукта — так у Wider есть переход на touchwider.com.
 // ---------------------------------------------------------------------------
-
-import { motion } from 'motion/react';
-import * as Icons from 'lucide-react';
-import { ArrowRight, ArrowLeft, CheckCircle2, Info, ImageOff, Expand } from 'lucide-react';
-import { useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
+import { ArrowLeft, ArrowRight, CheckCircle2, ChevronRight, ExternalLink, Info } from 'lucide-react';
 import { useSite } from '../context/SiteContext.jsx';
-import { localize, PORTFOLIO, SOFTWARE_FEATURES, FORM_FACTORS } from '../data/siteData.js';
+import { FORM_FACTORS, localize, PORTFOLIO, SOFTWARE_FEATURES } from '../data/siteData.js';
 import { tr } from '../lib/i18n.js';
+import { Icon } from '../lib/icons.jsx';
+import { Img, isStudio } from '../lib/img.jsx';
+import { CountUp, oneLine, Reveal, toList } from '../lib/fx.jsx';
 
-function ProductIcon({ name, className }) {
-  const Component = Icons[name] || Icons.Package;
-  return <Component className={className} />;
+const WiderScreen = lazy(() => import('./WiderScreen.jsx').then((m) => ({ default: m.WiderScreen })));
+
+const hasStage = (p) => p && p.id === 'wider' && !p.image;
+
+function ProductCard({ product, language, onOpen }) {
+  const iconCard = (
+    <span className="o-card__media is-icon" style={{ position: 'absolute', inset: 0 }}><Icon name={product.icon} /></span>
+  );
+  const badge = localize(product.badge, language);
+  let media;
+  if (hasStage(product)) {
+    media = <span className="o-card__media" style={{ background: '#06080c' }}><Suspense fallback={null}><WiderScreen align="center" /></Suspense></span>;
+  } else if (product.image) {
+    media = (
+      <span className={`o-card__media${isStudio(product.image) ? ' is-studio' : ''}`}>
+        <span className="o-zoom"><Img src={product.image} alt="" sizes="(max-width: 640px) 100vw, 30vw" fallback={iconCard} /></span>
+      </span>
+    );
+  } else {
+    media = <span className="o-card__media is-icon"><Icon name={product.icon} /></span>;
+  }
+  return (
+    <button type="button" className="o-card" onClick={() => onOpen(product.id)}>
+      {media}
+      {badge ? <span className="o-card__badge">{badge}</span> : null}
+      <span className="o-card__body">
+        <span className="o-card__cat">{oneLine(localize(product.subtitle, language))}</span>
+        <span className="o-card__name">{localize(product.title, language)}</span>
+        <span className="o-card__text">{oneLine(localize(product.description, language))}</span>
+        <span className="o-more">{tr('Подробнее')} <ArrowRight className="o-arrow" /></span>
+      </span>
+    </button>
+  );
 }
 
-// ───────────────────────── сетка на главной ─────────────────────────
-
-export function Portfolio({ onOpen, bare }) {
+export function Portfolio({ onOpen }) {
   const { language } = useSite();
-  const items = PORTFOLIO || [];
-
   return (
-    <section id="portfolio" className="relative overflow-hidden bg-white py-24 transition-colors dark:bg-black">
-      <div className="container mx-auto px-4">
-        {!bare && (
-          <div className="mb-12 text-center">
-            <div className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-700 dark:text-cyan-400">
-              {tr("Продуктовая линейка")}
-            </div>
-            <h2 className="mt-4 font-black text-slate-900 dark:text-white">{tr("Продукты компании")}</h2>
-          </div>
-        )}
-
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((item, index) => (
-            <motion.button
-              key={item.id}
-              type="button"
-              onClick={() => onOpen(item.id)}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.15 }}
-              transition={{ duration: 0.4, delay: Math.min(index * 0.04, 0.25) }}
-              className="olan-card group flex h-full flex-col rounded-3xl border border-slate-200 bg-slate-50 p-6 text-left dark:border-cyan-500/15 dark:bg-slate-950/70"
-            >
-              <div className="flex items-center gap-3">
-                <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 shadow-lg shadow-cyan-500/20">
-                  <ProductIcon name={item.icon} className="h-5 w-5 text-white" />
-                </span>
-                <span className="font-mono text-sm font-bold text-slate-500 dark:text-slate-600">{item.number}</span>
-              </div>
-
-              <h3 className="mt-4 text-xl font-bold text-slate-900 dark:text-white">
-                {localize(item.title, language)}
-              </h3>
-              <div className="mt-1 text-sm font-medium text-cyan-700 dark:text-cyan-400">
-                {localize(item.subtitle, language)}
-              </div>
-              <p className="mt-3 line-clamp-3 flex-1 text-sm leading-6 text-slate-700 dark:text-slate-400">
-                {localize(item.description, language)}
-              </p>
-
-              <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-cyan-700 transition-all group-hover:gap-3 dark:text-cyan-400">
-                {tr("Подробнее")} <ArrowRight className="h-4 w-4" />
-              </span>
-            </motion.button>
-          ))}
+    <section className="o-section">
+      <div className="o-wrap">
+        <div className="o-grid-cards">
+          {(PORTFOLIO || []).map((p) => <ProductCard key={p.id} product={p} language={language} onOpen={onOpen} />)}
         </div>
       </div>
     </section>
   );
 }
 
-// ───────────────────────── страница продукта ─────────────────────────
-
-// Снимок продукта. Если файла нет — показываем заглушку, а не пустоту,
-// чтобы сразу было видно, куда поставить фотографию.
-function ProductPhoto({ src, alt, onOpen }) {
-  const [broken, setBroken] = useState(false);
-  if (!src || broken) {
+// Живые иллюстрации для разделов страницы (поле visual у раздела).
+function Vignette({ kind }) {
+  if (kind === 'touch') {
     return (
-      <div className="flex aspect-[4/3] w-full items-center justify-center rounded-3xl border border-dashed border-slate-300 bg-slate-100 text-slate-400 dark:border-slate-700 dark:bg-slate-900">
-        <div className="text-center">
-          <ImageOff className="mx-auto h-9 w-9" />
-          <div className="mt-2 text-sm">{tr("Фотография не задана")}</div>
+      <div className="o-vg">
+        <div className="o-vg__screen">
+          {[[22, 42, '0s'], [50, 64, '.85s'], [77, 36, '1.7s']].map(([x, y, d]) => (
+            <span key={x} className="o-vg__tap" style={{ '--x': `${x}%`, '--y': `${y}%`, '--d': d }} />
+          ))}
         </div>
       </div>
     );
   }
-  return (
-    <button type="button" onClick={onOpen}
-      className="group relative block w-full overflow-hidden rounded-3xl border border-slate-200 dark:border-cyan-500/20">
-      <img src={src} alt={alt || ''} onError={() => setBroken(true)}
-        className="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-105" />
-      <span className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-black/60 px-3 py-1.5 text-xs text-white opacity-0 transition group-hover:opacity-100">
-        <Expand className="h-3.5 w-3.5" /> {tr("Открыть")}
-      </span>
-    </button>
-  );
+  if (kind === 'audio') {
+    return (
+      <div className="o-vg">
+        <div className="o-vg__eq">
+          {Array.from({ length: 28 }, (_, i) => (
+            <i key={i} style={{ '--t': `${0.45 + ((i * 37) % 9) / 10}s`, '--d': `${-(i * 0.13).toFixed(2)}s`,
+              '--h1': (0.35 + ((i * 53) % 65) / 100).toFixed(2), '--h2': (0.2 + ((i * 29) % 60) / 100).toFixed(2) }} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+  if (kind === 'battery') return <div className="o-vg"><div className="o-vg__batt"><i /></div></div>;
+  if (kind === 'brand') return <div className="o-vg"><div className="o-vg__brand"><span>{tr('Ваш логотип')}</span></div></div>;
+  return null;
 }
 
-export function ProductPage({ productId, onBack, onContact }) {
+const scrollToBlock = (e, id) => {
+  e.preventDefault();
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
+export function ProductPage({ productId, onBack, onContact, onNavigate }) {
   const { language } = useSite();
+  const product = (PORTFOLIO || []).find((p) => p.id === productId);
   const [zoom, setZoom] = useState(false);
-  const product = (PORTFOLIO || []).find((item) => item.id === productId);
+  const [current, setCurrent] = useState('pp-overview');
+
+  const blocks = product ? [
+    { id: 'pp-overview', label: tr('Обзор'), on: true },
+    { id: 'pp-features', label: tr('Возможности'), on: toList(product.features, language).length > 0 || product.id === 'complexes' },
+    { id: 'pp-use', label: tr('Применение'), on: (product.sections || []).length > 0 },
+    { id: 'pp-specs', label: tr('Характеристики'), on: (product.specs || []).length > 0 },
+  ].filter((b) => b.on) : [];
+
+  useEffect(() => {
+    if (!product || typeof IntersectionObserver === 'undefined') return undefined;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) setCurrent(e.target.id); });
+    }, { rootMargin: '-35% 0px -55% 0px' });
+    blocks.forEach((b) => { const el = document.getElementById(b.id); if (el) io.observe(el); });
+    return () => io.disconnect();
+  }, [productId, language]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!product) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-32 text-center">
-        <p className="text-lg text-slate-700 dark:text-slate-400">{tr("Продукт не найден.")}</p>
-        <button type="button" onClick={onBack}
-          className="mt-6 inline-flex items-center gap-2 rounded-full border border-cyan-600/40 px-5 py-2.5 text-sm text-cyan-700 transition hover:bg-cyan-50 dark:text-cyan-300 dark:hover:bg-cyan-500/10">
-          <ArrowLeft className="h-4 w-4" /> {tr("На главную")}
-        </button>
-      </div>
+      <section className="o-pagehead">
+        <div className="o-wrap">
+          <h1>{tr('Продукт')}</h1>
+          <button type="button" className="o-btn o-btn--line" style={{ marginTop: '1.5rem' }} onClick={onBack}><ArrowLeft /> {tr('Все продукты')}</button>
+        </div>
+      </section>
     );
   }
 
-  const tags = product.tags || [];
-  const tagsTitle = localize(product.tagsTitle, language);
-  const meta = localize(product.meta, language);
-  const note = localize(product.note, language);
+  const title = localize(product.title, language);
+  const features = toList(product.features, language);
+  const tags = toList(product.tags, language);
+  const clients = toList(product.clients, language);
+  const highlights = (product.highlights || []).map((h) => ({ value: localize(h.value, language), label: localize(h.label, language) }));
+  const sections = (product.sections || []).map((s) => ({ visual: s.visual, image: s.image, title: localize(s.title, language), text: localize(s.text, language) }));
+  const specs = (product.specs || []).map((s) => ({ label: localize(s.label, language), value: localize(s.value, language) }));
+  const link = product.link;
+  const linkLabel = localize(product.linkLabel, language) || tr('Перейти на сайт');
+  const related = (PORTFOLIO || []).filter((p) => p.id !== product.id && p.id !== 'catalog').slice(0, 3);
+  const blockStyle = { scrollMarginTop: 'calc(var(--o-header) + 70px)' };
+  const external = link ? (
+    <a className="o-btn o-btn--line" href={link} target="_blank" rel="noopener noreferrer">{linkLabel} <ExternalLink /></a>
+  ) : null;
+
+  let visual;
+  if (hasStage(product)) {
+    visual = <div className="o-pp-visual o-pp-visual--stage"><Suspense fallback={null}><WiderScreen align="center" /></Suspense></div>;
+  } else if (product.image) {
+    visual = (
+      <button type="button" className={`o-pp-visual${isStudio(product.image) ? ' is-studio' : ''}`} onClick={() => setZoom(true)} style={{ cursor: 'zoom-in' }}>
+        <Img src={product.image} alt={title} eager sizes="(max-width: 900px) 100vw, 55vw"
+          fallback={<span className="o-pp-visual is-icon" style={{ position: 'absolute', inset: 0 }}><Icon name={product.icon} /></span>} />
+      </button>
+    );
+  } else {
+    visual = <div className="o-pp-visual is-icon"><Icon name={product.icon} /></div>;
+  }
 
   return (
-    <div className="bg-white pt-24 transition-colors dark:bg-black">
-      <div className="container mx-auto px-4 pb-20">
-        <button type="button" onClick={onBack}
-          className="mb-8 inline-flex items-center gap-2 text-sm text-slate-600 transition hover:text-cyan-700 dark:text-slate-400 dark:hover:text-cyan-300">
-          <ArrowLeft className="h-4 w-4" /> {tr("Назад")}
-        </button>
-
-        <div className="flex flex-wrap items-center gap-4">
-          <span className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 shadow-lg shadow-cyan-500/20">
-            <ProductIcon name={product.icon} className="h-7 w-7 text-white" />
-          </span>
+    <>
+      <section className="o-pp-hero">
+        <div className="o-wrap o-pp-hero__grid">
           <div>
-            <div className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-600">
-              Продукт {product.number}
+            <nav className="o-crumbs">
+              <button type="button" onClick={() => onNavigate('home')}>{tr('Главная')}</button><ChevronRight />
+              <button type="button" onClick={() => onNavigate('portfolio')}>{tr('Продукты группы')}</button><ChevronRight />
+              <span>{title}</span>
+            </nav>
+            {localize(product.badge, language) ? <div className="o-hero__badge" style={{ marginTop: '1.25rem', marginBottom: 0 }}>{localize(product.badge, language)}</div> : null}
+            <h1>{title}</h1>
+            <p className="o-pp-hero__sub">{localize(product.subtitle, language)}</p>
+            <p className="o-pp-hero__desc">{localize(product.description, language)}</p>
+            <div className="o-pp-hero__actions">
+              <button type="button" className="o-btn o-btn--primary" onClick={onContact}>{tr('Связаться')} <ArrowRight className="o-arrow" /></button>
+              {external}
             </div>
-            <h1 className="mt-1 text-3xl font-black text-slate-900 dark:text-white md:text-4xl">
-              {localize(product.title, language)}
-            </h1>
           </div>
-        </div>
-
-        <div className="mt-2 text-lg font-medium text-cyan-700 dark:text-cyan-400">
-          {localize(product.subtitle, language)}
-        </div>
-
-        <p className="mt-6 max-w-4xl text-lg leading-8 text-slate-800 dark:text-slate-300">
-          {localize(product.description, language)}
-        </p>
-
-        <div className="mt-10 grid gap-8 lg:grid-cols-[1.4fr_1fr]">
           <div>
-            <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-600 dark:text-slate-400">
-              {tr("Что входит")}
-            </h2>
-            <ul className="mt-5 space-y-3">
-              {(product.features || []).map((feature, index) => (
-                <li key={index} className="flex items-start gap-3">
-                  <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-cyan-700 dark:text-cyan-400" />
-                  <span className="leading-7 text-slate-800 dark:text-slate-300">{localize(feature, language)}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="space-y-5">
-            {/* Снимок продукта. Загружается в админ-панели,
-                раздел «Продукты группы», поле «Картинка». */}
-            <ProductPhoto
-              src={product.image}
-              alt={localize(product.title, language)}
-              onOpen={() => setZoom(true)}
-            />
-            {product.imageCaption && (
-              <div className="-mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">
-                {localize(product.imageCaption, language)}
-              </div>
-            )}
-
-            {tags.length > 0 && (
-              <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 dark:border-cyan-500/15 dark:bg-slate-950/70">
-                {tagsTitle && (
-                  <div className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-800 dark:text-cyan-300">
-                    {tagsTitle}
-                  </div>
-                )}
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {tags.map((tag, index) => (
-                    <span key={index}
-                      className="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-800 dark:border-cyan-500/25 dark:bg-black dark:text-slate-200">
-                      {localize(tag, language)}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {meta && (
-              <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5 text-sm font-semibold text-slate-800 dark:border-cyan-500/15 dark:bg-slate-950/70 dark:text-slate-200">
-                {meta}
-              </div>
-            )}
-
-            <button type="button" onClick={onContact}
-              className="olan-sweep inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-600 to-blue-700 px-6 py-3.5 font-semibold text-white transition hover:scale-[1.02]">
-              {tr("Обсудить проект")} <ArrowRight className="h-4 w-4" />
-            </button>
+            {visual}
+            {product.imageCaption ? <p style={{ marginTop: '.75rem', fontSize: '.85rem', color: 'var(--o-muted)' }}>{localize(product.imageCaption, language)}</p> : null}
           </div>
         </div>
+      </section>
 
-        {/* Для комплексов показываем варианты исполнения и особенности ПО —
-            это отдельные развороты презентации, им нужно место на странице. */}
-        {product.id === 'complexes' && (
-          <>
-            <div className="mt-14">
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-                {localize(FORM_FACTORS.title, language)}
-              </h2>
-              <p className="mt-2 text-slate-700 dark:text-slate-400">{localize(FORM_FACTORS.note, language)}</p>
-              <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-                {(FORM_FACTORS.items || []).map((item, index) => (
-                  <div key={index}
-                    className="olan-card rounded-3xl border border-slate-200 bg-slate-50 p-5 dark:border-cyan-500/15 dark:bg-slate-950/70">
-                    <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 shadow-lg shadow-cyan-500/20">
-                      <ProductIcon name={item.icon} className="h-6 w-6 text-white" />
-                    </div>
-                    <div className="font-bold text-slate-900 dark:text-white">{localize(item.title, language)}</div>
-                    <p className="mt-2 text-sm leading-6 text-slate-700 dark:text-slate-400">{localize(item.text, language)}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-14">
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-                {localize(SOFTWARE_FEATURES.title, language)}
-              </h2>
-              <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {(SOFTWARE_FEATURES.items || []).map((item, index) => (
-                  <div key={index}
-                    className="olan-card flex items-start gap-4 rounded-3xl border border-slate-200 bg-slate-50 p-5 dark:border-cyan-500/15 dark:bg-slate-950/70">
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 shadow-lg shadow-cyan-500/20">
-                      <ProductIcon name={item.icon} className="h-5 w-5 text-white" />
-                    </div>
-                    <div>
-                      <div className="font-bold text-slate-900 dark:text-white">{localize(item.title, language)}</div>
-                      <p className="mt-1 text-sm leading-6 text-slate-700 dark:text-slate-400">{localize(item.text, language)}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </>
-        )}
-
-        {zoom && product.image && (
-          <div
-            className="fixed inset-0 z-[70] flex items-center justify-center bg-black/95 p-4"
-            onClick={() => setZoom(false)}
-          >
-            <img src={product.image} alt={localize(product.title, language)}
-              className="max-h-[88vh] w-auto max-w-full rounded-2xl object-contain" />
-          </div>
-        )}
-
-        {note && (
-          <div className="mt-10 flex items-start gap-3 rounded-3xl bg-slate-900 p-6 text-slate-100 dark:bg-slate-950 dark:text-slate-200">
-            <Info className="mt-0.5 h-5 w-5 shrink-0 text-cyan-400" />
-            <span className="leading-7">{note}</span>
-          </div>
-        )}
-
-        <div className="mt-12">
-          <div className="text-sm font-semibold text-slate-600 dark:text-slate-400">{tr("Другие продукты")}</div>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {(PORTFOLIO || []).filter((item) => item.id !== product.id).map((item) => (
-              <button key={item.id} type="button"
-                onClick={() => { if (typeof window !== 'undefined') window.location.hash = `product-${item.id}`; }}
-                className="rounded-full border border-slate-300 px-3.5 py-1.5 text-xs text-slate-700 transition hover:border-cyan-600/50 hover:text-cyan-700 dark:border-cyan-500/20 dark:text-slate-300 dark:hover:text-cyan-300">
-                {localize(item.title, language)}
-              </button>
+      {blocks.length > 1 ? (
+        <nav className="o-subnav">
+          <div className="o-wrap o-subnav__in">
+            {blocks.map((b) => (
+              <a key={b.id} href={`#${b.id}`} className={current === b.id ? 'is-active' : ''} onClick={(e) => scrollToBlock(e, b.id)}>{b.label}</a>
             ))}
           </div>
+        </nav>
+      ) : null}
+
+      <section className="o-section">
+        <div className="o-wrap">
+          <div id="pp-overview" className="o-pp-block" style={blockStyle}>
+            {highlights.length ? (
+              <div className="o-highlights">
+                {highlights.map((h, i) => (
+                  <Reveal key={i} className="o-hl" delay={i * 80}>
+                    <div className="o-hl__v"><CountUp value={h.value} /></div>
+                    <div className="o-hl__l">{h.label}</div>
+                  </Reveal>
+                ))}
+              </div>
+            ) : (
+              <p className="o-lead" style={{ margin: 0, color: 'var(--o-text)' }}>{localize(product.description, language)}</p>
+            )}
+          </div>
+
+          {features.length || product.id === 'complexes' ? (
+            <div id="pp-features" className="o-pp-block" style={blockStyle}>
+              {features.length ? (
+                <>
+                  <h2 className="o-h2">{tr('Возможности')}</h2>
+                  <div className="o-features">
+                    {features.map((f) => <div key={f} className="o-feature"><CheckCircle2 /> <span>{f}</span></div>)}
+                  </div>
+                </>
+              ) : null}
+              {product.id === 'complexes' && FORM_FACTORS ? (
+                <div style={{ marginTop: features.length ? 'clamp(3rem, 6vw, 5rem)' : 0 }}>
+                  <h2 className="o-h2">{localize(FORM_FACTORS.title, language)}</h2>
+                  {FORM_FACTORS.note ? <p className="o-lead" style={{ marginTop: '-1rem', marginBottom: '1.5rem' }}>{localize(FORM_FACTORS.note, language)}</p> : null}
+                  <div className="o-features">
+                    {(FORM_FACTORS.items || []).map((item, i) => (
+                      <div key={i} className="o-feature"><Icon name={item.icon} /><span><b>{localize(item.title, language)}</b>{localize(item.text, language)}</span></div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+              {product.id === 'complexes' && SOFTWARE_FEATURES ? (
+                <div style={{ marginTop: 'clamp(3rem, 6vw, 5rem)' }}>
+                  <h2 className="o-h2">{localize(SOFTWARE_FEATURES.title, language)}</h2>
+                  <div className="o-features">
+                    {(SOFTWARE_FEATURES.items || []).map((item, i) => (
+                      <div key={i} className="o-feature"><Icon name={item.icon} /><span><b>{localize(item.title, language)}</b>{localize(item.text, language)}</span></div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+
+          {sections.length ? (
+            <div id="pp-use" className="o-pp-block" style={blockStyle}>
+              {sections.map((s, i) => (
+                <div key={i} className="o-split">
+                  <Reveal className="o-split__media" variant="unmask">
+                    {s.image ? <Img src={s.image} alt="" sizes="(max-width: 900px) 100vw, 50vw" /> : <Vignette kind={s.visual} />}
+                  </Reveal>
+                  <Reveal>
+                    <h3>{s.title}</h3>
+                    <p>{s.text}</p>
+                  </Reveal>
+                </div>
+              ))}
+            </div>
+          ) : null}
+
+          {specs.length ? (
+            <div id="pp-specs" className="o-pp-block" style={blockStyle}>
+              <h2 className="o-h2">{tr('Характеристики')}</h2>
+              <dl className="o-specs">
+                {specs.map((s, i) => <div key={i} className="o-specs__row"><dt>{s.label}</dt><dd>{s.value}</dd></div>)}
+              </dl>
+            </div>
+          ) : null}
+
+          {tags.length ? (
+            <div className="o-pp-block">
+              <h2 className="o-h2">{localize(product.tagsTitle, language) || tr('Применение')}</h2>
+              <div className="o-tags">{tags.map((t) => <span key={t} className="o-tag">{t}</span>)}</div>
+            </div>
+          ) : null}
+
+          {clients.length ? (
+            <div className="o-pp-block">
+              <h2 className="o-h2">{localize(product.clientsTitle, language)}</h2>
+              <div className="o-clients">{clients.map((c) => <div key={c} className="o-client">{c}</div>)}</div>
+            </div>
+          ) : null}
+
+          {localize(product.note, language) || localize(product.meta, language) ? (
+            <div className="o-pp-block" style={{ display: 'grid', gap: '1rem' }}>
+              {localize(product.note, language) ? <div className="o-note"><Info /> <span>{localize(product.note, language)}</span></div> : null}
+              {localize(product.meta, language) ? <p style={{ color: 'var(--o-muted)', fontSize: '.9rem' }}>{localize(product.meta, language)}</p> : null}
+            </div>
+          ) : null}
+
+          {related.length ? (
+            <div className="o-pp-block">
+              <div className="o-head o-head--split" style={{ marginBottom: '1.75rem' }}>
+                <h2 className="o-h2" style={{ margin: 0 }}>{tr('Продукты группы')}</h2>
+                <button type="button" className="o-more" onClick={() => onNavigate('portfolio')}>{tr('Все продукты')} <ArrowRight className="o-arrow" /></button>
+              </div>
+              <div className="o-grid-cards">
+                {related.map((p) => <ProductCard key={p.id} product={p} language={language} onOpen={(id) => onNavigate(`product-${id}`)} />)}
+              </div>
+            </div>
+          ) : null}
+
+          <div className="o-pp-block">
+            <div className="o-cta">
+              <div>
+                <h2>{tr('Остались вопросы?')}</h2>
+                <p>{tr('Расскажите о задаче — подберём оборудование и подготовим предложение.')}</p>
+              </div>
+              <div className="o-cta__actions">
+                <button type="button" className="o-btn o-btn--primary" onClick={onContact}>{tr('Связаться')} <ArrowRight className="o-arrow" /></button>
+                {link ? (
+                  <a className="o-btn o-btn--light" href={link} target="_blank" rel="noopener noreferrer">{linkLabel} <ExternalLink /></a>
+                ) : null}
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </section>
+
+      {zoom && product.image ? (
+        <div className="o-lightbox" role="dialog" aria-label={title} onClick={() => setZoom(false)}>
+          <Img src={product.image} alt={title} sizes="100vw" />
+        </div>
+      ) : null}
+    </>
   );
 }

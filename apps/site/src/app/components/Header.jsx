@@ -1,259 +1,297 @@
-import { useState } from 'react';
-import { Menu, X, Sun, Moon, Phone, Globe, ChevronDown } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+// ---------------------------------------------------------------------------
+// Шапка в духе hikvision.com.
+//
+// На главной поверх баннера она прозрачная с белым текстом, при прокрутке
+// становится белой. При движении вниз уезжает, при движении вверх
+// возвращается — читать длинные страницы ничто не мешает.
+// «Продукты» и «Решения» раскрываются мега-меню во всю ширину с фотографиями.
+// Всё собирается из контента: добавили продукт в админке — он уже в меню.
+// ---------------------------------------------------------------------------
+import { useEffect, useRef, useState } from 'react';
+import { ArrowRight, ChevronDown, Globe, Menu, Moon, Sun, X } from 'lucide-react';
 import { useSite } from '../context/SiteContext.jsx';
-import { localize, PORTFOLIO } from '../data/siteData.js';
+import { localize, PORTFOLIO, PRODUCTS, VIOLATION_SOLUTIONS, DIRECTIONS } from '../data/siteData.js';
 import { tr } from '../lib/i18n.js';
+import { Icon } from '../lib/icons.jsx';
+import { Img, isStudio } from '../lib/img.jsx';
+import { oneLine } from '../lib/fx.jsx';
 
-export function Header({ route, onNavigate, onSection, onHome }) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [langOpen, setLangOpen] = useState(false);
-  // Какое подменю сейчас раскрыто при наведении.
-  const [openMenu, setOpenMenu] = useState('');
+function Thumb({ src, icon }) {
+  return (
+    <span className={`o-thumb${isStudio(src) ? ' is-studio' : ''}`}>
+      <Img src={src} sizes="72px" fallback={<Icon name={icon} />} />
+    </span>
+  );
+}
+
+export function Header({ route, onNavigate, onSection, onHome, onOpenDevice }) {
   const { text, theme, toggleTheme, language, setLanguage, languageOptions } = useSite();
+  const [open, setOpen] = useState('');
+  const [productsTab, setProductsTab] = useState('devices');
+  const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const [drawer, setDrawer] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
+  const closeTimer = useRef(0);
+  const openTimer = useRef(0);
 
-  // Каждый пункт — отдельная страница со своим адресом.
-  // На главной остались только первый экран, подбор по задаче,
-  // преимущества, порядок заказа и блок партнёра.
-  // Подменю собираются из самого контента: добавили направление или продукт
-  // в админке — он сразу появится в шапке, править код не нужно.
-  const productItems = (PORTFOLIO || []).map((item) => ({
-    name: localize(item.title, language),
-    // Каталог — не описание продукта, а сам каталог оборудования.
-    target: item.id === 'catalog' ? 'catalog' : `product-${item.id}`,
-  }));
+  // Прокрутка: прозрачность над баннером и «уезжающая» шапка.
+  useEffect(() => {
+    let last = window.scrollY;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const y = window.scrollY;
+      setScrolled(y > 24);
+      if (Math.abs(y - last) > 6) {
+        setHidden(y > last && y > 520);
+        last = y;
+      }
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => { window.removeEventListener('scroll', onScroll); cancelAnimationFrame(raf); };
+  }, []);
 
-  // «О компании» — без подменю: разделы открываются карточками уже
-  // на самой странице. Каталог переехал внутрь «Продуктов».
-  // Контакты живут на главной, отдельного пункта им не нужно.
-  const navItems = [
-    { name: tr("О компании"), target: 'about', isPage: true },
-    { name: tr("Услуги"), target: 'directions', isPage: true },
-    { name: tr("Продукты"), target: 'portfolio', isPage: true, children: productItems },
-    { name: tr("Задачи"), target: 'cases', isPage: true },
-    { name: text.nav.faq, target: 'faq', isPage: true },
-    // Контакты — секция на главной, поэтому не страница, а переход с прокруткой.
-    { name: text.nav.contact, target: 'contact', isPage: false, href: 'contact' },
-  ];
+  const isHidden = hidden && !open && !drawer && !langOpen;
+  useEffect(() => {
+    document.documentElement.style.setProperty('--o-sticky-top', isHidden ? '0px' : 'var(--o-header)');
+  }, [isHidden]);
 
-  const handleNav = (item) => {
-    if (item.isPage) onNavigate(item.target);
-    else onSection(item.href);
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') { setOpen(''); setLangOpen(false); setDrawer(false); } };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  useEffect(() => { document.body.style.overflow = drawer ? 'hidden' : ''; }, [drawer]);
+  useEffect(() => { setOpen(''); setDrawer(false); }, [route]);
+
+  // Небольшая задержка при наведении: меню не вспыхивает, если курсор
+  // просто пролетел над шапкой по пути к странице.
+  const enter = (id) => {
+    clearTimeout(closeTimer.current);
+    clearTimeout(openTimer.current);
+    openTimer.current = setTimeout(() => setOpen(id), open ? 0 : 90);
+  };
+  const leave = () => {
+    clearTimeout(openTimer.current);
+    closeTimer.current = setTimeout(() => setOpen(''), 160);
   };
 
+  const go = (target) => { setOpen(''); setDrawer(false); onNavigate(target); };
+  const goSection = (id) => { setOpen(''); setDrawer(false); onSection(id); };
+  const openDevice = (id) => { setOpen(''); setDrawer(false); onOpenDevice(id); };
+
+  const devices = (PRODUCTS || []).map((p) => {
+    const full = oneLine(localize(p.name, language));
+    return {
+      key: p.id, name: p.brand || full, sub: p.brand ? full.replace(p.brand, '').trim() : '',
+      image: p.images && p.images[0], icon: 'Camera', onClick: () => openDevice(p.id),
+    };
+  });
+  const platforms = (PORTFOLIO || []).filter((p) => p.id !== 'catalog').map((p) => ({
+    key: p.id, name: localize(p.title, language), sub: localize(p.subtitle, language), image: p.image, icon: p.icon,
+    onClick: () => go(`product-${p.id}`),
+  }));
+  const productTabs = [
+    { id: 'devices', label: tr('Комплексы фиксации'), items: devices },
+    { id: 'platforms', label: tr('Продукты группы'), items: platforms },
+  ];
+  const activeProducts = productTabs.find((t) => t.id === productsTab) || productTabs[0];
+
+  const solutions = (VIOLATION_SOLUTIONS || []).map((s) => ({ key: s.id, icon: s.icon, name: localize(s.title, language), onClick: () => go(`solution-${s.id}`) }));
+  const directions = (DIRECTIONS || []).map((d) => ({ key: d.id, icon: d.icon, name: localize(d.title, language), onClick: () => go(`card-directions-${d.id}`) }));
+  const company = [
+    { key: 'about', name: tr('О компании'), onClick: () => go('about') },
+    { key: 'team', name: tr('Команда'), onClick: () => go('team') },
+    { key: 'engagement', name: tr('Модели работы'), onClick: () => go('engagement') },
+    { key: 'workflow', name: tr('Этапы и SLA'), onClick: () => go('workflow') },
+    { key: 'faq', name: tr('Частые вопросы'), onClick: () => go('faq') },
+  ];
+
+  const over = route === 'home' && !scrolled && !open && !drawer;
+  const current = (ids) => ids.includes(route);
+
+  const navButton = (id, label, ids = []) => (
+    <button type="button" className={`o-nav__btn${current(ids) ? ' is-current' : ''}`} aria-expanded={open === id}
+      onClick={() => setOpen((v) => (v === id ? '' : id))} onFocus={() => enter(id)}>
+      {label} <ChevronDown />
+    </button>
+  );
+
   return (
-    <header className="fixed left-0 right-0 top-0 z-50 border-b border-slate-200 dark:border-cyan-500/15 bg-white backdrop-blur-xl transition-colors dark:bg-black/75">
-      <nav className="container mx-auto px-4 py-2.5">
-        <div className="flex items-center justify-between gap-4">
-          <motion.button
-            type="button"
-            onClick={onHome || (() => onNavigate('home'))}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.4 }}
-            className="flex items-center gap-3"
-          >
-            <img src="/olan_logo.svg" alt={text.brand} className="h-9 w-9 rounded-xl object-cover shadow-lg shadow-cyan-500/20" />
-            {/* Название в одну строку. Раньше «PROJECT» шло вторым блоком,
-                и шапка из-за этого была вдвое выше, чем нужно. */}
-            <div className="hidden whitespace-nowrap bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-[0.95rem] font-bold leading-tight text-transparent sm:block lg:text-base">
-              {text.brand} PROJECT
-            </div>
-          </motion.button>
+    <>
+      <header className={`o-header${over ? ' is-over' : ''}${isHidden ? ' is-hidden' : ''}`} onMouseLeave={leave}>
+        <div className="o-wrap o-header__row">
+          <button type="button" className="o-logo" onClick={onHome} aria-label={text.brand}>
+            <img src="/logo-mark.webp" alt="" width="38" height="38" />
+            <span>{text.brand}</span>
+          </button>
 
-          <motion.div
-            className="hidden items-center gap-4 lg:flex xl:gap-5"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.1 }}
-          >
-            {navItems.map((item) => (
-              item.children && item.children.length > 0 ? (
-                <div
-                  key={item.target}
-                  className="relative"
-                  onMouseEnter={() => setOpenMenu(item.target)}
-                  onMouseLeave={() => setOpenMenu('')}
-                >
-                  <button
-                    type="button"
-                    onClick={() => handleNav(item)}
-                    className={`inline-flex items-center gap-1 whitespace-nowrap text-sm font-medium transition-colors hover:text-cyan-600 dark:hover:text-cyan-400 ${route === item.target ? 'text-cyan-600 dark:text-cyan-400' : 'text-slate-700 dark:text-slate-300'}`}
-                  >
-                    {item.name}
-                    <ChevronDown className={`h-3.5 w-3.5 transition-transform ${openMenu === item.target ? 'rotate-180' : ''}`} />
-                  </button>
-
-                  <AnimatePresence>
-                    {openMenu === item.target && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 6 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute left-0 top-full z-50 w-72 pt-3"
-                      >
-                        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white py-2 shadow-xl shadow-slate-900/10 dark:border-cyan-500/20 dark:bg-slate-950 dark:shadow-black/40">
-                          {item.children.map((child) => (
-                            <button
-                              key={child.target + child.name}
-                              type="button"
-                              onClick={() => { onNavigate(child.target); setOpenMenu(''); }}
-                              className="block w-full px-4 py-2.5 text-left text-sm text-slate-700 transition hover:bg-cyan-50 hover:text-cyan-700 dark:text-slate-300 dark:hover:bg-cyan-500/10 dark:hover:text-cyan-300"
-                            >
-                              {child.name}
-                            </button>
-                          ))}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              ) : (
-              <button
-                key={item.target || item.href}
-                type="button"
-                onClick={() => handleNav(item)}
-                className={`relative whitespace-nowrap text-sm font-medium transition-colors hover:text-cyan-600 dark:hover:text-cyan-400 ${route === item.target ? 'text-cyan-600 dark:text-cyan-400' : 'text-slate-700 dark:text-slate-300'}`}
-              >
-                {item.name}
-              </button>
-              )
-            ))}
-          </motion.div>
-
-          <div className="hidden items-center gap-3 lg:flex">
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setLangOpen((prev) => !prev)}
-                className="inline-flex h-9 items-center gap-1.5 rounded-full border border-slate-200 dark:border-cyan-500/20 bg-white px-3 text-sm text-slate-700 transition hover:border-cyan-500/50 hover:text-cyan-600 dark:bg-slate-900 dark:text-slate-200"
-                aria-label={text.actions.language}
-              >
-                <Globe className="h-4 w-4" />
-                <span className="font-semibold uppercase">{language}</span>
-                <ChevronDown className={`h-3.5 w-3.5 transition ${langOpen ? 'rotate-180' : ''}`} />
-              </button>
-              {langOpen && (
-                <>
-                  <button
-                    type="button"
-                    aria-hidden="true"
-                    tabIndex={-1}
-                    className="fixed inset-0 z-40 cursor-default"
-                    onClick={() => setLangOpen(false)}
-                  />
-                  <div className="absolute right-0 z-50 mt-2 w-44 overflow-hidden rounded-2xl border border-slate-200 dark:border-cyan-500/20 bg-white py-1 shadow-xl dark:bg-slate-900">
-                    {languageOptions.map((option) => (
-                      <button
-                        key={option.code}
-                        type="button"
-                        onClick={() => {
-                          setLanguage(option.code);
-                          setLangOpen(false);
-                        }}
-                        className={`block w-full px-4 py-2 text-left text-sm transition hover:bg-cyan-500/10 ${option.code === language ? 'font-semibold text-cyan-600 dark:text-cyan-400' : 'text-slate-700 dark:text-slate-200'}`}
-                      >
-                        {option.label}
+          <nav className="o-nav">
+            <div className={`o-nav__item${open === 'products' ? ' is-open' : ''}`} onMouseEnter={() => enter('products')}>
+              {navButton('products', tr('Продукты'), ['portfolio', 'catalog', 'product'])}
+              <div className="o-mega" onMouseEnter={() => enter('products')}>
+                <div className="o-wrap o-mega__in">
+                  <div className="o-mega__side">
+                    {productTabs.map((t) => (
+                      <button key={t.id} type="button" className={`o-mega__tab${t.id === activeProducts.id ? ' is-active' : ''}`}
+                        onMouseEnter={() => setProductsTab(t.id)} onFocus={() => setProductsTab(t.id)} onClick={() => setProductsTab(t.id)}>
+                        {t.label} <ArrowRight className="o-arrow" />
                       </button>
+                    ))}
+                    <button type="button" className="o-mega__tab" onClick={() => go('catalog')}>
+                      {tr('Каталог оборудования')} <ArrowRight className="o-arrow" />
+                    </button>
+                  </div>
+                  <div className="o-mega__main">
+                    <div className="o-mega__grid" key={activeProducts.id}>
+                      {activeProducts.items.map((item, i) => (
+                        <button key={item.key} type="button" className="o-mega__card" style={{ '--i': i }} onClick={item.onClick}>
+                          <Thumb src={item.image} icon={item.icon} />
+                          <span>
+                            <span className="o-mega__name">{item.name}</span>
+                            {item.sub ? <span className="o-mega__sub">{item.sub}</span> : null}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                    <div className="o-mega__foot">
+                      <button type="button" className="o-more" onClick={() => go('portfolio')}>{tr('Все продукты')} <ArrowRight className="o-arrow" /></button>
+                      <button type="button" className="o-more" onClick={() => go('catalog')}>{tr('Каталог оборудования')} <ArrowRight className="o-arrow" /></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className={`o-nav__item${open === 'solutions' ? ' is-open' : ''}`} onMouseEnter={() => enter('solutions')}>
+              {navButton('solutions', tr('Решения'), ['solution', 'cases', 'directions', 'card'])}
+              <div className="o-mega" onMouseEnter={() => enter('solutions')}>
+                <div className="o-wrap">
+                  <div className="o-mega__cols">
+                    <div>
+                      <div className="o-mega__title">{tr('Решения по задачам')}</div>
+                      <div className="o-mega__list">
+                        {solutions.map((s, i) => (
+                          <button key={s.key} type="button" style={{ '--i': i }} onClick={s.onClick}><Icon name={s.icon} /> {s.name}</button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="o-mega__title">{tr('Направления деятельности')}</div>
+                      <div className="o-mega__list">
+                        {directions.map((d, i) => (
+                          <button key={d.key} type="button" style={{ '--i': i + 3 }} onClick={d.onClick}><Icon name={d.icon} /> {d.name}</button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="o-mega__foot" style={{ marginTop: 0, marginBottom: '1.5rem' }}>
+                    <button type="button" className="o-more" onClick={() => go('cases')}>{tr('Задачи заказчика')} <ArrowRight className="o-arrow" /></button>
+                    <button type="button" className="o-more" onClick={() => go('directions')}>{tr('Все услуги')} <ArrowRight className="o-arrow" /></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="o-nav__item">
+              <button type="button" className={`o-nav__btn${current(['projects']) ? ' is-current' : ''}`} onClick={() => go('projects')} onMouseEnter={leave}>
+                {tr('Проекты')}
+              </button>
+            </div>
+
+            <div className={`o-nav__item${open === 'company' ? ' is-open' : ''}`} onMouseEnter={() => enter('company')}>
+              {navButton('company', tr('О компании'), ['about', 'team', 'engagement', 'workflow', 'faq'])}
+              <div className="o-mega" onMouseEnter={() => enter('company')}>
+                <div className="o-wrap" style={{ paddingBlock: '1.5rem' }}>
+                  <div className="o-mega__list" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(14rem, 1fr))' }}>
+                    {company.map((c, i) => (
+                      <button key={c.key} type="button" style={{ '--i': i }} onClick={c.onClick}>{c.name}</button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="o-nav__item">
+              <button type="button" className="o-nav__btn" onClick={() => goSection('contact')} onMouseEnter={leave}>{tr('Контакты')}</button>
+            </div>
+          </nav>
+
+          <div className="o-tools">
+            <div style={{ position: 'relative' }} className="o-hide-m">
+              <button type="button" className="o-icon-btn" aria-label={text.actions.language} aria-expanded={langOpen}
+                onClick={() => setLangOpen((v) => !v)}>
+                <Globe /> <span>{(languageOptions.find((o) => o.code === language) || {}).short || language.toUpperCase()}</span>
+              </button>
+              {langOpen ? (
+                <>
+                  <button type="button" aria-hidden="true" tabIndex={-1} onClick={() => setLangOpen(false)}
+                    style={{ position: 'fixed', inset: 0, background: 'transparent', border: 0, cursor: 'default', zIndex: 4 }} />
+                  <div className="o-pop" role="menu">
+                    {languageOptions.map((o) => (
+                      <button key={o.code} type="button" role="menuitem" aria-current={o.code === language}
+                        onClick={() => { setLanguage(o.code); setLangOpen(false); }}>{o.label}</button>
                     ))}
                   </div>
                 </>
-              )}
+              ) : null}
             </div>
-
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 dark:border-cyan-500/20 bg-white text-slate-700 transition hover:border-cyan-500/50 hover:text-cyan-600 dark:bg-slate-900 dark:text-slate-200"
-              aria-label={theme === 'dark' ? text.actions.themeLight : text.actions.themeDark}
-            >
-              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            <button type="button" className="o-icon-btn o-hide-m" onClick={toggleTheme}
+              aria-label={theme === 'dark' ? text.actions.themeLight : text.actions.themeDark}>
+              {theme === 'dark' ? <Sun /> : <Moon />}
             </button>
-            <button
-              type="button"
-              onClick={() => onSection('contact')}
-              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-cyan-500/20 transition hover:translate-y-[-1px]"
-            >
-              <Phone className="h-4 w-4" />
-              {text.actions.contact}
+            <button type="button" className="o-btn o-btn--primary o-btn--sm o-hide-m" onClick={() => goSection('contact')}>
+              {tr('Связаться')}
+            </button>
+            <button type="button" className="o-icon-btn o-burger" aria-expanded={drawer}
+              aria-label={drawer ? tr('Закрыть меню') : tr('Открыть меню')} onClick={() => setDrawer((v) => !v)}>
+              {drawer ? <X /> : <Menu />}
             </button>
           </div>
-
-          <button
-            type="button"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 dark:border-cyan-500/20 bg-white text-slate-700 lg:hidden dark:bg-slate-900 dark:text-slate-200"
-            onClick={() => setMobileMenuOpen((prev) => !prev)}
-            aria-label={tr("Открыть меню")}
-          >
-            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
         </div>
+      </header>
 
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden lg:hidden"
-            >
-              <div className="mt-4 space-y-3 rounded-3xl border border-slate-200 dark:border-cyan-500/20 bg-white/90 p-4 dark:bg-slate-950/90">
-                <button
-                  type="button"
-                  onClick={toggleTheme}
-                  className="w-full rounded-2xl border border-slate-200 dark:border-cyan-500/20 px-3 py-2 text-sm text-slate-700 dark:text-slate-200"
-                >
-                  {theme === 'dark' ? text.actions.themeLight : text.actions.themeDark}
-                </button>
+      <div className={`o-veil${open ? ' is-on' : ''}`} aria-hidden="true" />
 
-                <div className="rounded-2xl border border-slate-200 dark:border-cyan-500/20 p-2">
-                  <div className="px-1 pb-2 text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-400">{text.actions.language}</div>
-                  <div className="grid grid-cols-3 gap-2">
-                    {languageOptions.map((option) => (
-                      <button
-                        key={option.code}
-                        type="button"
-                        onClick={() => {
-                          setLanguage(option.code);
-                          setMobileMenuOpen(false);
-                        }}
-                        className={`rounded-xl px-2 py-2 text-sm transition ${option.code === language ? 'bg-cyan-500/15 font-semibold text-cyan-600 dark:text-cyan-300' : 'text-slate-700 hover:bg-cyan-500/10 dark:text-slate-200'}`}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {navItems.map((item) => (
-                  <button
-                    key={item.target || item.href}
-                    type="button"
-                    onClick={() => {
-                      handleNav(item);
-                      setMobileMenuOpen(false);
-                    }}
-                    className="block w-full rounded-2xl px-3 py-2 text-left text-sm text-slate-700 transition hover:bg-cyan-500/10 hover:text-cyan-600 dark:text-slate-200"
-                  >
-                    {item.name}
-                  </button>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => {
-                    onSection('contact');
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 px-4 py-2 text-sm font-medium text-white"
-                >
-                  {text.actions.contact}
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </nav>
-    </header>
+      <div className={`o-drawer${drawer ? ' is-open' : ''}`} aria-hidden={!drawer}>
+        <details>
+          <summary>{tr('Комплексы фиксации')} <ChevronDown /></summary>
+          <div className="o-drawer__links">{devices.map((d) => <button key={d.key} type="button" onClick={d.onClick}>{d.name}</button>)}</div>
+        </details>
+        <details>
+          <summary>{tr('Продукты группы')} <ChevronDown /></summary>
+          <div className="o-drawer__links">
+            {platforms.map((p) => <button key={p.key} type="button" onClick={p.onClick}>{p.name}</button>)}
+            <button type="button" onClick={() => go('catalog')}>{tr('Каталог оборудования')}</button>
+          </div>
+        </details>
+        <details>
+          <summary>{tr('Решения')} <ChevronDown /></summary>
+          <div className="o-drawer__links">
+            {solutions.map((s) => <button key={s.key} type="button" onClick={s.onClick}>{s.name}</button>)}
+            {directions.map((d) => <button key={d.key} type="button" onClick={d.onClick}>{d.name}</button>)}
+          </div>
+        </details>
+        <details>
+          <summary>{tr('О компании')} <ChevronDown /></summary>
+          <div className="o-drawer__links">{company.map((c) => <button key={c.key} type="button" onClick={c.onClick}>{c.name}</button>)}</div>
+        </details>
+        <button type="button" className="o-drawer__plain" onClick={() => go('projects')}>{tr('Проекты')}</button>
+        <button type="button" className="o-drawer__plain" onClick={() => goSection('contact')}>{tr('Контакты')}</button>
+        <div className="o-drawer__langs">
+          {languageOptions.map((o) => (
+            <button key={o.code} type="button" aria-current={o.code === language} onClick={() => setLanguage(o.code)}>{o.label}</button>
+          ))}
+        </div>
+        <button type="button" className="o-btn o-btn--line" onClick={toggleTheme}>
+          {theme === 'dark' ? <Sun /> : <Moon />} {theme === 'dark' ? text.actions.themeLight : text.actions.themeDark}
+        </button>
+        <button type="button" className="o-btn o-btn--primary" onClick={() => goSection('contact')}>{tr('Связаться')}</button>
+      </div>
+    </>
   );
 }

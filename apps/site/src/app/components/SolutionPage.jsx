@@ -15,7 +15,7 @@ import { useSite } from '../context/SiteContext.jsx';
 import { localize, PRODUCTS, VIOLATION_SOLUTIONS, UI_TEXT } from '../data/siteData.js';
 
 // Иконки решений хранятся строкой, поэтому берём их по имени.
-import * as Icons from 'lucide-react';
+import { Icons } from '../lib/icons.jsx';
 import { tr } from '../lib/i18n.js';
 
 function SolutionIcon({ name, className }) {
