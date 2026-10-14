@@ -134,5 +134,26 @@ for (const label of TABS) {
   console.log(`${ok ? '✓' : '✗'} превью картинок берётся с сервера: ${src || '(картинки нет)'}`);
 }
 
+// ---------------------------------------------------------------------------
+// Живые анимации: список в админке совпадает с реестром сцен сайта,
+// а все сцены, указанные в контенте, существуют.
+{
+  const reg = fs.readFileSync(`${ROOT}/apps/site/src/app/components/scenes/index.jsx`, 'utf8');
+  const loaders = reg.slice(reg.indexOf('const LOADERS'), reg.indexOf('};', reg.indexOf('const LOADERS')));
+  const siteKinds = [...loaders.matchAll(/^\s+(\w+): \(\) => import\(/gm)].map((m) => m[1]).sort();
+  const { SCENES } = await import(`file://${ROOT}/apps/admin/src/app/lib/scenes.js`);
+  const adminKinds = SCENES.map((x) => x.id).filter(Boolean).sort();
+  const same = siteKinds.join() === adminKinds.join();
+  const used = [];
+  for (const p of content.PORTFOLIO || []) {
+    if (p.scene) used.push(p.scene);
+    for (const sec of p.sections || []) if (sec.scene) used.push(sec.scene);
+  }
+  const unknown = used.filter((k) => !siteKinds.includes(k));
+  const ok = same && !unknown.length && siteKinds.length > 0;
+  if (!ok) failed += 1;
+  console.log(`${ok ? '✓' : '✗'} живые анимации: на сайте ${siteKinds.length}, в админке ${adminKinds.length}, в контенте ${used.length}${unknown.length ? `, неизвестные: ${unknown.join(', ')}` : ''}${same ? '' : ' — списки различаются'}`);
+}
+
 console.log(failed ? `\nПРОБЛЕМНЫХ РАЗДЕЛОВ: ${failed}` : `\nВсе ${TABS.length} разделов админ-панели открываются без ошибок.`);
 process.exit(failed ? 1 : 0);

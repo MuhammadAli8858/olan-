@@ -64,3 +64,19 @@ for (const f of files) {
 }
 console.log(`HARDCODED cyrillic outside tr(): ${hard} in ${Object.keys(perFile).length} files`);
 for (const [f, list] of Object.entries(perFile).sort((a, b) => b[1].length - a[1].length)) console.log(`  ${f} (${list.length}): ${list.slice(0, 3).join(' | ')}`);
+
+// Надписи tr('…') в коде, у которых нет перевода в UI_TEXT[язык].s:
+// такая надпись на сайте останется русской на всех языках.
+const trKeys = new Map();
+for (const f of files) {
+  const src = fs.readFileSync(f, 'utf8');
+  for (const mm of src.matchAll(/\btr\(\s*'((?:[^'\\]|\\.)+)'\s*\)/g)) if (CYR.test(mm[1])) trKeys.set(mm[1], path.relative('apps/site/src', f));
+}
+let trMissing = 0;
+for (const l of LANGS.slice(1)) {
+  const table = (m.UI_TEXT[l] && m.UI_TEXT[l].s) || {};
+  const miss = [...trKeys.keys()].filter((k) => !(typeof table[k] === 'string' && table[k].trim()));
+  trMissing += miss.length;
+  if (miss.length) console.log(`  tr() ${l}: missing ${miss.length} | ${miss.slice(0, 4).map((k) => `${k} <${trKeys.get(k)}>`).join(' ; ')}`);
+}
+console.log(`TR KEYS: ${trKeys.size} in code, missing translations ${trMissing}`);

@@ -16,6 +16,7 @@ import { tr } from '../lib/i18n.js';
 import { Icon } from '../lib/icons.jsx';
 import { Img, isStudio } from '../lib/img.jsx';
 import { CountUp, oneLine, prefersReducedMotion, Reveal, toList } from '../lib/fx.jsx';
+import { heroScene, Scene, sectionScene } from './scenes/index.jsx';
 
 const WiderScreen = lazy(() => import('./WiderScreen.jsx').then((m) => ({ default: m.WiderScreen })));
 
@@ -223,7 +224,8 @@ export function ProductPage({ productId, onBack, onContact, onNavigate }) {
   const tags = toList(product.tags, language);
   const clients = toList(product.clients, language);
   const highlights = (product.highlights || []).map((h) => ({ value: localize(h.value, language), label: localize(h.label, language) }));
-  const sections = (product.sections || []).map((s) => ({ visual: s.visual, image: s.image, title: localize(s.title, language), text: localize(s.text, language) }));
+  const sections = (product.sections || []).map((s) => ({ visual: s.visual, image: s.image, scene: sectionScene(product, s), title: localize(s.title, language), text: localize(s.text, language) }));
+  const hero = heroScene(product);
   const specs = (product.specs || []).map((s) => ({ label: localize(s.label, language), value: localize(s.value, language) }));
   const link = product.link;
   const linkLabel = localize(product.linkLabel, language) || tr('Перейти на сайт');
@@ -234,7 +236,15 @@ export function ProductPage({ productId, onBack, onContact, onNavigate }) {
   ) : null;
 
   let visual;
-  if (hasStage(product)) {
+  if (hero) {
+    // Живая сцена вместо статичной картинки: картинка остаётся заставкой,
+    // пока грузится сцена, и обложкой карточки в списке продуктов.
+    visual = (
+      <div className="o-pp-visual o-pp-visual--scene">
+        <Scene kind={hero} image={product.image} sizes="(max-width: 900px) 100vw, 55vw" />
+      </div>
+    );
+  } else if (hasStage(product)) {
     visual = <div className="o-pp-visual o-pp-visual--stage"><Suspense fallback={null}><WiderScreen align="center" /></Suspense></div>;
   } else if (product.image) {
     visual = (
@@ -339,7 +349,8 @@ export function ProductPage({ productId, onBack, onContact, onNavigate }) {
               {sections.map((s, i) => (
                 <div key={i} className="o-split">
                   <Reveal className="o-split__media" variant="unmask">
-                    {s.image ? <Img src={s.image} alt="" sizes="(max-width: 900px) 100vw, 50vw" /> : <Vignette kind={s.visual} />}
+                    {s.scene ? <Scene kind={s.scene} image={s.image} />
+                      : s.image ? <Img src={s.image} alt="" sizes="(max-width: 900px) 100vw, 50vw" /> : <Vignette kind={s.visual} />}
                   </Reveal>
                   <Reveal>
                     <h3>{s.title}</h3>

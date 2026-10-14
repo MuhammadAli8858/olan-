@@ -19,6 +19,7 @@
 import { useState } from 'react';
 import { Plus, Trash2, ChevronDown, ChevronRight, Languages, GripVertical } from 'lucide-react';
 import { ImageField, ImageListEditor } from './ImageUpload.jsx';
+import { SCENES } from '../lib/scenes.js';
 
 // Коды языков сайта — по ним узнаём многоязычное поле.
 // Коды языков, по которым поле узнаётся как многоязычное.
@@ -29,7 +30,7 @@ import { ImageField, ImageListEditor } from './ImageUpload.jsx';
 const LANG_CODES = new Set(['ru', 'en', 'uz', 'zh', 'ar', 'uk', 'kk', 'be']);
 
 // Поля, которые не являются текстом для перевода.
-const TECHNICAL_FIELDS = new Set(['id', 'icon', 'number', 'n', 'value', 'link', 'effect', 'align', 'visual']);
+const TECHNICAL_FIELDS = new Set(['id', 'icon', 'number', 'n', 'value', 'link', 'effect', 'align', 'visual', 'scene']);
 
 // Поля, которые хранят путь к картинке. Для них показываем загрузку файла
 // с компьютера вместо обычного текстового поля.
@@ -46,7 +47,8 @@ const FIELD_LABELS = {
   linkLabel: 'Текст кнопки перехода на сайт',
   highlights: 'Цифры продукта',
   sections: 'Разделы страницы',
-  visual: 'Иллюстрация (touch, audio, battery, brand)',
+  visual: 'Иллюстрация (map, net, scan, radar, chain, touch, audio, battery, brand)',
+  scene: 'Живая анимация',
   specs: 'Характеристики',
   clients: 'Клиенты',
   clientsTitle: 'Заголовок блока клиентов',
@@ -140,6 +142,15 @@ function entryLabel(item, index, lang) {
   return plain || `Запись ${index + 1}`;
 }
 
+function shapeOf(list) {
+  if (!list.length) return { ru: '' };
+  const objects = list.filter((x) => x && typeof x === 'object' && !Array.isArray(x) && !isLocalized(x));
+  if (objects.length !== list.length) return list[0];
+  const shape = {};
+  for (const item of objects) for (const [k, v] of Object.entries(item)) if (!(k in shape)) shape[k] = v;
+  return shape;
+}
+
 // Заготовка новой записи: копируем структуру соседа и очищаем тексты.
 function blankLike(sample) {
   if (isLocalized(sample)) return { ru: '' };
@@ -158,6 +169,19 @@ function blankLike(sample) {
 }
 
 // ------------------------------ поле значения ------------------------------
+
+// Живая анимация продукта или раздела: выбор из готовых сцен сайта.
+function SceneField({ value, onChange }) {
+  const current = typeof value === 'string' ? value : '';
+  const known = SCENES.some((s) => s.id === current);
+  return (
+    <select value={current} onChange={(e) => onChange(e.target.value)} className={inputCls}
+      title="Если анимация выбрана, вместо картинки на сайте показывается живая сцена. Картинка остаётся заставкой.">
+      {SCENES.map((s) => <option key={s.id || 'none'} value={s.id}>{s.label}</option>)}
+      {!known ? <option value={current}>{current} (нет на сайте)</option> : null}
+    </select>
+  );
+}
 
 function ValueField({ value, onChange, lang, onTranslate, translating, fieldKey }) {
   // Многоязычный текст
@@ -224,7 +248,10 @@ function ListEditor({ items, onChange, lang, onTranslate, translating, depth, ad
     }
     onChange(list.filter((_, i) => i !== index));
   };
-  const add = () => onChange([...list, blankLike(list[0] ?? { ru: '' })]);
+  // Заготовка новой записи собирает поля всех соседей: например, новый раздел
+  // страницы получает и картинку, и иллюстрацию, и анимацию, даже если у
+  // первого раздела было только что-то одно.
+  const add = () => onChange([...list, blankLike(shapeOf(list))]);
   const move = (index, delta) => {
     const target = index + delta;
     if (target < 0 || target >= list.length) return;
@@ -308,9 +335,11 @@ function ObjectEditor({ value, onChange, lang, onTranslate, translating, depth =
       {technical.length > 0 && (
         <div className="flex flex-wrap gap-3">
           {technical.map(([key, field]) => (
-            <div key={key} className="w-40">
+            <div key={key} className={key === 'scene' ? 'w-72' : 'w-40'}>
               <label className={labelCls}>{labelFor(key)}</label>
-              <ValueField value={field} onChange={(v) => set(key, v)} lang={lang} fieldKey={key} />
+              {key === 'scene'
+                ? <SceneField value={field} onChange={(v) => set(key, v)} />
+                : <ValueField value={field} onChange={(v) => set(key, v)} lang={lang} fieldKey={key} />}
             </div>
           ))}
         </div>

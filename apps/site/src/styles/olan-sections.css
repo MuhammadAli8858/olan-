@@ -223,6 +223,15 @@
   .o-specs__row { grid-template-columns: 1fr; gap: .25rem; }
 }
 
+/* ───────── живые сцены продуктов (components/scenes) ─────────
+   Сцена занимает рамку картинки целиком. Пока её не видно, все её
+   CSS-анимации стоят на паузе — страница не тратит на них силы. */
+.o-scene { position: absolute; inset: 0; overflow: hidden; isolation: isolate; container-type: size; color: #e8eef9; text-align: start;
+  background: radial-gradient(85% 75% at 50% 42%, #18233a 0%, #0a0f1a 62%, #06080d 100%); -webkit-font-smoothing: antialiased; }
+.o-scene:not([data-awake]) *, .o-scene:not([data-awake]) *::before, .o-scene:not([data-awake]) *::after { animation-play-state: paused !important; }
+.o-scene__poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.o-pp-visual--scene { background: #06080d; cursor: default; }
+
 /* ───────── живые иллюстрации разделов Wider ───────── */
 .o-vg { position: absolute; inset: 0; display: grid; place-items: center; overflow: hidden; background: radial-gradient(80% 70% at 50% 40%, #1b2638, #080b11 75%); }
 .o-vg__screen { position: relative; width: 80%; aspect-ratio: 3.1 / 1; border-radius: 1.4% / 4.4%; overflow: hidden; transform: perspective(700px) rotateX(7deg);
