@@ -7,7 +7,7 @@
 // а режим тепловизора время от времени сменяется на «белый — горячее»:
 // по кадру проходит шторка, рамки остаются на местах.
 // ---------------------------------------------------------------------------
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { tr } from '../../lib/i18n.js';
 import { Img } from '../../lib/img.jsx';
 import { useAwake, useBeats, useReducedMotion } from './engine.js';
@@ -27,7 +27,11 @@ export default function UavThermal({ image = DEFAULT_IMAGE }) {
   const { awake } = useAwake(root);
   const beat = useBeats(awake, [1600, 2600, 2400, 2800, 3400], { reduced, still: 3 });
   const step = beat % 5;
-  const own = image === DEFAULT_IMAGE;
+  // Своё фото не загрузилось — показываем снимок из презентации.
+  const [failed, setFailed] = useState(false);
+  useEffect(() => { setFailed(false); }, [image]);
+  const photo = !image || failed ? DEFAULT_IMAGE : image;
+  const own = photo === DEFAULT_IMAGE;
   const cycle = Math.floor(beat / 5);
   const people = step >= 1 || reduced;
   const machines = step >= 2 || reduced;
@@ -38,7 +42,8 @@ export default function UavThermal({ image = DEFAULT_IMAGE }) {
     <div ref={root} className={`o-scene o-scene--th${white ? ' is-white' : ''}`} data-awake={awake ? '' : undefined} dir="ltr" aria-hidden="true">
       <div className="o-th__stage">
         <div className="o-th__hover">
-          <Img src={image} alt="" sizes="(max-width: 900px) 100vw, 50vw" className="o-th__img" lqip={false} />
+          <Img src={photo} alt="" sizes="(max-width: 900px) 100vw, 50vw" className="o-th__img" lqip={false}
+            {...(own ? null : { onError: () => setFailed(true) })} />
           {own ? <img className="o-th__wh" src="/scenes/thermal-wh.webp" alt="" draggable="false" /> : null}
           {own && people ? PEOPLE.map(([x, y, w, h], i) => (
             <span key={`p${cycle}-${i}`} className="o-th__box is-person" style={{ left: `${x}%`, top: `${y}%`, width: `${w}%`, height: `${h}%`, '--i': i }} />

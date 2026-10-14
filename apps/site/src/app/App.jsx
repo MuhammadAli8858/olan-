@@ -4,7 +4,7 @@ import { Header } from './components/Header.jsx';
 import { HeroSlider } from './components/HeroSlider.jsx';
 import { ProductRail } from './components/ProductRail.jsx';
 import { LazyMount } from './components/LazyMount.jsx';
-import { SiteProvider, useSite } from './context/SiteContext.jsx';
+import { SiteProvider } from './context/SiteContext.jsx';
 import { PRODUCTS } from './data/siteData.js';
 import { tr } from './lib/i18n.js';
 import { slowNetwork } from './lib/fx.jsx';

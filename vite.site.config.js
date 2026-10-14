@@ -62,6 +62,12 @@ export default defineConfig(async ({ mode }) => {
     build: {
       outDir: 'dist',
       emptyOutDir: true,
+      // Тексты сайта на всех шести языках встроены в сборку, чтобы страница
+      // открывалась сразу, не дожидаясь сервера. Это самый крупный файл
+      // (~840 КБ, ~270 КБ в gzip) — и он такой намеренно, поэтому порог
+      // предупреждения поднят. Полный набор иконок (~780 КБ) грузится
+      // отдельно и только если в контенте встретилась редкая иконка.
+      chunkSizeWarningLimit: 1000,
       // Библиотеки отдельным файлом: браузер закеширует их один раз
       // и не будет перекачивать при каждом обновлении сайта.
       rollupOptions: {
@@ -71,6 +77,9 @@ export default defineConfig(async ({ mode }) => {
             // в другой: так стартовая страница не тянет библиотеку анимаций.
             if (/node_modules\/(react|react-dom|scheduler)\//.test(id)) return 'react';
             if (/node_modules\/(motion|framer-motion|motion-dom|motion-utils)\//.test(id)) return 'motion';
+            // Контент — отдельным файлом: правка текстов не заставляет
+            // заново качать код сайта, а обновление кода — тексты.
+            if (/\/src\/app\/data\/siteData\.js$/.test(id)) return 'content';
             return undefined;
           },
         },

@@ -10,7 +10,7 @@
 // ---------------------------------------------------------------------------
 import { useEffect, useRef, useState } from 'react';
 import { tr } from '../../lib/i18n.js';
-import { clamp, easeInOut, useAwake, useFrames, useReducedMotion } from './engine.js';
+import { easeInOut, useAwake, useFrames, useReducedMotion } from './engine.js';
 import './scenes.css';
 
 const ROADS = [
@@ -118,7 +118,7 @@ export default function TollGnss() {
       s.carPassed += 1;
     }
   };
-  const time = useFrames(awake && !reduced, frame);
+  useFrames(awake && !reduced, frame);
   useEffect(() => { if (reduced) frame(0); }, [reduced, gates]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const total = rows.length ? rows[0].total : 0;

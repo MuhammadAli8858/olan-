@@ -49,7 +49,6 @@ const run = async () => {
   await post('/api/chat/send', { sessionId: sid, text: 'здравствуйте' });
 
   const owner = (await get(`/api/inbox/chats?key=${KEY}`)).d.chats.find((c) => c.sessionId === sid);
-  const ownerTok = owner.operatorId === op2.id ? null : opTok;
   check('чат назначен оператору', Boolean(owner.operatorId));
 
   check('админ пишет в чат', (await post('/api/operator/reply', { key: KEY, sessionId: sid, text: 'от админа' })).s === 200);

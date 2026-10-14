@@ -18,6 +18,7 @@ server/data/original-content.json
 server/data/users.json
 server/data/assignments.json
 server/data/sessions.json
+server/data/content-*.json
 
 # служебное
 .DS_Store

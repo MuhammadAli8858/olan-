@@ -17,6 +17,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { SiteDataFile } from './siteDataFile.js';
+import { loadHistory, mergeContent, rememberRelease } from './contentMerge.js';
 import { createStaticHandler } from './static.js';
 import { compressBuffer, contentHash, pickEncoding } from './compress.js';
 import { Staff } from './users.js';
@@ -44,7 +45,6 @@ const snapshotFile = path.join(dataDir, 'original-content.json');
 const usersFile = path.join(dataDir, 'users.json');
 const assignmentsFile = path.join(dataDir, 'assignments.json');
 const sessionsFile = path.join(dataDir, 'sessions.json');
-const seedFile = path.join(__dirname, 'content.seed.json');
 
 // Файл контента сайта.
 //
@@ -74,10 +74,17 @@ mkdirSync(dataDir, { recursive: true });
 //   • на диске лежит ровно то,
 //     что мы туда положили,
 //     а в коде текст новее     → обновляем сами: терять нечего;
-//   • контент правили в админке → НЕ трогаем и пишем подсказку в лог.
-// Кнопка «Обновить из кода» в админ-панели делает то же самое принудительно.
+//   • контент правили в админке → сводим: новое из кода приходит на сайт,
+//                                 правки из админки остаются на месте
+//                                 (подробности — в server/contentMerge.js).
+// Кнопка «Обновить из кода» в админ-панели заменяет контент целиком.
 // ---------------------------------------------------------------------------
 const seedMarkerPath = path.join(dataDir, 'content-seed.json');
+// Какую версию из кода уже свели с диском — чтобы не сводить при каждом запуске.
+const updateMarkerPath = path.join(dataDir, 'content-update.json');
+// Отпечатки прошлых выпусков контента: из репозитория и увиденные сервером.
+const historyFile = path.join(__dirname, 'content-history.json');
+const localHistoryFile = path.join(dataDir, 'content-history.json');
 const fileHash = (file) => createHash('sha256').update(readFileSync(file, 'utf8'), 'utf8').digest('hex');
 
 function readSeedMarker() {
@@ -110,27 +117,81 @@ function seedContentFromRepo(reason) {
   console.log(`[content] Контент взят из репозитория (${reason}): ${siteDataPath}`);
 }
 
-if (siteDataPath !== repoSiteDataPath) {
+// Контент из файла siteData.js — для сведения и сброса.
+const readContentFile = (file) => new SiteDataFile(file, null).read();
+
+// Запоминает версию контента из кода в истории сервера (если её там нет).
+// Тогда следующее обновление узнает её тексты, даже если историю
+// в репозитории не пересобрали.
+async function rememberRepoRelease(repoHash) {
+  const shipped = loadHistory(historyFile).releases.map((r) => r && r.hash);
+  if (shipped.includes(repoHash)) return;
+  const local = loadHistory(localHistoryFile).releases.map((r) => r && r.hash);
+  if (local.includes(repoHash)) return;
+  const content = await readContentFile(repoSiteDataPath);
+  rememberRelease(localHistoryFile, content, {
+    label: `v${APP_VERSION}`,
+    hash: repoHash,
+    date: new Date().toISOString().slice(0, 10),
+  }, shipped);
+}
+
+// Сводит контент с диска с новой версией из кода. Правки из админки
+// остаются, всё новое из кода приходит на сайт. Прежняя версия — в бэкапах.
+async function mergeContentFromRepo(repoHash) {
+  const [diskContent, repoContent] = await Promise.all([readContentFile(siteDataPath), readContentFile(repoSiteDataPath)]);
+  const history = loadHistory(historyFile, localHistoryFile);
+  const { content, stats, base, kept } = mergeContent(diskContent, repoContent, history);
+
+  let backup = '';
+  try {
+    mkdirSync(backupsDir, { recursive: true });
+    backup = `siteData.before-update.${new Date().toISOString().replace(/[:.]/g, '-')}.js`;
+    writeFileSync(path.join(backupsDir, backup), readFileSync(siteDataPath, 'utf8'), 'utf8');
+  } catch (error) {
+    console.warn('[content] Резервная копия не создана:', error.message);
+    backup = '';
+  }
+  siteData.write(content);
+  writeJson(updateMarkerPath, {
+    repoHash,
+    version: APP_VERSION,
+    mergedAt: new Date().toISOString(),
+    base: base ? base.label : null,
+    stats,
+    kept,
+    backup,
+  });
+  console.log(`[content] Контент сведён с версией из кода v${APP_VERSION}${base ? ` (на диске была версия ${base.label})` : ''}: `
+    + `обновлено ${stats.updated}, добавлено ${stats.added}, убрано ${stats.removed}, правок из админки сохранено ${stats.kept}.`);
+  if (kept.length) console.log(`[content] Правки из админки: ${kept.slice(0, 12).join(', ')}${kept.length > 12 ? ' …' : ''}`);
+  if (backup) console.log(`[content] Прежняя версия: ${path.join(backupsDir, backup)}`);
+}
+
+// Готовит файл контента на постоянном диске перед запуском сервера.
+async function prepareContent() {
+  if (siteDataPath === repoSiteDataPath) return;
   try {
     if (!existsSync(siteDataPath)) {
       seedContentFromRepo('первый запуск');
-    } else {
-      const marker = readSeedMarker();
-      const repoHash = fileHash(repoSiteDataPath);
-      const diskHash = fileHash(siteDataPath);
-      if (!marker) {
-        // Диск засеян старой версией сервера, отметки нет. Ставим её задним
-        // числом по текущему содержимому — дальше логика заработает штатно.
-        writeSeedMarker(diskHash);
-        if (repoHash !== diskHash) {
-          console.log('[content] В коде другой контент. Нажмите «Обновить из кода» в админ-панели, если нужен он.');
-        }
-      } else if (diskHash === marker.repoHash && repoHash !== marker.repoHash) {
-        seedContentFromRepo('в коде свежая версия, на диске правок не было');
-      } else if (repoHash !== diskHash) {
-        console.log('[content] Контент на диске отличается от репозитория (есть правки из админки). Обновить вручную: кнопка «Обновить из кода».');
-      }
+      return;
     }
+    const repoHash = fileHash(repoSiteDataPath);
+    const diskHash = fileHash(siteDataPath);
+    await rememberRepoRelease(repoHash);
+    const marker = readSeedMarker();
+    if (!marker) {
+      // Диск засеян старой версией сервера, отметки нет. Ставим её задним
+      // числом по текущему содержимому — дальше логика заработает штатно.
+      writeSeedMarker(diskHash);
+    } else if (diskHash === marker.repoHash && repoHash !== marker.repoHash) {
+      seedContentFromRepo('в коде свежая версия, на диске правок не было');
+      return;
+    }
+    if (repoHash === diskHash) return;
+    const done = readJsonSafe(updateMarkerPath);
+    if (done && done.repoHash === repoHash) return; // эту версию уже свели
+    await mergeContentFromRepo(repoHash);
   } catch (error) {
     console.error('[content] Не удалось подготовить файл контента:', error.message);
   }
@@ -684,7 +745,13 @@ async function handlePublishStatus(response, query) {
   }
   // Локальный запуск: файл и так лежит в проекте, выгружать никуда не нужно.
   const local = siteDataPath === repoSiteDataPath;
-  json(response, 200, { ...(await checkAccess()), local, file: siteDataPath });
+  // Последнее сведение контента с новой версией из кода — админка один раз
+  // покажет, что пришло на сайт и сколько правок сохранено.
+  const update = local ? null : readJsonSafe(updateMarkerPath);
+  const contentUpdate = update && update.mergedAt
+    ? { version: update.version, mergedAt: update.mergedAt, base: update.base, stats: update.stats || {} }
+    : null;
+  json(response, 200, { ...(await checkAccess()), local, file: siteDataPath, contentUpdate });
 }
 
 // Скачать текущий siteData.js — запасной путь, если GitHub не настроен:
@@ -766,13 +833,19 @@ async function handleTranslateStatus(response, query) {
   }
 }
 
-function handleAdminResetContent(body, response) {
+async function handleAdminResetContent(body, response) {
   if (!body || body.key !== ADMIN_KEY) {
     json(response, 401, { message: 'Неверный ключ администратора.' });
     return;
   }
   try {
-    const snapshot = readJson(snapshotFile, null) || readJson(seedFile, null);
+    // На хостинге «исходный контент» — это версия из кода: снимок первого
+    // запуска там давно устарел и вернул бы на сайт тексты прошлых версий.
+    // Локально админка правит сам файл проекта, поэтому исходным остаётся
+    // снимок, сделанный при первом запуске сервера.
+    const snapshot = siteDataPath !== repoSiteDataPath
+      ? await readContentFile(repoSiteDataPath)
+      : readJson(snapshotFile, null);
     if (!snapshot) { json(response, 500, { message: 'Исходный снимок контента не найден.' }); return; }
     siteData.write(snapshot);
     console.log('[admin] Контент сброшен к исходному состоянию.');
@@ -1432,7 +1505,7 @@ const server = createServer(async (request, response) => {
     if (request.method === 'POST' && pathname === '/api/admin/publish') { await handleAdminPublish(await parseBody(request), response); return; }
     if (request.method === 'GET' && pathname === '/api/admin/publish/status') { await handlePublishStatus(response, query); return; }
     if (request.method === 'GET' && pathname === '/api/admin/content/file') { handleDownloadContentFile(response, query); return; }
-    if (request.method === 'POST' && pathname === '/api/admin/reset') { handleAdminResetContent(await parseBody(request), response); return; }
+    if (request.method === 'POST' && pathname === '/api/admin/reset') { await handleAdminResetContent(await parseBody(request), response); return; }
     if (request.method === 'POST' && pathname === '/api/admin/translate') { await handleAdminTranslate(await parseBody(request), response); return; }
 
     // Продакшен: отдаём собранные фронтенды (если они собраны).
@@ -1478,6 +1551,10 @@ const port = Number(process.env.PORT || 3001);
 const host = process.env.HOST || '0.0.0.0';
 
 async function start() {
+  // Сначала приводим в порядок контент на диске: новый текст из кода
+  // должен попасть на сайт до того, как сервер начнёт отвечать.
+  await prepareContent();
+
   if (!siteData.exists()) {
     console.error(`\n[!] Файл контента не найден: ${siteDataPath}`);
     console.error('    Проверьте структуру проекта или переменную SITE_DATA_FILE в .env\n');

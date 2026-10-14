@@ -87,7 +87,9 @@ export function AnimatedNumber({ value, duration = 1400, className }) {
       const startedAt = performance.now();
 
       const tick = (now) => {
-        const progress = Math.min(1, (now - startedAt) / duration);
+        // Метка кадра может быть чуть раньше startedAt — тогда на миг
+        // показывалось бы отрицательное число.
+        const progress = Math.min(1, Math.max(0, now - startedAt) / duration);
         // Замедление к концу: цифры быстро набегают и мягко останавливаются.
         const eased = 1 - (1 - progress) ** 3;
         setDisplay(`${parsed.prefix}${formatNumber(parsed.value * eased, parsed)}${parsed.suffix}`);

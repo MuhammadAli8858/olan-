@@ -44,11 +44,28 @@ function replaceArray(target, next) {
   next.forEach((item) => target.push(item));
 }
 
+const isPlainObject = (value) => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+
+// Подписи с сервера главнее встроенных, но тех, которых на сервере ещё нет
+// (новые кнопки и заголовки из свежей версии), берём из сборки. Иначе после
+// деплоя, пока контент на сервере старый, новые подписи показывались бы
+// по-русски на всех языках.
+function withBundled(server, bundled) {
+  if (!isPlainObject(server)) return server;
+  if (!isPlainObject(bundled)) return server;
+  const out = { ...server };
+  Object.keys(bundled).forEach((key) => {
+    if (!(key in out)) out[key] = bundled[key];
+    else if (isPlainObject(out[key]) && isPlainObject(bundled[key])) out[key] = withBundled(out[key], bundled[key]);
+  });
+  return out;
+}
+
 export function applyServerContent(content) {
   if (!content || typeof content !== 'object') return;
   if (content.UI_TEXT && typeof content.UI_TEXT === 'object') {
     Object.keys(content.UI_TEXT).forEach((lang) => {
-      UI_TEXT[lang] = content.UI_TEXT[lang];
+      UI_TEXT[lang] = withBundled(content.UI_TEXT[lang], UI_TEXT[lang]);
     });
   }
   replaceArray(PRODUCTS, content.PRODUCTS);
@@ -96,6 +113,11 @@ export async function loadContent() {
     clearTimeout(timer);
     if (res.status === 204) return true;
     if (!res.ok) return false;
+    // Без сервера (например, `npm run site` без бэкенда) dev-сервер отвечает
+    // на любой адрес страницей index.html. Это не ошибка: остаётся встроенный
+    // контент, а в консоли не должно быть пугающего сообщения.
+    const type = res.headers && typeof res.headers.get === 'function' ? res.headers.get('content-type') || '' : 'application/json';
+    if (!/json/i.test(type)) return false;
     const content = await res.json();
     applyServerContent(content);
     return true;

@@ -9,7 +9,7 @@
 // ---------------------------------------------------------------------------
 import { useEffect, useRef, useState } from 'react';
 import { tr } from '../../lib/i18n.js';
-import { clamp, easeInOut, easeOut, lerp, span, useAwake, useFrames, useReducedMotion } from './engine.js';
+import { easeInOut, easeOut, lerp, span, useAwake, useFrames, useReducedMotion } from './engine.js';
 import './scenes.css';
 
 const LOOP = 13200;

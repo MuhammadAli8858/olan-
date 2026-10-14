@@ -245,7 +245,7 @@ export default function StaffSection({ adminKey }) {
     }
   };
 
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, [adminKey]);
+  useEffect(() => { load(); }, [adminKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const apply = (result) => {
     if (result.tree) setTree(result.tree);

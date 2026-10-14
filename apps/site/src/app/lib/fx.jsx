@@ -62,7 +62,7 @@ export function CountUp({ value, duration = 1900 }) {
     let raf = 0;
     const t0 = performance.now();
     const tick = (t) => {
-      const p = Math.min(1, (t - t0) / duration);
+      const p = Math.min(1, Math.max(0, t - t0) / duration);
       const eased = 1 - Math.pow(1 - p, 4);
       if (p < 1) { setShown(fmt(target * eased)); raf = requestAnimationFrame(tick); } else setShown(text);
     };

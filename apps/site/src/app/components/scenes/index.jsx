@@ -13,11 +13,14 @@ const LOADERS = {
   bodycam: () => import('./Bodycam.jsx'),
   hub: () => import('./ApiHub.jsx'),
   sites: () => import('./EgsvSites.jsx'),
+  crossing: () => import('./EgsvCrossing.jsx'),
+  beat: () => import('./EgsvBeat.jsx'),
   gantry: () => import('./TollGantry.jsx'),
   lidar: () => import('./TollLidar.jsx'),
   enforce: () => import('./TollEnforce.jsx'),
   backoffice: () => import('./TollBackoffice.jsx'),
   gnss: () => import('./TollGnss.jsx'),
+  incident: () => import('./TollIncident.jsx'),
   flight: () => import('./UavFlight.jsx'),
   launch: () => import('./UavLaunch.jsx'),
   hover: () => import('./UavHover.jsx'),
@@ -25,6 +28,7 @@ const LOADERS = {
   detect: () => import('./UavDetect.jsx'),
   pipeline: () => import('./UavPipeline.jsx'),
   charge: () => import('./UavCharge.jsx'),
+  report: () => import('./UavReport.jsx'),
   thermal: () => import('./UavThermal.jsx'),
 };
 

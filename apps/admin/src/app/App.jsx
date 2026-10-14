@@ -652,7 +652,8 @@ export default function App() {
     }
   };
 
-  useEffect(() => { if (key) { loadContent(); refreshTranslationStatus(); refreshGitStatus(); } /* eslint-disable-next-line */ }, [key]);
+  // Загружаем всё заново только при смене ключа администратора.
+  useEffect(() => { if (key) { loadContent(); refreshTranslationStatus(); refreshGitStatus(); } }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => () => { if (watchRef.current) clearInterval(watchRef.current); }, []);
 
   // ---- Синхронизация «код → админка» ----
@@ -680,7 +681,6 @@ export default function App() {
     };
     const id = setInterval(tick, 2500);
     return () => { stopped = true; clearInterval(id); };
-    /* eslint-disable-next-line */
   }, [key, dirty]);
 
   // Предупреждаем о несохранённых правках при закрытии вкладки.
@@ -744,6 +744,20 @@ export default function App() {
     try {
       const res = await getJson(`/api/admin/publish/status?key=${encodeURIComponent(key)}`);
       setGitInfo(res);
+      // После деплоя сервер сам сводит контент с новой версией из кода.
+      // Один раз сообщаем, что пришло на сайт и что из правок сохранено.
+      const up = res && res.contentUpdate;
+      if (up && up.mergedAt) {
+        let seen = '';
+        try { seen = localStorage.getItem('olan-admin-content-update') || ''; } catch { /* приватный режим */ }
+        if (seen !== up.mergedAt) {
+          const st = up.stats || {};
+          const kept = st.kept ? ` Ваши правки из админки сохранены: ${st.kept}.` : '';
+          setStatus(`Сайт обновлён из кода до версии ${up.version}: добавлено ${st.added || 0}, обновлено ${st.updated || 0}.${kept} `
+            + 'Прежняя версия — в резервных копиях.');
+          try { localStorage.setItem('olan-admin-content-update', up.mergedAt); } catch { /* не критично */ }
+        }
+      }
     } catch { /* не критично */ }
   };
 

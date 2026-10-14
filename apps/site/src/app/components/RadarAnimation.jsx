@@ -1,4 +1,3 @@
-import { motion } from 'motion/react';
 import { useEffect, useRef } from 'react';
 
 export function RadarAnimation() {
@@ -15,6 +14,7 @@ export function RadarAnimation() {
     canvas.height = window.innerHeight;
 
     let angle = 0;
+    let raf = 0;
 
     const drawRadar = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -74,7 +74,7 @@ export function RadarAnimation() {
       }
 
       angle += 0.02;
-      requestAnimationFrame(drawRadar);
+      raf = requestAnimationFrame(drawRadar);
     };
 
     drawRadar();
@@ -87,6 +87,8 @@ export function RadarAnimation() {
     window.addEventListener('resize', handleResize);
 
     return () => {
+      // Без этого цикл рисования продолжался бы после ухода со страницы.
+      cancelAnimationFrame(raf);
       window.removeEventListener('resize', handleResize);
     };
   }, []);

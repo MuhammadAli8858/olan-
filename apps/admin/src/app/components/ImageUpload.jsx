@@ -9,7 +9,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Upload, Trash2, Plus, ImageOff, Loader2 } from 'lucide-react';
 import { postJson, API_BASE_URL } from '../lib/api.js';
-import { FRAMES, checkAgainstFrame, ratioLabel } from '../lib/imageFrames.js';
+import { FRAMES, checkAgainstFrame } from '../lib/imageFrames.js';
 
 const MAX_MB = 10;
 

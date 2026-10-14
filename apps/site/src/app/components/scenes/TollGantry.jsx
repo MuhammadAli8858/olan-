@@ -7,11 +7,11 @@
 // на балке «стреляют» лучами, по дороге пробегает световая завеса, а над
 // машиной всплывает карточка проезда: номер, класс, скорость и оплата.
 // ---------------------------------------------------------------------------
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { tr } from '../../lib/i18n.js';
 import { randomPlate } from '../../lib/plates.js';
 import { Img } from '../../lib/img.jsx';
-import { clamp, easeOut, groupNum, rng, useAwake, useCanvasSize, useFrames, useReducedMotion } from './engine.js';
+import { clamp, groupNum, rng, useAwake, useCanvasSize, useFrames, useReducedMotion } from './engine.js';
 import './scenes.css';
 
 const DEFAULT_IMAGE = '/products/toll-gantry.jpg';
@@ -43,7 +43,12 @@ export default function TollGantry({ image = DEFAULT_IMAGE }) {
   const { awake } = useAwake(root);
   const [card, setCard] = useState(null);
   const countRef = useRef(null);
-  const own = image === DEFAULT_IMAGE;
+  // Своё фото не загрузилось (например, в старом контенте осталась ссылка
+  // на удалённую картинку) — показываем снимок портала, а не чёрный кадр.
+  const [failed, setFailed] = useState(false);
+  useEffect(() => { setFailed(false); }, [image]);
+  const photo = !image || failed ? DEFAULT_IMAGE : image;
+  const own = photo === DEFAULT_IMAGE;
 
   const draw = (t, dt) => {
     const c = canvas.current;
@@ -178,7 +183,8 @@ export default function TollGantry({ image = DEFAULT_IMAGE }) {
     <div ref={root} className="o-scene o-scene--gt" data-awake={awake ? '' : undefined} dir="ltr" aria-hidden="true">
       <div className="o-gt__stage" style={{ '--a': ASPECT }}>
         <div className="o-gt__kb">
-          <Img src={image} alt="" sizes="(max-width: 900px) 100vw, 55vw" eager className="o-gt__photo" lqip={false} />
+          <Img src={photo} alt="" sizes="(max-width: 900px) 100vw, 55vw" eager className="o-gt__photo" lqip={false}
+            {...(own ? null : { onError: () => setFailed(true) })} />
           <canvas ref={canvas} className="o-gt__canvas" />
           {card && own ? (
             <div key={card.id} className="o-gt__card" style={{ left: `${card.x}%`, top: `${card.y}%` }}>

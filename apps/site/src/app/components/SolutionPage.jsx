@@ -24,7 +24,7 @@ function SolutionIcon({ name, className }) {
 }
 
 export function SolutionPage({ solutionId, onBack, onOpenProduct, onContact }) {
-  const { language, text } = useSite();
+  const { language } = useSite();
 
   const solution = VIOLATION_SOLUTIONS.find((item) => item.id === solutionId)
     || VIOLATION_SOLUTIONS.find((item) => item.category === solutionId);
@@ -47,7 +47,6 @@ export function SolutionPage({ solutionId, onBack, onOpenProduct, onContact }) {
     return categories.includes(solution.category);
   });
 
-  const categories = (UI_TEXT[language] || UI_TEXT.ru).categories || {};
   const actions = (UI_TEXT[language] || UI_TEXT.ru).actions || {};
 
   return (

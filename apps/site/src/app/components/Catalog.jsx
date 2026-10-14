@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { Filter, Image as ImageIcon } from 'lucide-react';
+import { Image as ImageIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { PRODUCTS, localize } from '../data/siteData.js';
 import { useSite } from '../context/SiteContext.jsx';

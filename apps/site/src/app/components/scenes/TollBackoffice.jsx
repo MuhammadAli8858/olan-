@@ -73,7 +73,7 @@ export default function TollBackoffice() {
       out.push({ n, plate: plateOf(n), src: SOURCES[Math.floor(r() * SOURCES.length)], pay, min: Math.floor(r() * 50) + 10 });
     }
     return out;
-  }, [beat]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [beat]);
   const passes = FLOW.slice(0, hour + 1).reduce((a, b) => a + b, 0);
   const g = area(hour);
   const active = rows[0] ? rows[0].pay.m : '';

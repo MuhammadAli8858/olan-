@@ -5,7 +5,8 @@
 // другой «загораются» волной от своего центра — от ближних к Астане к дальним.
 // От каждой области к Астане протягивается дуга, по ней бежит импульс, и
 // счётчик камер в карточке растёт. Потом карта живёт: мерцают камеры,
-// по дугам идут данные, ситуационный центр мягко пульсирует.
+// по дугам идут данные, по областям время от времени проходит волна
+// переклички, ситуационный центр мягко пульсирует.
 // ---------------------------------------------------------------------------
 import { useRef } from 'react';
 import { tr } from '../../lib/i18n.js';
@@ -233,7 +234,32 @@ function draw(st, ctx, t, ui) {
     }
     return true;
   });
-  // 5. Мерцание камер.
+  // 5. После вступления по карте время от времени проходит мягкая волна:
+  //    одна из областей «перекличкой» отправляет данные в Астану.
+  if (t > st.introEnd + 1500 && (!st.wave || t - st.wave.t0 > st.wave.gap)) {
+    let pick = rand();
+    const r = regions.find((x) => (pick -= x.weight) <= 0) || regions[0];
+    st.wave = { r, t0: t, gap: 5200 + rand() * 3200 };
+    for (let k = 0; k < 3; k++) st.packets.push({ r, t0: t + 380 + k * 260, dur: 1150 + k * 120 });
+  }
+  if (st.wave && t - st.wave.t0 < 2000) {
+    const { r, t0 } = st.wave;
+    const [cr, cg] = r.color;
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.fillStyle = `rgb(${Math.min(255, cr + 70)},${Math.min(255, cg + 50)},255)`;
+    for (let n = 0; n < r.dots.length; n++) {
+      const d = r.dots[n];
+      const p = clamp((t - t0 - (d.d / (r.maxD || 1)) * 1100) / 520);
+      if (p <= 0 || p >= 1) continue;
+      ctx.globalAlpha = 0.75 * Math.sin(Math.PI * p);
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, rad * 1.45, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = 'source-over';
+  }
+  // 6. Мерцание камер.
   if (t > st.introEnd * 0.6 && t >= st.nextTwinkle) {
     const d = st.dots[Math.floor(rand() * st.dots.length)];
     if (t > regions[d.r].fillEnd) st.twinkles.push({ d, t0: t });
@@ -249,7 +275,7 @@ function draw(st, ctx, t, ui) {
     ctx.fill();
     return true;
   });
-  // 6. Ситуационный центр в Астане.
+  // 7. Ситуационный центр в Астане.
   const hubOn = clamp((t - INTRO + 200) / 600);
   if (hubOn > 0) {
     for (let k = 0; k < 2; k++) {
@@ -271,7 +297,7 @@ function draw(st, ctx, t, ui) {
   }
   ctx.globalAlpha = 1;
   ctx.globalCompositeOperation = 'source-over';
-  // 7. Счётчик в карточке догоняет пришедшие импульсы.
+  // 8. Счётчик в карточке догоняет пришедшие импульсы.
   const target = t >= st.introEnd + FLY ? 1 : Math.min(1, st.arrived);
   st.shown = ui.still ? target : (st.shown || 0) + (target - (st.shown || 0)) * 0.08;
   if (Math.abs(target - st.shown) < 0.0005) st.shown = target;

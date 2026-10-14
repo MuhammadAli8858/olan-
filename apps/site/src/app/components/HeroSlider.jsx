@@ -73,7 +73,7 @@ function useCycle(live, steps, period) {
 
 function CaptureFX({ scene, live, mx, sx, inFrame }) {
   const phase = useCycle(live, [[1300, 1], [1650, 2], [4600, 0]], 5800);
-  const stamp = useMemo(clock, [phase === 2]); // eslint-disable-line react-hooks/exhaustive-deps
+  const stamp = useMemo(clock, [phase === 2]);
   const [lx, ly] = scene.lens;
   const [tx, ty, tw, th] = scene.target;
   return (

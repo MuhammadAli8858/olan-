@@ -39,8 +39,9 @@ const ROADS = [
 
 function pointOn(path, t) {
   const n = path.length - 1;
-  const f = Math.min(n - 1e-6, t * n);
-  const i = Math.floor(f);
+  const u = ((t % 1) + 1) % 1; // 0…1 даже для отрицательного времени
+  const f = Math.min(n - 1e-6, u * n);
+  const i = Math.max(0, Math.floor(f));
   const k = f - i;
   return [path[i][0] + (path[i + 1][0] - path[i][0]) * k, path[i][1] + (path[i + 1][1] - path[i][1]) * k];
 }
@@ -333,7 +334,9 @@ export function WiderScreen({ active = true, align = 'center', className = 'o-st
       content.height = Math.max(2, Math.round(sh * dpr));
     };
     const frame = (now) => {
-      const t = reduced ? 2.2 : (now - t0) / 1000;
+      // Метка времени кадра бывает чуть раньше t0 (её берут в начале кадра,
+      // а t0 — позже, при монтировании): без Math.max время уходило в минус.
+      const t = reduced ? 2.2 : Math.max(0, now - t0) / 1000;
       drawUI(cctx, content.width, content.height, t);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       drawStage(ctx, W, H, s, content, t);
