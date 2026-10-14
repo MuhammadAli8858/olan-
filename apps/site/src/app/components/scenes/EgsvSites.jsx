@@ -1,213 +1,417 @@
 // ---------------------------------------------------------------------------
-// ЕГСВ: стройка под наблюдением — таймлапс.
+// ЕГСВ: школы и стройки под наблюдением.
 //
-// Камера стройплощадки снимает таймлапс: день сменяется ночью за пару
-// секунд, солнце и луна проходят по небу, а здание растёт этаж за этажом.
-// Кран поднимает груз, у въезда камера ГРНЗ читает номер грузовика.
-// Окна готовых этажей ночью зажигаются. Когда здание достроено —
-// таймлапс отматывается к первому дню и начинается заново.
+// Пульт дежурного: слева — две камеры. Двор школы с виртуальной оградой
+// (периметр под охраной) и въезд на стройку: камера ночью в ИК читает
+// госномер машины и сверяет его со списком подрядчиков. Справа — таймлапс
+// стройки в виде цифровой модели корпуса: сменяются сутки (тень от здания
+// обегает площадку, ночью загораются окна), этаж за этажом растёт каркас,
+// за ним идёт остекление, работает башенный кран, к воротам подъезжает
+// грузовик. Счётчики показывают день, этажи и отставание от графика.
+// Когда корпус сдан, таймлапс отматывается к первому дню.
 // ---------------------------------------------------------------------------
 import { useEffect, useRef, useState } from 'react';
 import { tr } from '../../lib/i18n.js';
-import { clamp, easeInOut, lerp, rng, smooth, span, useAwake, useFrames, useReducedMotion } from './engine.js';
+import { clamp, easeInOut, lerp, smooth, useAwake, useBeats, useCanvasSize, useClock, useFrames, useReducedMotion } from './engine.js';
 import './scenes.css';
 
-const DAY = 2600; // один «день» таймлапса, мс
-const FLOORS = 13;
-const REWIND = 1600;
-const LOOP = DAY * (FLOORS + 1) + REWIND;
-const BASE_Y = 252;
-const FH = 12; // высота этажа
-const BX = 214;
-const BW = 116;
-// Палитры неба: день, закат, ночь, рассвет — [верх, низ].
-const SKY = [
-  [[110, 168, 245], [205, 226, 250]],
-  [[48, 50, 104], [240, 162, 110]],
-  [[5, 10, 24], [20, 36, 72]],
-  [[44, 60, 128], [246, 196, 140]],
-];
-const STARS = Array.from({ length: 34 }, (_, i) => {
-  const r = rng(i + 3);
-  return [r() * 400, r() * 150, 0.4 + r() * 0.9];
-});
-const SKYLINE = 'M0 196 L0 172 L16 172 L16 160 L30 160 L30 176 L44 176 L44 150 L52 146 L60 150 L60 178 L78 178 L78 164 L92 164 L92 140 L100 136 L108 140 L108 182 L124 182 L124 170 L140 170 L140 158 L152 158 L152 186 L170 186 L170 176 L186 176 L186 196 Z M 344 196 L 344 168 L 356 168 L 356 150 L 370 150 L 370 172 L 384 172 L 384 160 L 400 160 L 400 196 Z';
-const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
-const rgb = (c) => `rgb(${c[0]},${c[1]},${c[2]})`;
+const N = 12; // этажей
+const BW = 8; // длина корпуса, ед.
+const BD = 5; // глубина корпуса
+const FH = 0.85; // высота этажа
+const DAYS = 240; // срок по графику
+const LOOP = 30000;
+const T0 = 1400; // пустая площадка
+const T1 = 25400; // каркас готов
+const T2 = 28000; // перемотка к первому дню
+const SUN = 4200; // одни «сутки» таймлапса
+const CRANE = { x: 10.2, y: -1.2, h: N * FH + 3.8, jib: 9.5, back: 3 };
+const GROUND = { x0: -2, x1: 11.6, y0: -2.4, y1: 7.6 };
+const COS = Math.cos(Math.PI / 6);
+const GATE = 2.6; // ворота на южной стороне, x
 
-function skyAt(phase) {
-  // phase 0..1 внутри суток: 0–0.5 день, 0.5–0.62 закат, 0.62–0.9 ночь, 0.9–1 рассвет
-  const k = [[0, 0], [0.48, 0], [0.58, 1], [0.66, 2], [0.88, 2], [0.96, 3], [1, 0]];
-  for (let i = 0; i < k.length - 1; i++) {
-    if (phase >= k[i][0] && phase <= k[i + 1][0]) {
-      const t = smooth((phase - k[i][0]) / (k[i + 1][0] - k[i][0] || 1));
-      const a = SKY[k[i][1]]; const b = SKY[k[i + 1][1]];
-      return [mix(a[0], b[0], t), mix(a[1], b[1], t)];
+// Факт против плана: первые месяцы стройка чуть отстаёт, потом нагоняет.
+const fact = (p) => clamp(p - 0.017 * Math.sin(Math.PI * 2 * p));
+
+function timeline(t) {
+  if (t < T0) return { built: 0, glass: 0, day: 1, lag: 0, phase: 'start' };
+  if (t < T1) {
+    const p = (t - T0) / (T1 - T0);
+    const f = fact(p);
+    const built = f * N;
+    return { built, glass: Math.max(0, built - 2.6), day: 1 + Math.round(p * (DAYS - 1)), lag: Math.round((p - f) * DAYS), phase: 'build' };
+  }
+  if (t < T2) {
+    const q = smooth((t - T1) / (T2 - T1) * 1.5);
+    return { built: N, glass: N - 2.6 * (1 - q), day: DAYS, lag: 0, phase: 'done' };
+  }
+  const r = smooth((t - T2) / (LOOP - T2));
+  const built = N * (1 - r);
+  return { built, glass: Math.max(0, built - 2.6 * r), day: Math.max(1, Math.round(DAYS * (1 - r))), lag: 0, phase: 'rewind' };
+}
+
+// Детерминированный «шум» для окон.
+const hash = (a, b) => {
+  const s = Math.sin(a * 127.1 + b * 311.7) * 43758.5453;
+  return s - Math.floor(s);
+};
+const mixc = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
+const rgba = (c, a = 1) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+
+function fit({ cssW, cssH, dpr }) {
+  const pts = [];
+  const add = (x, y, z) => pts.push([(x - y) * COS, (x + y) * 0.5 - z]);
+  [[GROUND.x0, GROUND.y0], [GROUND.x1, GROUND.y0], [GROUND.x1, GROUND.y1], [GROUND.x0, GROUND.y1]].forEach(([x, y]) => add(x, y, 0));
+  add(CRANE.x, CRANE.y, CRANE.h + 1.2);
+  // стрела ходит в пределах ±0,5 рад от направления на корпус
+  for (let a = -0.5; a <= 0.5; a += 0.05) {
+    const th = jibBase() + a;
+    add(CRANE.x + Math.cos(th) * CRANE.jib, CRANE.y + Math.sin(th) * CRANE.jib, CRANE.h);
+    add(CRANE.x - Math.cos(th) * CRANE.back, CRANE.y - Math.sin(th) * CRANE.back, CRANE.h);
+  }
+  const xs = pts.map((p) => p[0]);
+  const ys = pts.map((p) => p[1]);
+  const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
+  // снизу — место под подписи панели
+  const padT = cssH * 0.1;
+  const padB = cssH * 0.23;
+  const k = Math.min((cssW * 1.02) / (x1 - x0), (cssH - padT - padB) / (y1 - y0));
+  const ox = (cssW - (x1 - x0) * k) / 2 - x0 * k;
+  const oy = padT + (cssH - padT - padB - (y1 - y0) * k) / 2 - y0 * k;
+  return { k: k * dpr, ox: ox * dpr, oy: oy * dpr };
+}
+
+function jibBase() {
+  // стрела смотрит на середину корпуса
+  return Math.atan2(BD / 2 - CRANE.y, BW / 2 - CRANE.x);
+}
+
+function draw(ctx, st, t) {
+  const { w, h, k, ox, oy, dpr } = st;
+  const P = (x, y, z) => [ox + (x - y) * COS * k, oy + ((x + y) * 0.5 - z) * k];
+  const poly = (pts) => { ctx.beginPath(); pts.forEach(([x, y, z], i) => { const [a, b] = P(x, y, z); if (i) ctx.lineTo(a, b); else ctx.moveTo(a, b); }); ctx.closePath(); };
+  const line = (x1, y1, z1, x2, y2, z2) => { const [a, b] = P(x1, y1, z1); const [c, d] = P(x2, y2, z2); ctx.beginPath(); ctx.moveTo(a, b); ctx.lineTo(c, d); ctx.stroke(); };
+  const tl = timeline(t % LOOP);
+  // сутки: 0…0.72 — день (солнце с востока на запад), дальше ночь
+  const ph = (t % SUN) / SUN;
+  const day = ph < 0.72 ? smooth(clamp(ph / 0.08)) * smooth(clamp((0.72 - ph) / 0.08)) : 0;
+  const night = 1 - day;
+  ctx.clearRect(0, 0, w, h);
+
+  // площадка и сетка цифровой модели
+  ctx.lineWidth = 1 * dpr;
+  poly([[GROUND.x0, GROUND.y0, 0], [GROUND.x1, GROUND.y0, 0], [GROUND.x1, GROUND.y1, 0], [GROUND.x0, GROUND.y1, 0]]);
+  ctx.fillStyle = rgba(mixc([14, 22, 38], [24, 36, 58], day));
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(120, 155, 210, 0.08)';
+  for (let x = Math.ceil(GROUND.x0); x <= GROUND.x1; x++) line(x, GROUND.y0, 0, x, GROUND.y1, 0);
+  for (let y = Math.ceil(GROUND.y0); y <= GROUND.y1; y++) line(GROUND.x0, y, 0, GROUND.x1, y, 0);
+  // ограждение с воротами
+  ctx.setLineDash([4 * dpr, 3 * dpr]);
+  ctx.strokeStyle = 'rgba(150, 185, 235, 0.45)';
+  ctx.beginPath();
+  const fence = [[GATE + 1.6, GROUND.y1], [GROUND.x1, GROUND.y1], [GROUND.x1, GROUND.y0], [GROUND.x0, GROUND.y0], [GROUND.x0, GROUND.y1], [GATE, GROUND.y1]];
+  fence.forEach(([x, y], i) => { const [a, b] = P(x, y, 0); if (i) ctx.lineTo(a, b); else ctx.moveTo(a, b); });
+  ctx.stroke();
+  ctx.setLineDash([]);
+  // будка охраны у ворот и камера КПП
+  box(ctx, P, GATE - 1.3, GROUND.y1 - 1.1, 0, 0.9, 0.8, 0.75, [96, 112, 138], day);
+  ctx.strokeStyle = 'rgba(190, 210, 240, 0.8)';
+  ctx.lineWidth = 1.2 * dpr;
+  line(GATE + 1.9, GROUND.y1 - 0.1, 0, GATE + 1.9, GROUND.y1 - 0.1, 1.6);
+  const [cx0, cy0] = P(GATE + 1.9, GROUND.y1 - 0.1, 1.6);
+  ctx.fillStyle = '#dfe9f7';
+  ctx.fillRect(cx0 - 2.5 * dpr, cy0 - 1.5 * dpr, 5 * dpr, 3 * dpr);
+  ctx.fillStyle = (t % 1400) < 700 ? '#ff5b57' : 'rgba(255, 91, 87, .35)';
+  ctx.beginPath(); ctx.arc(cx0 + 2.5 * dpr, cy0, 1 * dpr, 0, Math.PI * 2); ctx.fill();
+
+  // грузовик заезжает на площадку и разгружается
+  const tt = t % 9000;
+  if (tt < 6200 && tl.phase === 'build') {
+    const yIn = tt < 2200 ? lerp(GROUND.y1 + 3.2, 6.1, easeInOut(tt / 2200)) : tt < 4400 ? 6.1 : lerp(6.1, GROUND.y1 + 3.2, easeInOut((tt - 4400) / 1800));
+    const back = tt >= 4400;
+    truck(ctx, P, GATE + 0.8, yIn, back, day, dpr);
+  }
+
+  // тень корпуса — обходит площадку вместе с солнцем
+  const H = tl.built * FH;
+  if (H > 0.05 && day > 0.02) {
+    const a = lerp(-0.55, Math.PI + 0.55, clamp(ph / 0.72));
+    const len = H * (0.55 + 0.75 * Math.abs(Math.cos(a)));
+    const dx = Math.cos(a) * len;
+    const dy = Math.sin(a) * len * 0.6 + len * 0.35;
+    const foot = [[0, 0], [BW, 0], [BW, BD], [0, BD]];
+    const pts = foot.concat(foot.map(([x, y]) => [x + dx, y + dy])).map(([x, y]) => P(x, y, 0));
+    const hull = convexHull(pts);
+    ctx.fillStyle = `rgba(0, 0, 0, ${0.32 * day})`;
+    ctx.beginPath(); hull.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.closePath(); ctx.fill();
+  }
+
+  // корпус: этаж за этажом
+  const conc = mixc([58, 66, 84], [176, 186, 202], day);
+  const concR = mixc([44, 50, 66], [134, 145, 164], day);
+  const full = Math.floor(tl.built + 1e-6);
+  const part = tl.built - full;
+  for (let i = 0; i < Math.min(N, full); i++) {
+    const z0 = i * FH;
+    const z1 = z0 + FH;
+    const g = clamp(tl.glass - i);
+    floorFaces(ctx, P, poly, line, i, z0, z1, g, day, night, conc, concR, dpr, t);
+  }
+  // перекрытие верхнего готового этажа
+  if (full > 0) {
+    const z = Math.min(N, full) * FH;
+    poly([[0, 0, z], [BW, 0, z], [BW, BD, z], [0, BD, z]]);
+    ctx.fillStyle = rgba(mixc([52, 60, 78], [150, 162, 182], day));
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(220, 232, 250, 0.25)';
+    ctx.lineWidth = 0.8 * dpr;
+    ctx.stroke();
+  }
+  // растущий этаж: колонны и опалубка
+  if (full < N && part > 0.02) {
+    const z0 = full * FH;
+    const zt = z0 + FH * part;
+    ctx.strokeStyle = rgba(conc);
+    ctx.lineWidth = 2 * dpr;
+    for (let x = 0; x <= BW; x += 2) line(x, BD, z0, x, BD, zt);
+    for (let y = 0; y < BD; y += 2.5) line(BW, y, z0, BW, y, zt);
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1.3 * dpr;
+    poly([[0, 0, zt], [BW, 0, zt], [BW, BD, zt], [0, BD, zt]]);
+    ctx.stroke();
+    ctx.globalAlpha = 0.18;
+    ctx.fillStyle = '#f59e0b';
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+
+  // башенный кран
+  crane(ctx, P, line, t, tl, day, night, dpr);
+}
+
+function floorFaces(ctx, P, poly, line, i, z0, z1, g, day, night, conc, concR, dpr, t) {
+  const slab = 0.14;
+  // торец перекрытия
+  ctx.fillStyle = rgba(conc);
+  poly([[0, BD, z0], [BW, BD, z0], [BW, BD, z0 + slab], [0, BD, z0 + slab]]); ctx.fill();
+  ctx.fillStyle = rgba(concR);
+  poly([[BW, 0, z0], [BW, BD, z0], [BW, BD, z0 + slab], [BW, 0, z0 + slab]]); ctx.fill();
+  const zb = z0 + slab;
+  // каркас без стекла: тёмная глубина и колонны
+  ctx.fillStyle = `rgba(8, 13, 24, ${0.82 - 0.2 * day})`;
+  poly([[0, BD, zb], [BW, BD, zb], [BW, BD, z1], [0, BD, z1]]); ctx.fill();
+  poly([[BW, 0, zb], [BW, BD, zb], [BW, BD, z1], [BW, 0, z1]]); ctx.fill();
+  // остекление: слева направо по фасаду
+  if (g > 0) {
+    const gl = mixc([34, 66, 122], [96, 150, 232], day);
+    const gr = mixc([24, 50, 96], [66, 112, 192], day);
+    const xg = BW * Math.min(1, g * 1.2);
+    const yg = BD * clamp(g * 1.2 - 0.2);
+    ctx.fillStyle = rgba(gl, 0.95);
+    poly([[0, BD, zb], [xg, BD, zb], [xg, BD, z1], [0, BD, z1]]); ctx.fill();
+    if (yg > 0) { ctx.fillStyle = rgba(gr, 0.95); poly([[BW, BD - yg, zb], [BW, BD, zb], [BW, BD, z1], [BW, BD - yg, z1]]); ctx.fill(); }
+    // окна, горящие ночью
+    if (night > 0.05 && g >= 1) {
+      for (let j = 0; j < BW; j++) {
+        if (hash(i, j) < 0.45) continue;
+        ctx.fillStyle = `rgba(255, 214, 140, ${0.85 * night * (0.6 + 0.4 * hash(j, i))})`;
+        poly([[j + 0.18, BD, zb + 0.12], [j + 0.82, BD, zb + 0.12], [j + 0.82, BD, z1 - 0.06], [j + 0.18, BD, z1 - 0.06]]); ctx.fill();
+      }
+      for (let j = 0; j < BD; j++) {
+        if (hash(j + 9, i) < 0.5) continue;
+        ctx.fillStyle = `rgba(255, 204, 128, ${0.7 * night})`;
+        poly([[BW, j + 0.18, zb + 0.12], [BW, j + 0.82, zb + 0.12], [BW, j + 0.82, z1 - 0.06], [BW, j + 0.18, z1 - 0.06]]); ctx.fill();
+      }
+    }
+    // блик солнца бежит по стеклу
+    if (day > 0.1) {
+      const sx = ((t / 1400 + i * 0.13) % 3) * BW / 2 - 1;
+      ctx.fillStyle = `rgba(255, 255, 255, ${0.16 * day})`;
+      const a = clamp(sx, 0, xg);
+      const b = clamp(sx + 0.9, 0, xg);
+      if (b > a) { poly([[a, BD, zb], [b, BD, zb], [b, BD, z1], [a, BD, z1]]); ctx.fill(); }
     }
   }
-  return SKY[0];
+  // колонны и импосты
+  ctx.lineWidth = 1 * dpr;
+  ctx.strokeStyle = g > 0 ? `rgba(210, 228, 255, ${0.35 + 0.2 * day})` : rgba(conc, 0.95);
+  for (let x = 0; x <= BW; x += g > 0 ? 1 : 2) line(x, BD, zb, x, BD, z1);
+  ctx.strokeStyle = g > 0 ? `rgba(190, 210, 245, ${0.3 + 0.15 * day})` : rgba(concR, 0.95);
+  for (let y = 0; y <= BD; y += g > 0 ? 1 : 2.5) line(BW, y, zb, BW, y, z1);
 }
-const darkAt = (phase) => (phase < 0.5 ? 0 : phase < 0.64 ? smooth((phase - 0.5) / 0.14) : phase < 0.88 ? 1 : 1 - smooth((phase - 0.88) / 0.12));
+
+function box(ctx, P, x, y, z, w, d, hgt, col, day) {
+  const c = mixc(col.map((v) => v * 0.45), col, day);
+  const face = (pts, k) => {
+    ctx.beginPath();
+    pts.forEach(([a, b, cc], i) => { const [u, v] = P(a, b, cc); if (i) ctx.lineTo(u, v); else ctx.moveTo(u, v); });
+    ctx.closePath();
+    ctx.fillStyle = rgba(c.map((v) => Math.round(v * k)));
+    ctx.fill();
+  };
+  face([[x, y + d, z], [x + w, y + d, z], [x + w, y + d, z + hgt], [x, y + d, z + hgt]], 0.92);
+  face([[x + w, y, z], [x + w, y + d, z], [x + w, y + d, z + hgt], [x + w, y, z + hgt]], 0.72);
+  face([[x, y, z + hgt], [x + w, y, z + hgt], [x + w, y + d, z + hgt], [x, y + d, z + hgt]], 1.12);
+}
+
+function truck(ctx, P, x, y, back, day, dpr) {
+  // кузов позади кабины по ходу движения (машина едет на север)
+  box(ctx, P, x - 0.45, y + 0.3, 0.15, 0.9, 1.9, 0.75, [150, 158, 172], day);
+  box(ctx, P, x - 0.45, y - 0.5, 0.15, 0.9, 0.75, 0.8, [226, 160, 40], day);
+  if (day < 0.6 && !back) {
+    const [a, b] = P(x, y - 0.5, 0.45);
+    ctx.fillStyle = `rgba(255, 238, 190, ${0.5 * (1 - day)})`;
+    ctx.beginPath(); ctx.moveTo(a, b); ctx.lineTo(a + 18 * dpr, b - 14 * dpr); ctx.lineTo(a - 4 * dpr, b - 20 * dpr); ctx.closePath(); ctx.fill();
+  }
+}
+
+function crane(ctx, P, line, t, tl, day, night, dpr) {
+  const { x, y, h } = CRANE;
+  const yel = mixc([150, 112, 30], [246, 196, 69], day);
+  ctx.strokeStyle = rgba(yel, 0.95);
+  // решётчатая мачта
+  const s = 0.32;
+  ctx.lineWidth = 1 * dpr;
+  line(x - s, y, 0, x - s, y, h);
+  line(x + s, y, 0, x + s, y, h);
+  ctx.lineWidth = 0.6 * dpr;
+  for (let z = 0; z < h - 0.3; z += 0.7) line(x - s, y, z, x + s, y, z + 0.7);
+  // стрела поворачивается над корпусом
+  const th = jibBase() + 0.42 * Math.sin(t / 3300) + (tl.phase === 'rewind' ? 0 : 0.06 * Math.sin(t / 900));
+  const ex = x + Math.cos(th) * CRANE.jib;
+  const ey = y + Math.sin(th) * CRANE.jib;
+  const bx = x - Math.cos(th) * CRANE.back;
+  const by = y - Math.sin(th) * CRANE.back;
+  ctx.lineWidth = 1.6 * dpr;
+  line(bx, by, h, ex, ey, h);
+  ctx.lineWidth = 0.8 * dpr;
+  line(x, y, h + 1.1, ex, ey, h + 0.05);
+  line(x, y, h + 1.1, bx, by, h + 0.05);
+  // противовес и кабина
+  ctx.fillStyle = rgba(mixc([40, 46, 58], [92, 100, 116], day));
+  const [qx, qy] = P(bx, by, h);
+  ctx.fillRect(qx - 4 * dpr, qy - 1 * dpr, 8 * dpr, 6 * dpr);
+  const [kx, ky] = P(x, y, h);
+  ctx.fillStyle = rgba(yel);
+  ctx.fillRect(kx - 3 * dpr, ky - 1 * dpr, 6 * dpr, 4.5 * dpr);
+  // каретка, трос и груз
+  const r = CRANE.jib * (0.45 + 0.28 * Math.sin(t / 2100 + 1.3));
+  const tx = x + Math.cos(th) * r;
+  const ty = y + Math.sin(th) * r;
+  const top = tl.built * FH;
+  const lz = Math.max(0.3, top + 0.6 + 0.9 * (0.5 + 0.5 * Math.sin(t / 1700)));
+  ctx.strokeStyle = 'rgba(220, 230, 245, 0.7)';
+  ctx.lineWidth = 0.7 * dpr;
+  line(tx, ty, h, tx, ty, lz + 0.35);
+  const [lx, ly] = P(tx, ty, lz);
+  ctx.fillStyle = '#d97706';
+  ctx.fillRect(lx - 4 * dpr, ly - 2.5 * dpr, 8 * dpr, 5 * dpr);
+  // заградительный огонь на вершине — ночью
+  if (night > 0.3) {
+    const [ax, ay] = P(x, y, h + 1.15);
+    ctx.fillStyle = `rgba(255, 70, 60, ${night * (0.4 + 0.6 * ((t % 1200) < 600))})`;
+    ctx.beginPath(); ctx.arc(ax, ay, 1.8 * dpr, 0, Math.PI * 2); ctx.fill();
+  }
+}
+
+function convexHull(points) {
+  const p = points.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const cross = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+  const lower = [];
+  for (const q of p) { while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], q) <= 0) lower.pop(); lower.push(q); }
+  const upper = [];
+  for (let i = p.length - 1; i >= 0; i--) { const q = p[i]; while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], q) <= 0) upper.pop(); upper.push(q); }
+  upper.pop(); lower.pop();
+  return lower.concat(upper);
+}
+
+const ANPR = ['scan', 'read', 'ok'];
 
 export default function EgsvSites() {
   const root = useRef(null);
-  const r = useRef({});
+  const canvas = useRef(null);
+  const st = useRef(null);
   const reduced = useReducedMotion();
   const { awake } = useAwake(root);
-  const [hud, setHud] = useState({ day: 1, floors: 0, plate: false });
+  const clock = useClock(awake && !reduced);
+  const gate = ANPR[useBeats(awake, [1500, 1700, 3200], { reduced, still: 2 }) % ANPR.length];
+  const [hud, setHud] = useState({ day: 1, built: 0, glass: 0, lag: 0, phase: 'start' });
   const last = useRef('');
 
-  const set = (k, attr, v) => { const el = r.current[k]; if (el) el.setAttribute(attr, v); };
-
-  const frame = (time) => {
-    const t = reduced ? DAY * 9.3 : time % LOOP;
-    const rewinding = t > DAY * (FLOORS + 1);
-    const rw = rewinding ? span(t, DAY * (FLOORS + 1), LOOP) : 0;
-    const dayF = rewinding ? (FLOORS + 1) * (1 - easeInOut(rw)) : t / DAY;
-    const day = Math.floor(dayF);
-    const phase = rewinding ? 0.2 : dayF - day;
-    // небо
-    const [top, bot] = skyAt(phase);
-    set('s0', 'stop-color', rgb(top));
-    set('s1', 'stop-color', rgb(bot));
-    const dark = rewinding ? 0 : darkAt(phase);
-    set('stars', 'opacity', (dark * 0.9).toFixed(2));
-    // солнце и луна идут по дуге
-    const sunP = clamp(phase / 0.58);
-    const ang = Math.PI * (1 - sunP);
-    set('sun', 'cx', (200 + Math.cos(ang) * 190).toFixed(1));
-    set('sun', 'cy', (205 - Math.sin(ang) * 150).toFixed(1));
-    set('sun', 'opacity', (1 - dark).toFixed(2));
-    const moonP = clamp((phase - 0.6) / 0.38);
-    const mang = Math.PI * (1 - moonP);
-    set('moon', 'cx', (200 + Math.cos(mang) * 170).toFixed(1));
-    set('moon', 'cy', (200 - Math.sin(mang) * 130).toFixed(1));
-    set('moon', 'opacity', (dark * 0.95).toFixed(2));
-    const land = mix([92, 78, 60], [26, 26, 38], dark);
-    set('ground', 'fill', rgb(land));
-    set('skyline', 'fill', rgb(mix([120, 145, 185], [12, 18, 34], dark)));
-    // этажи
-    const built = Math.min(FLOORS, rewinding ? dayF : dayF + 0.0001);
-    for (let i = 0; i < FLOORS; i++) {
-      const g = r.current[`f${i}`];
-      if (!g) continue;
-      const p = clamp(built - i);
-      g.setAttribute('opacity', p > 0 ? Math.min(1, p * 3).toFixed(2) : '0');
-      g.setAttribute('transform', `translate(0 ${((1 - Math.min(1, p * 2.4)) * -6).toFixed(1)})`);
-      const lit = i < built - 2 && dark > 0.4;
-      g.classList.toggle('is-lit', lit && (i * 7 + day) % 5 !== 0);
-      g.classList.toggle('is-glass', i < built - 2);
-    }
-    const topY = BASE_Y - Math.max(1, Math.min(FLOORS, Math.ceil(built))) * FH;
-    // кран растёт вместе со зданием
-    const mastTop = Math.min(BASE_Y - 60, topY - 30);
-    set('mast', 'y', mastTop.toFixed(1));
-    set('mast', 'height', (BASE_Y - mastTop).toFixed(1));
-    set('jib', 'transform', `translate(0 ${mastTop.toFixed(1)})`);
-    const trolley = 250 + Math.sin(time / 1300) * 60;
-    set('trolley', 'transform', `translate(${trolley.toFixed(1)} 0)`);
-    const hookY = 18 + (0.5 + 0.5 * Math.sin(time / 900)) * Math.max(10, topY - mastTop - 26);
-    set('cable', 'y2', hookY.toFixed(1));
-    set('load', 'transform', `translate(0 ${hookY.toFixed(1)})`);
-    set('crane-light', 'opacity', dark > 0.3 ? (0.6 + 0.4 * Math.sin(time / 300)).toFixed(2) : '0');
-    // грузовик проезжает ворота раз в два «дня»
-    const truckT = (time % (DAY * 2)) / (DAY * 2);
-    const tx = lerp(-70, 430, easeInOut(truckT));
-    set('truck', 'transform', `translate(${tx.toFixed(1)} 0)`);
-    const atGate = tx > 40 && tx < 140;
-    set('scan', 'opacity', atGate ? '0.9' : '0');
-    set('headl', 'opacity', dark > 0.35 ? '0.9' : '0');
-    // мерцание экспозиции, как у настоящего таймлапса
-    set('flicker', 'opacity', rewinding ? '0.12' : (0.02 + 0.03 * Math.abs(Math.sin(day * 12.9))).toFixed(3));
-    const floors = Math.min(FLOORS, Math.ceil(built));
-    const key = `${day}|${floors}|${atGate}`;
-    if (key !== last.current) { last.current = key; setHud({ day: rewinding ? Math.max(1, day * 18) : day * 18 + 1, floors, plate: atGate, rewinding }); }
+  const render = (time) => {
+    const s = st.current;
+    const c = canvas.current;
+    if (!s || !c) return;
+    const t = reduced ? T2 - 200 : time;
+    draw(c.getContext('2d'), s, t);
+    const tl = timeline(t % LOOP);
+    const next = { day: tl.day, built: Math.min(N, Math.floor(tl.built + 1e-6)), glass: Math.min(N, Math.floor(tl.glass + 1e-6)), lag: tl.lag, phase: tl.phase };
+    const key = `${next.day}|${next.built}|${next.glass}|${next.lag}|${next.phase}`;
+    if (key !== last.current) { last.current = key; setHud(next); }
   };
-  useFrames(awake && !reduced, frame);
-  useEffect(() => { if (reduced) frame(0); }, [reduced]); // eslint-disable-line react-hooks/exhaustive-deps
-  const ref = (k) => (el) => { r.current[k] = el; };
+  const time = useFrames(awake && !reduced, render);
+  useCanvasSize(canvas, (size) => {
+    st.current = { ...size, ...fit(size) };
+    render(time.current);
+  });
+  useEffect(() => { if (reduced) render(0); }, [reduced]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const lag = hud.phase === 'build' ? hud.lag : 0;
+  const sched = lag >= 1
+    ? { tone: 'amber', text: tr('Отставание {n} дн.').replace('{n}', lag) }
+    : lag <= -1 ? { tone: 'green', text: tr('Опережение {n} дн.').replace('{n}', -lag) } : { tone: 'green', text: tr('По графику') };
 
   return (
     <div ref={root} className="o-scene o-scene--st" data-awake={awake ? '' : undefined} dir="ltr" aria-hidden="true">
-      <svg className="o-st__svg" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
-        <defs>
-          <linearGradient id="st-sky" x1="0" y1="0" x2="0" y2="1">
-            <stop ref={ref('s0')} offset="0" stopColor="rgb(110,168,245)" />
-            <stop ref={ref('s1')} offset="1" stopColor="rgb(205,226,250)" />
-          </linearGradient>
-          <radialGradient id="st-sun"><stop offset="0" stopColor="#fff7d6" /><stop offset=".35" stopColor="#ffd88a" /><stop offset="1" stopColor="#ffd88a" stopOpacity="0" /></radialGradient>
-        </defs>
-        <rect width="400" height="300" fill="url(#st-sky)" />
-        <g ref={ref('stars')} opacity="0">
-          {STARS.map(([x, y, s], i) => <circle key={i} cx={x} cy={y} r={s} fill="#fff" />)}
-        </g>
-        <circle ref={ref('sun')} r="26" fill="url(#st-sun)" />
-        <circle ref={ref('moon')} r="7" fill="#e8eefc" opacity="0" />
-        <path ref={ref('skyline')} d={SKYLINE} fill="rgb(120,145,185)" />
-        <rect ref={ref('ground')} x="0" y="196" width="400" height="104" fill="rgb(92,78,60)" />
-        <rect x="0" y="270" width="400" height="30" fill="rgba(20,22,30,.55)" />
-        {/* здание */}
-        <rect x={BX - 6} y={BASE_Y} width={BW + 12} height="5" fill="#6b6f78" />
-        {Array.from({ length: FLOORS }, (_, i) => {
-          const y = BASE_Y - (i + 1) * FH;
-          return (
-            <g key={i} ref={ref(`f${i}`)} className="o-st__floor" opacity="0">
-              <rect x={BX} y={y + FH - 2.4} width={BW} height="2.4" className="o-st__slab" />
-              {[0, 1, 2, 3, 4].map((c) => <rect key={c} x={BX + 2 + c * ((BW - 7) / 4)} y={y} width="3" height={FH - 2.4} className="o-st__col" />)}
-              {[0, 1, 2, 3, 4, 5, 6, 7].map((w) => <rect key={`w${w}`} x={BX + 7 + w * 13.6} y={y + 2.4} width="9" height={FH - 6} className="o-st__win" />)}
-            </g>
-          );
-        })}
-        {/* кран */}
-        <rect ref={ref('mast')} x="186" y="140" width="7" height="112" className="o-st__mast" />
-        <g ref={ref('jib')}>
-          <rect x="150" y="-4" width="225" height="5" className="o-st__jibbar" />
-          <rect x="150" y="1" width="26" height="9" fill="#3b4250" />
-          <path d="M186 -4 L189.5 -22 L193 -4 Z" className="o-st__jibbar" />
-          <line x1="189.5" y1="-22" x2="372" y2="-3" className="o-st__tie" />
-          <line x1="189.5" y1="-22" x2="152" y2="-3" className="o-st__tie" />
-          <circle ref={ref('crane-light')} cx="189.5" cy="-23" r="2.2" fill="#ff4d3d" opacity="0" />
-          <g ref={ref('trolley')}>
-            <rect x="-5" y="1" width="10" height="4" fill="#2d333f" />
-            <line ref={ref('cable')} x1="0" y1="5" x2="0" y2="40" className="o-st__cable" />
-            <g ref={ref('load')}>
-              <path d="M-3 0 L3 0 L0 4 Z" fill="#2d333f" />
-              <rect x="-11" y="4" width="22" height="7" rx="1" fill="#c26b2b" />
-            </g>
-          </g>
-        </g>
-        {/* забор, ворота, камера ГРНЗ */}
-        {Array.from({ length: 22 }, (_, i) => (i > 2 && i < 7 ? null : <rect key={i} x={i * 19} y="252" width="18" height="16" className="o-st__fence" />))}
-        <rect x="134" y="226" width="2.4" height="42" fill="#3b4250" />
-        <rect x="127" y="224" width="13" height="6" rx="1.5" fill="#1f2530" />
-        <circle cx="129" cy="227" r="1.4" fill="#ff4d3d" />
-        <path ref={ref('scan')} d="M128 229 L60 268 L112 272 Z" className="o-st__scan" opacity="0" />
-        {/* грузовик */}
-        <g ref={ref('truck')}>
-          <rect x="0" y="260" width="44" height="14" rx="2" fill="#e5e7eb" />
-          <ellipse cx="22" cy="262" rx="16" ry="7" fill="#9ca3af" />
-          <rect x="44" y="262" width="14" height="12" rx="2" fill="#f59e0b" />
-          <rect x="49" y="264" width="7" height="5" rx="1" fill="#1f2937" />
-          <circle cx="10" cy="276" r="3.6" fill="#111827" />
-          <circle cx="32" cy="276" r="3.6" fill="#111827" />
-          <circle cx="51" cy="276" r="3.6" fill="#111827" />
-          <path ref={ref('headl')} d="M58 268 L96 262 L96 276 Z" fill="rgba(255,240,200,.45)" opacity="0" />
-        </g>
-        <rect ref={ref('flicker')} width="400" height="300" fill="#fff" opacity="0.03" />
-      </svg>
-      <div className="o-st__hud">
-        <div className="o-st__rec"><i /> REC · {tr('Таймлапс')}</div>
-        <div className="o-st__day">{hud.rewinding ? '◀◀ ' : ''}{tr('День {n}').replace('{n}', hud.day)}</div>
-        <div className="o-st__stats">
-          <div><b>846</b><span>{tr('камер на 106 стройках')}</span></div>
-          <div><b>5&nbsp;435</b><span>{tr('камер в 234 школах Астаны')}</span></div>
+      <div className="o-st__top">
+        <b>{tr('Школы и стройки')}</b>
+        <span className="o-st__on"><i /> {tr('3 камеры онлайн')}</span>
+        <em>{clock.hms}</em>
+      </div>
+
+      <div className="o-st__cams">
+        <div className="o-st__tile">
+          <img src="/scenes/wall-yard.webp" alt="" draggable="false" />
+          <svg className="o-st__fence" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <polyline points="3,37 12,22 26,12 44,7 62,7 78,11 90,19 97,30" />
+          </svg>
+          <span className="o-st__cap">{tr('Школа № 21 · двор')}</span>
+          <span className="o-st__rec"><i /> {clock.hms}</span>
+          <span className="o-st__chip is-green">{tr('Периметр под охраной')}</span>
         </div>
-        <div className="o-st__progress">
-          <span>{tr('Этаж {n} / {m}').replace('{n}', hud.floors).replace('{m}', FLOORS)}</span>
-          <div className="o-st__bar"><i style={{ transform: `scaleX(${hud.floors / FLOORS})` }} /></div>
+        <div className={`o-st__tile is-${gate}`}>
+          <img src="/scenes/wall-anpr.webp" alt="" draggable="false" />
+          <span className="o-st__plate"><i /></span>
+          <span className="o-st__read">01 784 KAA</span>
+          <span className="o-st__cap">{tr('Стройка · КПП')}</span>
+          <span className="o-st__rec"><i /> {clock.hms}</span>
+          <span className={`o-st__chip ${gate === 'ok' ? 'is-green' : 'is-sky'}`}>
+            {gate === 'scan' ? tr('Распознаю номер…') : gate === 'read' ? tr('Сверка со списком подрядчиков') : tr('Подрядчик · въезд разрешён')}
+          </span>
         </div>
       </div>
-      {hud.plate && !reduced ? <div className="o-st__plate" key={hud.day}>017 ABK 01 · {tr('въезд')}</div> : null}
+
+      <div className={`o-st__tl is-${hud.phase}`}>
+        <canvas ref={canvas} />
+        <div className="o-st__tlhead">
+          <span className="o-st__tlname"><i /> {tr('Таймлапс')} · {tr('корпус 2')}</span>
+          <b>{hud.phase === 'rewind' ? '◀◀ ' : ''}{tr('День {n}').replace('{n}', hud.day)} <small>/ {DAYS}</small></b>
+        </div>
+        <div className="o-st__tlfoot">
+          <div className="o-st__row">
+            <span>{tr('Каркас')}</span>
+            <div className="o-st__meter"><i style={{ transform: `scaleX(${hud.built / N})` }} /></div>
+            <em>{hud.built}/{N}</em>
+          </div>
+          <div className="o-st__row is-glass">
+            <span>{tr('Остекление')}</span>
+            <div className="o-st__meter"><i style={{ transform: `scaleX(${hud.glass / N})` }} /></div>
+            <em>{hud.glass}/{N}</em>
+          </div>
+          <span className={`o-st__sched is-${hud.phase === 'done' ? 'green' : sched.tone}`}>{hud.phase === 'done' ? tr('Каркас готов в срок') : sched.text}</span>
+        </div>
+      </div>
     </div>
   );
 }

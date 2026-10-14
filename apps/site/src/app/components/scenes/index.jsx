@@ -8,7 +8,7 @@ import { lazy, Suspense } from 'react';
 import { Img } from '../../lib/img.jsx';
 
 const LOADERS = {
-  kzmap: () => import('./KzMap.jsx'),
+  uzmap: () => import('./UzMap.jsx'),
   wall: () => import('./Wall.jsx'),
   bodycam: () => import('./Bodycam.jsx'),
   hub: () => import('./ApiHub.jsx'),
@@ -32,12 +32,18 @@ const LOADERS = {
   thermal: () => import('./UavThermal.jsx'),
 };
 
+// Прежние имена сцен из старого контента: карта Казахстана заменена
+// картой Узбекистана, и контент, сохранённый со старым именем, показывает новую.
+const ALIASES = { kzmap: 'uzmap' };
+const resolve = (kind) => (kind && ALIASES[kind]) || kind;
+
 const cache = {};
 
 export const SCENE_KINDS = Object.keys(LOADERS);
 
 export function hasScene(kind) {
-  return Boolean(kind && LOADERS[kind]);
+  const k = resolve(kind);
+  return Boolean(k && LOADERS[k]);
 }
 
 // Сцены по умолчанию — для контента, в котором поля scene ещё нет
@@ -48,7 +54,7 @@ export function hasScene(kind) {
 // Пустое поле scene ('') в контенте явно отключает анимацию.
 const HERO_DEFAULTS = { egsv: 'wall', toll: 'gantry', uav: 'flight' };
 const SECTION_DEFAULTS = {
-  egsv: { map: 'kzmap', net: 'hub', '/products/egsv-bodycam.jpg': 'bodycam', scan: 'sites' },
+  egsv: { map: 'uzmap', net: 'hub', '/products/egsv-bodycam.jpg': 'bodycam', scan: 'sites' },
   toll: { scan: 'lidar', radar: 'enforce', net: 'backoffice', map: 'gnss' },
   uav: {
     '/products/uav-plane.jpg': 'launch', '/products/uav-copter.jpg': 'hover', map: 'survey', '/products/uav-ai.jpg': 'detect',
@@ -58,13 +64,13 @@ const SECTION_DEFAULTS = {
 
 export function heroScene(product) {
   if (!product) return '';
-  if (typeof product.scene === 'string') return hasScene(product.scene) ? product.scene : '';
+  if (typeof product.scene === 'string') return hasScene(product.scene) ? resolve(product.scene) : '';
   return HERO_DEFAULTS[product.id] || '';
 }
 
 export function sectionScene(product, section) {
   if (!product || !section) return '';
-  if (typeof section.scene === 'string') return hasScene(section.scene) ? section.scene : '';
+  if (typeof section.scene === 'string') return hasScene(section.scene) ? resolve(section.scene) : '';
   const map = SECTION_DEFAULTS[product.id];
   if (!map) return '';
   return map[section.image] || (!section.image && map[section.visual]) || '';
@@ -72,7 +78,8 @@ export function sectionScene(product, section) {
 
 export function Scene({ kind, image, sizes = '(max-width: 900px) 100vw, 50vw' }) {
   if (!hasScene(kind)) return null;
-  const Comp = cache[kind] || (cache[kind] = lazy(LOADERS[kind]));
+  const k = resolve(kind);
+  const Comp = cache[k] || (cache[k] = lazy(LOADERS[k]));
   const poster = image
     ? <Img src={image} alt="" sizes={sizes} className="o-scene__poster" lqip={false} />
     : <div className="o-scene" />;

@@ -16,6 +16,11 @@ export function setUiLanguage(language) {
   currentLanguage = language || 'ru';
 }
 
+// Текущий язык — для форматирования чисел (десятичная точка или запятая).
+export function uiLanguage() {
+  return currentLanguage;
+}
+
 export function tr(value) {
   const key = String(value ?? '');
   if (!key) return key;
