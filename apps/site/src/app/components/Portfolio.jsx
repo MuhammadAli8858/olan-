@@ -29,7 +29,7 @@ function ProductCard({ product, language, onOpen }) {
   const badge = localize(product.badge, language);
   let media;
   if (hasStage(product)) {
-    media = <span className="o-card__media" style={{ background: '#06080c' }}><Suspense fallback={null}><WiderScreen align="center" /></Suspense></span>;
+    media = <span className="o-card__media" style={{ background: '#06080c' }}><Suspense fallback={null}><WiderScreen align={badge ? 'card' : 'center'} /></Suspense></span>;
   } else if (product.image) {
     media = (
       <span className={`o-card__media${isStudio(product.image) ? ' is-studio' : ''}`}>
@@ -67,7 +67,7 @@ export function Portfolio({ onOpen }) {
 }
 
 // Живые иллюстрации для разделов страницы (поле visual у раздела):
-// touch, audio, battery, brand — для Wider; scan — распознавание номера;
+// touch, audio, battery, brand — для Wider (живой экран на подиуме); scan — распознавание номера;
 // map — карта города; net — сеть узлов; chain — блокчейн; radar — радар.
 const MAP_ROADS = ['M0 212 C 80 192, 140 122, 220 140 S 340 92, 400 70', 'M58 0 C 92 92, 120 162, 150 300', 'M238 300 C 252 222, 302 160, 400 152'];
 const MAP_PINS = [[152, 138], [268, 112], [96, 198]];
@@ -75,29 +75,12 @@ const NET_NODES = [[70, 150], [170, 70], [170, 230], [270, 150], [350, 70], [350
 const NET_LINKS = [[0, 1], [0, 2], [1, 3], [2, 3], [3, 4], [3, 5], [1, 4], [2, 5]];
 // Точка загорается, когда над ней проходит луч: задержка = угол / 360 × оборот.
 const RADAR_BLIPS = [[70, 30, 0.4], [62, 72, 1.34], [30, 62, 2.12]];
+// Разделы Wider (мультитач, звук, батарея, бренд) показывают тот же экран
+// на подиуме, что и первый экран страницы, — каждый в своей роли.
+const WIDER_MODES = ['touch', 'audio', 'battery', 'brand'];
 function Vignette({ kind }) {
-  if (kind === 'touch') {
-    return (
-      <div className="o-vg">
-        <div className="o-vg__screen">
-          {[[22, 42, '0s'], [50, 64, '.85s'], [77, 36, '1.7s']].map(([x, y, d]) => (
-            <span key={x} className="o-vg__tap" style={{ '--x': `${x}%`, '--y': `${y}%`, '--d': d }} />
-          ))}
-        </div>
-      </div>
-    );
-  }
-  if (kind === 'audio') {
-    return (
-      <div className="o-vg">
-        <div className="o-vg__eq">
-          {Array.from({ length: 28 }, (_, i) => (
-            <i key={i} style={{ '--t': `${0.45 + ((i * 37) % 9) / 10}s`, '--d': `${-(i * 0.13).toFixed(2)}s`,
-              '--h1': (0.35 + ((i * 53) % 65) / 100).toFixed(2), '--h2': (0.2 + ((i * 29) % 60) / 100).toFixed(2) }} />
-          ))}
-        </div>
-      </div>
-    );
+  if (WIDER_MODES.includes(kind)) {
+    return <Suspense fallback={null}><WiderScreen mode={kind} align="center" /></Suspense>;
   }
   const still = prefersReducedMotion();
   if (kind === 'scan') {
@@ -175,8 +158,6 @@ function Vignette({ kind }) {
       </div>
     );
   }
-  if (kind === 'battery') return <div className="o-vg"><div className="o-vg__batt"><i /></div></div>;
-  if (kind === 'brand') return <div className="o-vg"><div className="o-vg__brand"><span>{tr('Ваш логотип')}</span></div></div>;
   return null;
 }
 

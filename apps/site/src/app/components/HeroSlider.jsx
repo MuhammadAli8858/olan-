@@ -31,6 +31,48 @@ const SCENES = {
 const pct = (v) => `${(v * 100).toFixed(3)}%`;
 const clock = () => new Date().toTimeString().slice(0, 8);
 
+// Что экспонат Wider не должен закрывать: слова заголовка и бейдж, строки
+// описания и кнопки, а также шапку сверху и вкладки снизу. Всё — в
+// координатах самой сцены. Сцена шире кадра на 2,5% с каждой стороны и
+// ездит за мышью, поэтому её место берём по offset-цепочке (без transform),
+// а из прямоугольников текста вычитаем сдвиг параллакса и анимации появления.
+function shiftOf(el) {
+  const t = el ? getComputedStyle(el).transform : 'none';
+  if (!t || t === 'none' || typeof DOMMatrixReadOnly === 'undefined') return [0, 0];
+  const m = new DOMMatrixReadOnly(t);
+  return [m.m41, m.m42];
+}
+
+function stageClearance(root, text) {
+  const hero = root && text ? text.closest('.o-hero') : null;
+  if (!hero) return null;
+  let ox = 0;
+  let oy = 0;
+  for (let el = root; el && el !== hero; el = el.offsetParent) { ox += el.offsetLeft; oy += el.offsetTop; }
+  const hb = hero.getBoundingClientRect();
+  const [tx, ty] = shiftOf(text);
+  const boxes = (rects, holder) => {
+    const [fx, fy] = shiftOf(holder);
+    const dx = hb.left + ox + tx + fx;
+    const dy = hb.top + oy + ty + fy;
+    return [...rects].filter((b) => b.width > 0 && b.height > 0).map((b) => ({ l: b.left - dx, t: b.top - dy, r: b.right - dx, b: b.bottom - dy }));
+  };
+  const badge = text.querySelector('.o-hero__badge');
+  const desc = text.querySelector('.o-hero__desc');
+  const actions = text.querySelector('.o-hero__actions');
+  const words = [...text.querySelectorAll('.o-hero__title .o-w')].map((w) => w.getBoundingClientRect());
+  let lines = [];
+  if (desc) { const range = document.createRange(); range.selectNodeContents(desc); lines = range.getClientRects(); }
+  const nav = hero.querySelector('.o-hero__nav');
+  const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--o-header')) || 72;
+  return {
+    frame: { l: -ox, t: header - oy, r: hero.clientWidth - ox, b: (nav ? nav.offsetTop : hero.clientHeight) - oy },
+    title: [...boxes(words, null), ...(badge ? boxes([badge.getBoundingClientRect()], badge) : [])],
+    text: [...boxes(lines, desc), ...(actions ? boxes([...actions.children].map((b) => b.getBoundingClientRect()), actions) : [])],
+    watch: [text],
+  };
+}
+
 // Где на экране оказалось фото при object-fit: cover.
 function useCoverRect(ref, src, enabled) {
   const [state, setState] = useState({ rect: null, portrait: false });
@@ -184,6 +226,10 @@ function Slide({ slide, index, state, armed, eager, language, onNavigate, onLoad
   const badge = localize(slide.badge, language);
   const cta = localize(slide.cta, language) || tr('Подробнее');
   const Heading = index === 0 ? 'h1' : 'h2';
+  const textRef = useRef(null);
+  // новая функция при смене языка — сцена заново раскладывает экспонат
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const avoid = useCallback((root) => stageClearance(root, textRef.current), [language, title]);
   let w = 0;
 
   return (
@@ -192,7 +238,7 @@ function Slide({ slide, index, state, armed, eager, language, onNavigate, onLoad
       <div className="o-hero__depth">
         {slide.effect === 'wider' ? (
           <div className="o-hero__stage">
-            {armed ? <Suspense fallback={null}><WiderScreen active={live} align={slide.align === 'right' ? 'left' : 'right'} /></Suspense> : null}
+            {armed ? <Suspense fallback={null}><WiderScreen active={live} align={slide.align === 'right' ? 'left' : 'right'} avoid={avoid} /></Suspense> : null}
           </div>
         ) : (
           <div className="o-hero__kb" style={{ '--kb-o': (scene && scene.origin) || '50% 50%', '--kb-x': scene ? scene.kb[0] : '0%', '--kb-y': scene ? scene.kb[1] : '0%' }}>
@@ -216,7 +262,7 @@ function Slide({ slide, index, state, armed, eager, language, onNavigate, onLoad
       <div className="o-hero__shade" />
       <div className="o-hero__content" style={{ opacity: 'var(--fade, 1)' }}>
         <div className="o-wrap">
-          <div className="o-hero__text">
+          <div className="o-hero__text" ref={textRef}>
             {badge ? <div className="o-hero__badge o-fade" style={{ '--d': '250ms' }}>{badge}</div> : null}
             <Heading className="o-hero__title">
               {title.split(/(\s+)/).map((part, i) => (/^\s+$/.test(part) || !part ? part : (

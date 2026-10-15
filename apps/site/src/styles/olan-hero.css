@@ -31,6 +31,15 @@
 .o-hero__slide[data-align="right"] .o-hero__shade {
   background: linear-gradient(270deg, rgba(5, 7, 10, .78) 0%, rgba(5, 7, 10, .44) 34%, rgba(5, 7, 10, 0) 64%),
               linear-gradient(0deg, rgba(5, 7, 10, .84) 0%, rgba(5, 7, 10, .24) 32%, rgba(5, 7, 10, 0) 55%); }
+/* по-арабски текст стоит с другой стороны — и затемнение под ним тоже */
+@media (min-width: 761px) {
+  [dir="rtl"] .o-hero__slide .o-hero__shade {
+    background: linear-gradient(270deg, rgba(5, 7, 10, .78) 0%, rgba(5, 7, 10, .44) 34%, rgba(5, 7, 10, 0) 64%),
+                linear-gradient(0deg, rgba(5, 7, 10, .84) 0%, rgba(5, 7, 10, .24) 32%, rgba(5, 7, 10, 0) 55%); }
+  [dir="rtl"] .o-hero__slide[data-align="right"] .o-hero__shade {
+    background: linear-gradient(90deg, rgba(5, 7, 10, .78) 0%, rgba(5, 7, 10, .44) 34%, rgba(5, 7, 10, 0) 64%),
+                linear-gradient(0deg, rgba(5, 7, 10, .84) 0%, rgba(5, 7, 10, .24) 32%, rgba(5, 7, 10, 0) 55%); }
+}
 
 /* зерно плёнки: прячет мягкость увеличенных фото и делает кадр «живым» */
 .o-hero__grain { position: absolute; inset: -60%; z-index: 3; pointer-events: none; opacity: .075; mix-blend-mode: overlay;

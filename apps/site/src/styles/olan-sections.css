@@ -232,34 +232,11 @@
 .o-scene__poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .o-pp-visual--scene { background: #06080d; cursor: default; }
 
-/* ───────── живые иллюстрации разделов Wider ───────── */
+/* ───────── живые иллюстрации разделов (номер, карта, сеть, блокчейн, радар) ───────── */
 .o-vg { position: absolute; inset: 0; display: grid; place-items: center; overflow: hidden; background: radial-gradient(80% 70% at 50% 40%, #1b2638, #080b11 75%); }
-.o-vg__screen { position: relative; width: 80%; aspect-ratio: 3.1 / 1; border-radius: 1.4% / 4.4%; overflow: hidden; transform: perspective(700px) rotateX(7deg);
-  background: linear-gradient(180deg, #17263f, #0c1628); box-shadow: 0 0 0 5px #05070a, 0 34px 60px -24px rgba(40, 110, 255, .5); }
-.o-vg__screen::before { content: ''; position: absolute; inset: 0; opacity: .5;
-  background: linear-gradient(90deg, rgba(255, 255, 255, .06) 1px, transparent 1px) 0 0 / 8% 100%, linear-gradient(rgba(255, 255, 255, .06) 1px, transparent 1px) 0 0 / 100% 25%; }
-.o-vg__tap { position: absolute; left: var(--x); top: var(--y); width: 12%; aspect-ratio: 1; transform: translate(-50%, -50%); }
-.o-vg__tap::before, .o-vg__tap::after { content: ''; position: absolute; inset: 0; border-radius: 50%; opacity: 0; animation-delay: var(--d); animation-iteration-count: infinite; }
-.o-vg__tap::before { border: 2px solid rgba(170, 212, 255, .9); animation-name: o-tap; animation-duration: 2.6s; animation-timing-function: var(--o-ease); }
-.o-vg__tap::after { background: rgba(255, 255, 255, .45); animation-name: o-press; animation-duration: 2.6s; animation-timing-function: ease-out; }
-@keyframes o-tap { 0% { transform: scale(.2); opacity: 0; } 8% { opacity: 1; } 70%, 100% { transform: scale(1.7); opacity: 0; } }
-@keyframes o-press { 0%, 100% { transform: scale(.3); opacity: 0; } 6% { transform: scale(.42); opacity: .9; } 30% { opacity: 0; } }
-.o-vg__eq { display: flex; align-items: flex-end; gap: 1.1%; width: 70%; height: 46%; }
-.o-vg__eq i { flex: 1; height: 100%; border-radius: 2px; background: linear-gradient(0deg, #0a5ad4, #7bb0ff); transform-origin: bottom;
-  animation: o-eq var(--t) ease-in-out infinite alternate; animation-delay: var(--d); }
-@keyframes o-eq { 0% { transform: scaleY(.1); } 50% { transform: scaleY(var(--h1)); } 100% { transform: scaleY(var(--h2)); } }
-.o-vg__batt { position: relative; width: 44%; aspect-ratio: 2.3 / 1; border: 3px solid rgba(255, 255, 255, .88); border-radius: 12px; padding: 5px; }
-.o-vg__batt::after { content: ''; position: absolute; inset-inline-end: -11px; top: 32%; bottom: 32%; width: 7px; border-radius: 0 4px 4px 0; background: rgba(255, 255, 255, .88); }
-.o-vg__batt i { display: block; height: 100%; border-radius: 6px; background: linear-gradient(90deg, #22c55e, #9af0b8); transform-origin: left; animation: o-charge 5.5s var(--o-ease) infinite; }
-@keyframes o-charge { 0% { transform: scaleX(.16); } 72%, 100% { transform: scaleX(1); } }
-.o-vg__brand { width: 74%; aspect-ratio: 2.6 / 1; border-radius: 10px; display: grid; place-items: center; box-shadow: 0 0 0 5px #05070a;
-  background: linear-gradient(135deg, #0a5ad4, #0b2a66); animation: o-hue 12s linear infinite; }
-.o-vg__brand span { display: flex; align-items: center; gap: .7rem; color: #fff; font-weight: 700; font-size: clamp(.95rem, 1.8vw, 1.4rem); letter-spacing: -.01em; }
-.o-vg__brand span::before { content: ''; width: 1.6em; height: 1.6em; border-radius: 50%; border: .28em solid #fff; }
-@keyframes o-hue { to { filter: hue-rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) {
   .o-card__media img, .o-panel, .o-panel__img img, .o-dir__slide img { transition: none; }
-  .o-vg__tap::before, .o-vg__tap::after, .o-vg__eq i, .o-vg__batt i, .o-vg__brand, .o-rail__hint svg { animation: none; }
+  .o-rail__hint svg { animation: none; }
 }
 
 /* ───────── страница «Проекты»: после мозаики — ровная сетка ───────── */
@@ -341,3 +318,48 @@
   .o-vg__plate::after, .o-vg__target, .o-vg__chip, .o-vg__pulse, .o-vg__block, .o-vg__joint::after, .o-vg__radar::before, .o-vg__radar i { animation: none; }
   .o-vg__chip, .o-vg__radar i { opacity: 1; }
 }
+
+/* ───────── Wider: экран 123″ на подсвеченном подиуме ───────── */
+.o-wd { position: absolute; inset: 0; overflow: hidden; background: #020306; }
+.o-wd__box { position: absolute; container-type: size; }
+.o-wd__aura { position: absolute; inset: -20% -15%; pointer-events: none; transform: translate3d(calc(var(--wx, 0) * -18px), calc(var(--wy, 0) * -11px), 0);
+  background: radial-gradient(38% 30% at 47% 76%, rgba(56, 189, 248, .2), transparent 72%), radial-gradient(34% 34% at 47% 26%, rgba(37, 99, 235, .16), transparent 70%); }
+.o-wd__tilt { position: absolute; inset: 0; will-change: transform;
+  transform: perspective(1600px) rotateY(calc(var(--wx, 0) * 3.2deg)) rotateX(calc(var(--wy, 0) * -2.2deg)) translate3d(calc(var(--wx, 0) * 10px), calc(var(--wy, 0) * 6px), 0); }
+.o-wd__push { position: absolute; inset: 0; transform-origin: 46% 52%; animation: o-wd-push 24s ease-in-out infinite alternate; }
+@keyframes o-wd-push { from { transform: scale(1); } to { transform: scale(1.045); } }
+.o-wd__img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; user-select: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 14%, #000 86%, transparent 100%), linear-gradient(180deg, transparent 0, #000 5%, #000 84%, transparent 100%);
+  -webkit-mask-composite: source-in; mask-image: linear-gradient(90deg, transparent 0, #000 14%, #000 86%, transparent 100%), linear-gradient(180deg, transparent 0, #000 5%, #000 84%, transparent 100%);
+  mask-composite: intersect; }
+.o-wd canvas.o-wd__screen { position: absolute; display: block; right: auto; bottom: auto; }
+.o-wd__gloss { position: absolute; overflow: hidden; pointer-events: none; mix-blend-mode: screen; background-repeat: no-repeat; background-size: 260% 100%;
+  background-image: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, .13) 47%, rgba(255, 255, 255, .03) 53%, transparent 62%); animation: o-wd-gloss 8s ease-in-out infinite; }
+@keyframes o-wd-gloss { 0% { background-position: 140% 0; } 50%, 100% { background-position: -40% 0; } }
+.o-wd__spill { position: absolute; left: 21%; width: 52%; top: 62%; height: 15%; border-radius: 50%; pointer-events: none; mix-blend-mode: screen; filter: blur(10px);
+  background: radial-gradient(closest-side, var(--wd-b, rgba(96, 165, 250, .55)), transparent); opacity: .35; animation: o-wd-spill 5s ease-in-out infinite; transition: background .8s; }
+@keyframes o-wd-spill { 0%, 100% { opacity: .22; } 50% { opacity: .45; } }
+.o-wd__fx { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.o-wd__frame { fill: none; stroke: rgba(140, 210, 255, .92); stroke-width: 1.3; vector-effect: non-scaling-stroke; filter: drop-shadow(0 0 3px rgba(80, 170, 255, .85)); }
+.o-wd__rim, .o-wd__rim-glow, .o-wd__comet { fill: none; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.o-wd__rim { stroke: #d2fbff; stroke-width: 1.6; animation: o-wd-breathe 4.6s ease-in-out infinite; }
+.o-wd__rim-glow { stroke: #67e8f9; stroke-width: 8; filter: blur(5px); animation: o-wd-breathe 4.6s ease-in-out infinite; }
+@keyframes o-wd-breathe { 0%, 100% { opacity: .35; } 50% { opacity: .9; } }
+.o-wd__comet { stroke: #fff; stroke-width: 3; stroke-dasharray: 90 1200; stroke-dashoffset: 90; filter: drop-shadow(0 0 4px #a5f3fc) drop-shadow(0 0 10px #22d3ee);
+  animation: o-wd-comet 6s cubic-bezier(.45, .05, .55, .95) infinite; }
+@keyframes o-wd-comet { 0% { stroke-dashoffset: 90; opacity: 0; } 8% { opacity: 1; } 70% { opacity: 1; } 78%, 100% { stroke-dashoffset: -1180; opacity: 0; } }
+.o-wd__led { fill: #7dd3fc; filter: drop-shadow(0 0 3px #38bdf8); animation: o-wd-led 2.6s ease-in-out infinite; }
+@keyframes o-wd-led { 50% { opacity: .3; } }
+.o-wd__sound { fill: none; stroke: rgba(125, 211, 252, .8); stroke-width: 1.6; vector-effect: non-scaling-stroke; transform-box: fill-box; opacity: 0;
+  filter: drop-shadow(0 0 3px rgba(56, 189, 248, .8)); animation: o-wd-sound 2.4s ease-out infinite; animation-delay: calc(var(--i) * .8s); }
+.o-wd__sound.is-l { transform-origin: 100% 50%; }
+.o-wd__sound.is-r { transform-origin: 0 50%; }
+@keyframes o-wd-sound { 0% { transform: scale(.45); opacity: 0; } 25% { opacity: .75; } 100% { transform: scale(1.9); opacity: 0; } }
+.o-wd__wrap { position: absolute; display: grid; place-items: center; pointer-events: none; mix-blend-mode: screen; transition: background .8s;
+  background: linear-gradient(110deg, var(--wd-a, #2563eb) 0%, transparent 75%); opacity: .6; }
+.o-wd__wrap b { font-size: 2.3cqw; font-weight: 800; letter-spacing: .32em; text-transform: uppercase; color: rgba(255, 255, 255, .9); white-space: nowrap; }
+.o-wd__motes i { position: absolute; width: var(--s); height: var(--s); border-radius: 50%; background: #c9f6ff; box-shadow: 0 0 6px #67e8f9; opacity: 0;
+  animation: o-wd-mote var(--t) linear infinite; animation-delay: var(--d); }
+@keyframes o-wd-mote { 0% { opacity: 0; transform: translate3d(0, 0, 0); } 15% { opacity: .85; } 80% { opacity: .45; } 100% { opacity: 0; transform: translate3d(1.4cqw, -16cqh, 0); } }
+.o-wd:not([data-awake]) *, .o-wd:not([data-awake]) *::before, .o-wd:not([data-awake]) *::after { animation-play-state: paused !important; }
+@media (prefers-reduced-motion: reduce) { .o-wd *, .o-wd *::before, .o-wd *::after { animation: none !important; } .o-wd__comet { opacity: 0; } }

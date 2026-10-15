@@ -69,7 +69,7 @@ function CardMedia({ item, eager }) {
   if (item.stage) {
     return (
       <span className="o-card__media" style={{ background: '#06080c' }}>
-        <Suspense fallback={null}><WiderScreen align="center" /></Suspense>
+        <Suspense fallback={null}><WiderScreen align={item.badge ? 'card' : 'center'} /></Suspense>
       </span>
     );
   }
